@@ -7,6 +7,7 @@ import com.example.comiccollection.data.TitlesListener;
 import com.example.comiccollection.data.entities.Title;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import androidx.lifecycle.MutableLiveData;
@@ -14,14 +15,14 @@ import androidx.lifecycle.ViewModel;
 
 public class TitlesViewModel extends ViewModel implements TitlesListener {
 
-    private MutableLiveData< ArrayList<Title> > mTitles = new MutableLiveData<ArrayList<Title>>();
+    private MutableLiveData< ArrayList<Title> > mLiveTitles = new MutableLiveData<ArrayList<Title>>();
     private FirestoreComicRepository repository = FirestoreComicRepository.getInstance();
 
     private boolean mTryLoadAgain = true;
 
     private String TAG = TitlesListener.class.getSimpleName();
 
-    public MutableLiveData< ArrayList<Title> > getTitles() { return mTitles; }
+    public MutableLiveData< ArrayList<Title> > getTitles() { return mLiveTitles; }
 
     /****************************************************************************************
      * Interface methods to the UI.
@@ -35,13 +36,19 @@ public class TitlesViewModel extends ViewModel implements TitlesListener {
         This is an asynchronous call to the repository, which will call one of our callback
         methods when complete.
          */
-        repository.getTitles(this);
+        repository.loadAndListenForTitles(this);
     }
 
     /****************************************************************************************
      * Methods to implement business logic.
      ****************************************************************************************/
 
+    private List<Title> sortTitlesAlphabetically(List<Title> titles) {
+
+        titles.sort((t0, t1) -> {return t0.getName().compareTo(t1.getName());});
+
+        return titles;
+    }
 
     /****************************************************************************************
      * Listeners to the data (model) layer.
@@ -52,7 +59,10 @@ public class TitlesViewModel extends ViewModel implements TitlesListener {
         for( Title title : titles ) {
             Log.d(TAG, "Loaded title " + title.getName());
         }
-        mTitles.setValue( (ArrayList<Title>) titles );
+
+        titles = sortTitlesAlphabetically(titles);
+
+        mLiveTitles.setValue( (ArrayList<Title>) titles );
     }
 
     @Override

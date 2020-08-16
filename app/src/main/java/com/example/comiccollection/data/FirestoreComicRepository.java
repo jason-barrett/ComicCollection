@@ -8,7 +8,9 @@ import android.util.Log;
 import com.example.comiccollection.data.entities.Title;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -19,7 +21,6 @@ public class FirestoreComicRepository implements ComicRepository {
     /*
     This class manages access to the Firestore data.
      */
-    private ArrayList<Title> mComicData;
     private String TAG = this.getClass().getSimpleName();
 
     private static FirestoreComicRepository mInstance = null;
@@ -43,55 +44,60 @@ public class FirestoreComicRepository implements ComicRepository {
     }
 
     @Override
-    public void getTitles(final TitlesListener titlesListener) {
+    public void loadAndListenForTitles(final TitlesListener titlesListener) {
 
-        final List<Title> titles = new ArrayList<Title>();
-
-        db.collection(ComicDbHelper.CC_COLLECTION_TITLE).get().addOnCompleteListener(
-                new OnCompleteListener<QuerySnapshot>() {
+        db.collection(ComicDbHelper.CC_COLLECTION_TITLE).addSnapshotListener(
+                new EventListener<QuerySnapshot>() {
                     @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if( task.isSuccessful() ) {
-                            Log.i(TAG, "Fetch collection " + ComicDbHelper.CC_COLLECTION_TITLE
-                                    + " SUCCESSFUL");
+                    public void onEvent(@Nullable QuerySnapshot value,
+                                        @Nullable FirebaseFirestoreException e) {
 
-                            /*
-                            Every document in the result is a title.  Read them into a list of
-                            Title entities.
-                             */
-                            for( QueryDocumentSnapshot document : task.getResult() ) {
-                                if( document.exists() ) {
-                                    Title title = new Title();
-                                    title.setName(document.getString(ComicDbHelper.CC_TITLE_NAME));
+                        List<Title> titles = new ArrayList<Title>();
 
-                                    Long firstIssue = document.getLong(ComicDbHelper.CC_TITLE_FIRST_ISSUE);
-                                    if( firstIssue != null ) {
-                                        title.setFirstIssue(firstIssue.toString());
-                                    }
+                        /*
+                        Check for exception, otherwise I can assume I got updates.
+                         */
+                        if( e != null ) {
+                            Log.e(TAG, "Error fetching " + ComicDbHelper.CC_COLLECTION_TITLE
+                                    + ": " + e);
 
-                                    Long lastIssue = document.getLong(ComicDbHelper.CC_TITLE_LAST_ISSUE);
-                                    if( lastIssue != null ) {
-                                        title.setLastIssue(lastIssue.toString());
-                                    }
+                            titlesListener.onTitleLoadFailed();
+                        }
 
-                                    titles.add(title);
-                                    Log.d(TAG, "Added title " + title.getName()
+                        Log.i(TAG, "Fetch collection " + ComicDbHelper.CC_COLLECTION_TITLE
+                                + " SUCCESSFUL");
+
+                        /*
+                        Every document in the result is a title.  Read them into a list of
+                        Title entities.
+                        */
+                        for( QueryDocumentSnapshot document : value ) {
+                            if( document.exists() ) {
+                                Title title = new Title();
+                                title.setName(document.getString(ComicDbHelper.CC_TITLE_NAME));
+
+                                Long firstIssue = document.getLong(ComicDbHelper.CC_TITLE_FIRST_ISSUE);
+                                if( firstIssue != null ) {
+                                    title.setFirstIssue(firstIssue.toString());
+                                }
+
+                                Long lastIssue = document.getLong(ComicDbHelper.CC_TITLE_LAST_ISSUE);
+                                if( lastIssue != null ) {
+                                    title.setLastIssue(lastIssue.toString());
+                                }
+
+                                titles.add(title);
+                                Log.d(TAG, "Added title " + title.getName()
                                         + " , first issue " + title.getFirstIssue()
                                         + ". last issue " + title.getLastIssue());
-                                }
                             }
 
                             titlesListener.onTitlesReady(titles);
 
-                        } else {
-                            Log.e(TAG, "Error fetching " + ComicDbHelper.CC_COLLECTION_TITLE
-                                    + task.getException());
-
-                            titlesListener.onTitleLoadFailed();
-                        }
-                    }
-                } // new OnCompleteListener()
-        ); // addOnCompleteListener()
+                        } // End for (documents fetched)
+                    } // on Event()
+                } // new EventListener()
+        ); // addSnapshotListener()
     }
 
     @Override
