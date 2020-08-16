@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "136369615319",
+    "firebase_url": "https://comic-collection-791f5.firebaseio.com",
+    "project_id": "comic-collection-791f5",
+    "storage_bucket": "comic-collection-791f5.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:136369615319:android:c413d9ddcc834f1a80db92",
+        "android_client_info": {
+          "package_name": "com.example.comiccollection"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "136369615319-6inleic8bnnp6bqcfvnpo34rcebmf5pn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC_larmpjID5c5PYjzoxZyEdKbj6Gr9hjc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "136369615319-6inleic8bnnp6bqcfvnpo34rcebmf5pn.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
