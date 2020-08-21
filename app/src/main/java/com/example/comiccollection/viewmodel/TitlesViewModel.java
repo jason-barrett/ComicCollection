@@ -40,17 +40,6 @@ public class TitlesViewModel extends ViewModel implements TitlesListener {
     }
 
     /****************************************************************************************
-     * Methods to implement business logic.
-     ****************************************************************************************/
-
-    private List<Title> sortTitlesAlphabetically(List<Title> titles) {
-
-        titles.sort((t0, t1) -> {return t0.getName().compareTo(t1.getName());});
-
-        return titles;
-    }
-
-    /****************************************************************************************
      * Listeners to the data (model) layer.
      ****************************************************************************************/
     @Override
@@ -59,8 +48,6 @@ public class TitlesViewModel extends ViewModel implements TitlesListener {
         for( Title title : titles ) {
             Log.d(TAG, "Loaded title " + title.getName());
         }
-
-        titles = sortTitlesAlphabetically(titles);
 
         mLiveTitles.setValue( (ArrayList<Title>) titles );
     }

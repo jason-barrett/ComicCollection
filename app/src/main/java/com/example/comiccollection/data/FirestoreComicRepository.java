@@ -6,6 +6,9 @@ import java.util.List;
 import android.util.Log;
 
 import com.example.comiccollection.data.entities.Title;
+import com.example.comiccollection.data.map.TitlesMapper;
+import com.example.comiccollection.data.modifiers.TitlesModifier;
+import com.example.comiccollection.data.modifiers.TitlesSorter;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.EventListener;
@@ -35,6 +38,8 @@ public class FirestoreComicRepository implements ComicRepository {
         db = FirebaseFirestore.getInstance();
     }
 
+    private List<TitlesModifier> modifiers = new ArrayList<TitlesModifier>();
+
     public synchronized static FirestoreComicRepository getInstance() {
         if( mInstance == null ) {
             mInstance = new FirestoreComicRepository();
@@ -46,13 +51,22 @@ public class FirestoreComicRepository implements ComicRepository {
     @Override
     public void loadAndListenForTitles(final TitlesListener titlesListener) {
 
+        /*
+        Register modifiers to implement the business logic.
+
+         - Sort the titles alphabetically.
+         */
+        modifiers.add(new TitlesSorter());
+
+        /*
+        Define a listener to be called on any changes to the collection (including the initial
+        load).
+         */
         db.collection(ComicDbHelper.CC_COLLECTION_TITLE).addSnapshotListener(
                 new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(@Nullable QuerySnapshot value,
                                         @Nullable FirebaseFirestoreException e) {
-
-                        List<Title> titles = new ArrayList<Title>();
 
                         /*
                         Check for exception, otherwise I can assume I got updates.
@@ -64,37 +78,26 @@ public class FirestoreComicRepository implements ComicRepository {
                             titlesListener.onTitleLoadFailed();
                         }
 
+                        /*
+                        We're good.  Map the query result into a list to send back.
+                         */
                         Log.i(TAG, "Fetch collection " + ComicDbHelper.CC_COLLECTION_TITLE
                                 + " SUCCESSFUL");
+                        List<Title> titles = TitlesMapper.map(value);
 
                         /*
-                        Every document in the result is a title.  Read them into a list of
-                        Title entities.
+                        Before sending the list back, apply any registered business logic methods.
                         */
-                        for( QueryDocumentSnapshot document : value ) {
-                            if( document.exists() ) {
-                                Title title = new Title();
-                                title.setName(document.getString(ComicDbHelper.CC_TITLE_NAME));
+                        for( TitlesModifier m : modifiers ) {
+                            Log.i(TAG, "Running logic in " + m.getClass().getSimpleName());
+                            titles = m.modify((ArrayList<Title>)titles);
+                        }
 
-                                Long firstIssue = document.getLong(ComicDbHelper.CC_TITLE_FIRST_ISSUE);
-                                if( firstIssue != null ) {
-                                    title.setFirstIssue(firstIssue.toString());
-                                }
+                        /*
+                        The list goes back to the ViewModel layer.
+                         */
+                        titlesListener.onTitlesReady(titles);
 
-                                Long lastIssue = document.getLong(ComicDbHelper.CC_TITLE_LAST_ISSUE);
-                                if( lastIssue != null ) {
-                                    title.setLastIssue(lastIssue.toString());
-                                }
-
-                                titles.add(title);
-                                Log.d(TAG, "Added title " + title.getName()
-                                        + " , first issue " + title.getFirstIssue()
-                                        + ". last issue " + title.getLastIssue());
-                            }
-
-                            titlesListener.onTitlesReady(titles);
-
-                        } // End for (documents fetched)
                     } // on Event()
                 } // new EventListener()
         ); // addSnapshotListener()
