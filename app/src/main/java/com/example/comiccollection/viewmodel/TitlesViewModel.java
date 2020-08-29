@@ -39,6 +39,10 @@ public class TitlesViewModel extends ViewModel implements TitlesListener {
         repository.loadAndListenForTitles(this);
     }
 
+    public void addTitle(Title title) {
+        repository.addTitle(title);
+    }
+
     /****************************************************************************************
      * Listeners to the data (model) layer.
      ****************************************************************************************/
@@ -66,7 +70,7 @@ public class TitlesViewModel extends ViewModel implements TitlesListener {
             Log.w(TAG, "Failed to load titles on second try, giving up.");
             mTryLoadAgain = true;   // Reset for next time.
 
-            /* Do we want to provide some indication back to the user here, especially if
+            /* TODO Do we want to provide some indication back to the user here, especially if
             the contents of the LiveData are null?
              */
         }

@@ -27,20 +27,18 @@ public class TitlesMapper {
                 Title title = new Title();
                 title.setName(document.getString(ComicDbHelper.CC_TITLE_NAME));
 
-                Long firstIssue = document.getLong(ComicDbHelper.CC_TITLE_FIRST_ISSUE);
+                String firstIssue = document.getString(ComicDbHelper.CC_TITLE_FIRST_ISSUE);
                 if (firstIssue != null) {
-                    title.setFirstIssue(firstIssue.toString());
+                    title.setFirstIssue(firstIssue);
                 }
 
-                Long lastIssue = document.getLong(ComicDbHelper.CC_TITLE_LAST_ISSUE);
+                String lastIssue = document.getString(ComicDbHelper.CC_TITLE_LAST_ISSUE);
                 if (lastIssue != null) {
-                    title.setLastIssue(lastIssue.toString());
+                    title.setLastIssue(lastIssue);
                 }
 
                 titles.add(title);
-                Log.d(TAG, "Added title " + title.getName()
-                        + " , first issue " + title.getFirstIssue()
-                        + ". last issue " + title.getLastIssue());
+                Log.d(TAG, "Added title " + title.toString());
             }
         }  // End for (documents)
 

@@ -1,7 +1,9 @@
 package com.example.comiccollection.data;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import android.util.Log;
 
@@ -9,12 +11,12 @@ import com.example.comiccollection.data.entities.Title;
 import com.example.comiccollection.data.map.TitlesMapper;
 import com.example.comiccollection.data.modifiers.TitlesModifier;
 import com.example.comiccollection.data.modifiers.TitlesSorter;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import androidx.annotation.NonNull;
@@ -79,6 +81,14 @@ public class FirestoreComicRepository implements ComicRepository {
                         }
 
                         /*
+                        Check for a null snapshot.
+                         */
+                        if( value == null ) {
+                            Log.e(TAG, "Got a null query snapshot, back end connection may have failed.");
+                            titlesListener.onTitleLoadFailed();
+                        }
+
+                        /*
                         We're good.  Map the query result into a list to send back.
                          */
                         Log.i(TAG, "Fetch collection " + ComicDbHelper.CC_COLLECTION_TITLE
@@ -88,9 +98,11 @@ public class FirestoreComicRepository implements ComicRepository {
                         /*
                         Before sending the list back, apply any registered business logic methods.
                         */
-                        for( TitlesModifier m : modifiers ) {
-                            Log.i(TAG, "Running logic in " + m.getClass().getSimpleName());
-                            titles = m.modify((ArrayList<Title>)titles);
+                        if( modifiers != null ) {
+                            for (TitlesModifier m : modifiers) {
+                                Log.i(TAG, "Running logic in " + m.getClass().getSimpleName());
+                                titles = m.modify((ArrayList<Title>) titles);
+                            }
                         }
 
                         /*
@@ -106,6 +118,28 @@ public class FirestoreComicRepository implements ComicRepository {
     @Override
     public void addTitle(Title title) {
 
+        /*
+        Specify the title in a HashMap.  Firestore will auto-generate a document ID.
+         */
+        Map<String, Object> newTitle = new HashMap();
+        newTitle.put(ComicDbHelper.CC_TITLE_NAME, title.getName());
+        newTitle.put(ComicDbHelper.CC_TITLE_FIRST_ISSUE, title.getFirstIssue());
+        newTitle.put(ComicDbHelper.CC_TITLE_LAST_ISSUE, title.getLastIssue());
+
+        db.collection(ComicDbHelper.CC_COLLECTION_TITLE).add(newTitle)
+                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+            @Override
+            public void onSuccess(DocumentReference documentReference) {
+                Log.i(TAG, "Loaded new title " + title.getName());
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.e(TAG, "Failed to load title " + title.getName() + e.toString());
+
+                //TODO: Refactor to propagate this error back to the screen / user.
+            }
+        }); // new OnFailureListener
     }
 
     @Override

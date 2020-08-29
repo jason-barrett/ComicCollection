@@ -2,6 +2,8 @@ package com.example.comiccollection.data.entities;
 
 import java.util.ArrayList;
 
+import androidx.annotation.NonNull;
+
 public class Title {
          /*
         This is an entity class for a comic title e.g., 'Spider-Man (Amazing)" or "Fantastic Four".
@@ -33,5 +35,11 @@ public class Title {
 
     public void setLastIssue(String lastIssue) {
         this.mLastIssue = lastIssue;
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return getName() + " - " + getFirstIssue() + " (First) " + getLastIssue() + " (Last)";
     }
 }

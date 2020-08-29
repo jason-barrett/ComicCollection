@@ -1,3 +1,13 @@
 <resources>
     <string name="app_name">Comic Collection</string>
+
+    <!-- For data entry of titles -->
+    <string name="title_entry_name">Title name (e.g., Action Comics)</string>
+    <string name="title_entry_first_issue">First issue (of interest)</string>
+    <string name="title_entry_last_issue">Last issue (of interest)</string>
+
+    <string name="add_title">Add A Title</string>
+    <string name="positive_add_title">Add</string>
+    <string name="negative_add_title">Cancel</string>
+
 </resources>
