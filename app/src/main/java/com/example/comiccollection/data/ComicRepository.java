@@ -8,4 +8,5 @@ public interface ComicRepository {
     public void loadAndListenForTitles(TitlesListener onTitlesReady);
     public void addTitle(Title title);
     public void modifyTitle(Title title);
+    public void deleteTitle(Title title);
 }

@@ -1,5 +1,6 @@
 package com.example.comiccollection;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -8,8 +9,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
 
 import com.example.comiccollection.data.entities.Title;
 import com.example.comiccollection.viewmodel.TitlesViewModel;
@@ -18,7 +19,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.util.ArrayList;
 
 public class TitlesActivity extends AppCompatActivity
-        implements RecyclerView.OnClickListener, AddTitleDialogFragment.AddTitleDialogListener {
+        implements AddTitleDialogFragment.AddTitleDialogListener, TitlesAdapter.TitleClickListener {
 
     private RecyclerView mTitlesListView;
     private ArrayList<Title> mTitlesList;
@@ -28,12 +29,17 @@ public class TitlesActivity extends AppCompatActivity
 
     private final String TAG = TitlesActivity.class.getSimpleName();
 
+    /*************************************************************************************
+     * Activity lifecycle methods.
+     *************************************************************************************/
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_titles);
 
-        mTitlesAdapter = new TitlesAdapter();
+        mTitlesListView = (ContextMenuRecyclerView) findViewById(R.id.titles_list);
+        mTitlesAdapter = new TitlesAdapter(this);
 
         /*
         Instantiate the ViewModel and create an Observer to update the UI.  The Observer is
@@ -58,9 +64,9 @@ public class TitlesActivity extends AppCompatActivity
         /*
         Set up the RecyclerView to show all of the titles.
          */
-        mTitlesListView = (RecyclerView) findViewById(R.id.titles_list);
         mTitlesListView.setAdapter(mTitlesAdapter);
         mTitlesListView.setLayoutManager(new LinearLayoutManager(this));
+        mTitlesListView.setHasFixedSize(true);
 
         /*
         Kick off the initial titles load.
@@ -81,17 +87,55 @@ public class TitlesActivity extends AppCompatActivity
 
     } // end onCreate()
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
+
+    /*************************************************************************************
+     * TitlesAdapter listener interface method implementations.
+     *************************************************************************************/
+
     /*
-    This is the click handler for the RecyclerView for the list of titles.
+      This is the click handler for the TitlesAdapter for the list of titles.
      */
     @Override
-    public void onClick(View view) {
+    public void onClick(View view, Title title) {
 
     }
+
+    @Override
+    public boolean onContextItemSelected(@NonNull MenuItem item) {
+        /*
+        Following a trick I learned in this video, https://www.youtube.com/watch?v=fl5BB3I3MvQ,
+        we're hiding the adapter position in the group ID for the menu item.
+         */
+        Title title = mTitlesAdapter.getTitleAt(item.getGroupId());
+
+        switch ( item.getItemId() ) {
+
+            case R.id.title_menu_option_edit:
+                break;
+
+            case R.id.title_menu_option_delete:
+                Log.i(TAG, "Deleting title " + title.toString());
+                mTitlesViewModel.deleteTitle(title);
+
+                return true;
+        }
+
+        return super.onContextItemSelected(item);
+    }
+
+
+    /*************************************************************************************
+     * Listeners for the 'Add Title' dialog.
+     *************************************************************************************/
 
     /*
     This is the handler for when the user chooses to add a title in the popup dialog.
      */
+
     @Override
     public void onDialogPositiveClick(AddTitleDialogFragment fragment) {
         Title title = fragment.getNewTitle();
@@ -104,6 +148,8 @@ public class TitlesActivity extends AppCompatActivity
                  */
                 Integer.parseInt(title.getFirstIssue());
                 Integer.parseInt(title.getLastIssue());
+
+                // TODO: Disallow last issue < first issue
 
                 Log.i(TAG,"Adding title " + title.toString());
                 mTitlesViewModel.addTitle(title);

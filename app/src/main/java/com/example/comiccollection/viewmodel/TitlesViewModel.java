@@ -43,6 +43,8 @@ public class TitlesViewModel extends ViewModel implements TitlesListener {
         repository.addTitle(title);
     }
 
+    public void deleteTitle(Title title) { repository.deleteTitle(title); }
+
     /****************************************************************************************
      * Listeners to the data (model) layer.
      ****************************************************************************************/

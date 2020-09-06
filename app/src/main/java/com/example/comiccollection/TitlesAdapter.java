@@ -1,6 +1,8 @@
 package com.example.comiccollection;
 
 import android.content.Context;
+import android.util.Log;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,21 +11,40 @@ import android.widget.TextView;
 import com.example.comiccollection.data.entities.Title;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class TitlesAdapter extends RecyclerView.Adapter {
 
+    /*
+    This is the canonical dataset that will be shown in the Adapter.
+     */
     ArrayList<Title> mTitles;
 
-    //public TitlesAdapter(ArrayList<Title> titles) { mTitles = titles; }
-    public TitlesAdapter() { mTitles = new ArrayList<Title>(); }
+    /*
+    Specify a listener that will receive click events from the view holders, along with
+    the knowledge of which View was clicked and which Title that represents in the data.
+     */
+    public interface TitleClickListener {
+        public void onClick(View view, Title title);
+    }
+    TitleClickListener mListener;
 
+    String TAG = TitlesAdapter.class.getSimpleName();
+
+    public TitlesAdapter(TitlesAdapter.TitleClickListener listener) {
+        mTitles = new ArrayList<Title>();
+
+        mListener = listener;
+    }
 
     public void updateTitles(ArrayList<Title> titles) {
         mTitles = titles;
+    }
+
+    public Title getTitleAt(int position) {
+        return mTitles.get(position);
     }
 
     @NonNull
@@ -47,25 +68,51 @@ public class TitlesAdapter extends RecyclerView.Adapter {
         Title title = mTitles.get(position);
         TitlesViewHolder titlesViewHolder = (TitlesViewHolder) holder;
         titlesViewHolder.getTitleView().setText(title.getName());
-    }
+
+        /*
+        A long press on the view holder will provide a context menu for edits and deletes.
+         */
+        holder.itemView.setLongClickable(true);
+
+    } // onBindViewHolder()
 
     @Override
     public int getItemCount() {
         return mTitles.size();
     }
 
-    public class TitlesViewHolder extends RecyclerView.ViewHolder {
+    public class TitlesViewHolder extends RecyclerView.ViewHolder implements /*View.OnLongClickListener,*/ View.OnCreateContextMenuListener {
 
         TextView mTitleView;
+        View mTitlesItemView;
 
         public TitlesViewHolder(View titlesItemView) {
             super(titlesItemView);
 
             mTitleView = (TextView) titlesItemView.findViewById(R.id.title_item_title);
+            mTitlesItemView = titlesItemView;
+
+            /*
+            Set the OnCreateContextMenu listener for the main view.
+             */
+            titlesItemView.setOnCreateContextMenuListener(this);
         }
 
         public TextView getTitleView() {
             return mTitleView;
         }
-    }
+
+        @Override
+        public void onCreateContextMenu(ContextMenu contextMenu, View view, ContextMenu.ContextMenuInfo contextMenuInfo) {
+
+            /*
+            Credit to the guy who made this video (https://www.youtube.com/watch?v=fl5BB3I3MvQ) for the trick of
+            sneaking the adapter position into the first parameter (the group number) as a way of getting the
+            position (and therefore the Title) back to the Activity.
+             */
+            contextMenu.add(this.getAdapterPosition(), R.id.title_menu_option_edit, 0, "EDIT");
+            contextMenu.add(this.getAdapterPosition(), R.id.title_menu_option_delete, 1, "DELETE");
+        }
+
+    }  // class TitlesViewHolder
 }

@@ -37,6 +37,8 @@ public class TitlesMapper {
                     title.setLastIssue(lastIssue);
                 }
 
+                title.setDocumentId(document.getId());
+
                 titles.add(title);
                 Log.d(TAG, "Added title " + title.toString());
             }

@@ -13,6 +13,12 @@ public class Title {
     private String mFirstIssue;
     private String mLastIssue;
 
+    /*
+    This is the document ID given by Firestore.  It's handy to have for deletes and
+    modifications.
+     */
+    private String mDocumentId;
+
     public String getName() {
         return mName;
     }
@@ -35,6 +41,14 @@ public class Title {
 
     public void setLastIssue(String lastIssue) {
         this.mLastIssue = lastIssue;
+    }
+
+    public String getDocumentId() {
+        return mDocumentId;
+    }
+
+    public void setDocumentId(String documentId) {
+        this.mDocumentId = documentId;
     }
 
     @NonNull

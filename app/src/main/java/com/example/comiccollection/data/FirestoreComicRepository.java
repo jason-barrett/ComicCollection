@@ -146,4 +146,10 @@ public class FirestoreComicRepository implements ComicRepository {
     public void modifyTitle(Title title) {
 
     }
+
+    @Override
+    public void deleteTitle(Title title) {
+        Log.i(TAG, "Deleting title " + title.getName());
+        db.collection(ComicDbHelper.CC_COLLECTION_TITLE).document(title.getDocumentId()).delete();
+    }
 }
