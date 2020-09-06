@@ -7,7 +7,10 @@
     <string name="title_entry_last_issue">Last issue (of interest)</string>
 
     <string name="add_title">Add A Title</string>
+    <string name="edit_title">Edit Title</string>
     <string name="positive_add_title">Add</string>
+    <string name="positive_edit_title">Edit</string>
     <string name="negative_add_title">Cancel</string>
+    <string name="negative_edit_title">Cancel</string>
 
 </resources>

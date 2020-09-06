@@ -19,7 +19,9 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.util.ArrayList;
 
 public class TitlesActivity extends AppCompatActivity
-        implements AddTitleDialogFragment.AddTitleDialogListener, TitlesAdapter.TitleClickListener {
+        implements AddTitleDialogFragment.AddTitleDialogListener,
+        EditTitleDialogFragment.EditTitleDialogListener,
+        TitlesAdapter.TitleClickListener {
 
     private RecyclerView mTitlesListView;
     private ArrayList<Title> mTitlesList;
@@ -115,7 +117,10 @@ public class TitlesActivity extends AppCompatActivity
         switch ( item.getItemId() ) {
 
             case R.id.title_menu_option_edit:
-                break;
+                EditTitleDialogFragment editTitleDialogFragment = new EditTitleDialogFragment(title);
+                editTitleDialogFragment.show(getSupportFragmentManager(), null);
+
+                return true;
 
             case R.id.title_menu_option_delete:
                 Log.i(TAG, "Deleting title " + title.toString());
@@ -129,7 +134,7 @@ public class TitlesActivity extends AppCompatActivity
 
 
     /*************************************************************************************
-     * Listeners for the 'Add Title' dialog.
+     * Listeners for the 'Add Title' and 'Edit Title' dialogs.
      *************************************************************************************/
 
     /*
@@ -137,7 +142,7 @@ public class TitlesActivity extends AppCompatActivity
      */
 
     @Override
-    public void onDialogPositiveClick(AddTitleDialogFragment fragment) {
+    public void onDialogClickAdd(AddTitleDialogFragment fragment) {
         Title title = fragment.getNewTitle();
         if( title != null && title.getName().length() > 0 ) {
             try {
@@ -159,4 +164,33 @@ public class TitlesActivity extends AppCompatActivity
 
         }
     }
+
+    /*
+    This is the handler for when the user chooses to edit a title in the popup dialog.
+     */
+
+    @Override
+    public void onDialogClickEdit(EditTitleDialogFragment fragment) {
+        Title title = fragment.getTitle();
+        if( title != null && title.getName().length() > 0 ) {
+            try {
+                /*
+                Just double check that the user did not enter a character in one of the issue
+                numbers.  Technically that is not illegal (e.g., the annuals), but the first and
+                last issues are used for comparison purposes.
+                 */
+                Integer.parseInt(title.getFirstIssue());
+                Integer.parseInt(title.getLastIssue());
+
+                // TODO: Disallow last issue < first issue
+
+                Log.i(TAG,"Modifying title " + title.toString());
+                mTitlesViewModel.modifyTitle(title);
+            } catch( NumberFormatException e ) {
+                Log.i(TAG, "User entered a non-numeric issue number.");
+            }
+
+        }
+    }
+
 }

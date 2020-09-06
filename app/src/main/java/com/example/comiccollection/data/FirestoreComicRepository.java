@@ -144,7 +144,33 @@ public class FirestoreComicRepository implements ComicRepository {
 
     @Override
     public void modifyTitle(Title title) {
+        Log.i(TAG, "Modifying title" + title.getName());
 
+        /*
+        I could probably do this with a delete-and-add.  But this way preserves the document ID
+        in Firestore, which at this point is practically probably unimportant, but as the
+        product evolves, could matter.
+         */
+
+        Map<String, Object> newTitle = new HashMap();
+        newTitle.put(ComicDbHelper.CC_TITLE_NAME, title.getName());
+        newTitle.put(ComicDbHelper.CC_TITLE_FIRST_ISSUE, title.getFirstIssue());
+        newTitle.put(ComicDbHelper.CC_TITLE_LAST_ISSUE, title.getLastIssue());
+
+        db.collection(ComicDbHelper.CC_COLLECTION_TITLE).document(title.getDocumentId()).set(newTitle)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.i(TAG, "Modified title " + title.getName());
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.e(TAG, "Failed to modify title " + title.getName() + e.toString());
+
+                //TODO: Refactor to propagate this error back to the screen / user.
+            }
+        });
     }
 
     @Override

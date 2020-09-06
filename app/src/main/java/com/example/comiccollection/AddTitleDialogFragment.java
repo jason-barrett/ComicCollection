@@ -1,6 +1,5 @@
 package com.example.comiccollection;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -17,10 +16,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
-public class AddTitleDialogFragment extends DialogFragment {
+public class AddTitleDialogFragment extends TitleDialogFragment {
 
     public interface AddTitleDialogListener {
-        public void onDialogPositiveClick(AddTitleDialogFragment fragment);
+        public void onDialogClickAdd(AddTitleDialogFragment fragment);
     }
 
     AddTitleDialogListener listener;
@@ -36,11 +35,7 @@ public class AddTitleDialogFragment extends DialogFragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         try {
-            /*
-            The context will be the activity this fragment instance is being attached to.
-             */
             Log.d(TAG, "onAttach()");
-            //listener = (AddTitleDialogListener) context;
             listener = (AddTitleDialogListener) getActivity();
         } catch( ClassCastException e) {
             /*
@@ -75,9 +70,8 @@ public class AddTitleDialogFragment extends DialogFragment {
                         newTitle.setLastIssue(lastIssueField.getText().toString());
 
                         Log.i(TAG, "Clicked to add title " + newTitle.toString());
-
-                        listener.onDialogPositiveClick(AddTitleDialogFragment.this);
-                    }
+                        listener.onDialogClickAdd(AddTitleDialogFragment.this);
+                    }  //onClick()
                 })
                 .setNegativeButton(R.string.negative_add_title, new DialogInterface.OnClickListener() {
                     @Override
