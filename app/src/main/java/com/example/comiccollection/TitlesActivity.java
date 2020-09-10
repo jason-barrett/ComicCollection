@@ -2,21 +2,30 @@ package com.example.comiccollection;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.HorizontalScrollView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.example.comiccollection.data.entities.Title;
 import com.example.comiccollection.viewmodel.TitlesViewModel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.FirebaseAppLifecycleListener;
 
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Map;
 
 public class TitlesActivity extends AppCompatActivity
         implements AddTitleDialogFragment.AddTitleDialogListener,
@@ -24,6 +33,8 @@ public class TitlesActivity extends AppCompatActivity
         TitlesAdapter.TitleClickListener {
 
     private RecyclerView mTitlesListView;
+    private HorizontalScrollView mAlphaSelectView;
+
     private ArrayList<Title> mTitlesList;
 
     private TitlesViewModel mTitlesViewModel;
@@ -43,6 +54,8 @@ public class TitlesActivity extends AppCompatActivity
         mTitlesListView = (ContextMenuRecyclerView) findViewById(R.id.titles_list);
         mTitlesAdapter = new TitlesAdapter(this);
 
+        mAlphaSelectView = (HorizontalScrollView) findViewById(R.id.scroll_first_letters);
+
         /*
         Instantiate the ViewModel and create an Observer to update the UI.  The Observer is
         observing the LiveData in the ViewModel, representing the current list of titles
@@ -58,6 +71,12 @@ public class TitlesActivity extends AppCompatActivity
                 mTitlesList = titles;
                 mTitlesAdapter.updateTitles(titles);
                 mTitlesAdapter.notifyDataSetChanged();
+
+                /*
+                If the list of titles has changed, the set of valid start letters for the
+                scroll menu may have as well.
+                 */
+                buildAlphaSelectView();
             }
         };
 
@@ -88,6 +107,18 @@ public class TitlesActivity extends AppCompatActivity
         });
 
     } // end onCreate()
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        /*
+        Initialize the alpha menu that allows the user to scroll to titles beginning with a
+        certain letter.  The menu is built programmatically to only show letters that actually
+        have titles that start with them.
+         */
+        buildAlphaSelectView();
+    }
 
     @Override
     protected void onDestroy() {
@@ -156,6 +187,8 @@ public class TitlesActivity extends AppCompatActivity
 
                 // TODO: Disallow last issue < first issue
 
+                // TODO Disallow duplicate title names
+
                 Log.i(TAG,"Adding title " + title.toString());
                 mTitlesViewModel.addTitle(title);
             } catch( NumberFormatException e ) {
@@ -192,5 +225,62 @@ public class TitlesActivity extends AppCompatActivity
 
         }
     }
+
+    /*
+    Build the scroller at the bottom of the screen that allows you to pick the starting letter
+    for titles at the top of the app, in other words, selecting 'D' gives you the titles
+    starting with 'D' up at the top.
+     */
+    private void buildAlphaSelectView() {
+        /*
+        Get from the ViewModel the current list of (letter, list position) pairs.
+         */
+        Map<String, Integer> listPositionByStartLetter = mTitlesViewModel.getListPositionByStartLetter();
+        if( listPositionByStartLetter == null ) {
+            /*
+            Could be that the data hasn't initialized yet.
+             */
+            return;
+        }
+
+        /*
+        Create a TextView for each currently valid letter (with which at least one title
+        in the list starts).
+         */
+        LinearLayout alphaSelectLayout = findViewById(R.id.layout_first_letters);
+        alphaSelectLayout.removeAllViews();
+
+        Iterator<Map.Entry<String, Integer>> it = listPositionByStartLetter.entrySet().iterator();
+        while( it.hasNext() ) {
+            TextView letterView = new TextView(this);
+            letterView.setText(it.next().getKey());
+            letterView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            letterView.setTextColor(ContextCompat.getColor(this, R.color.colorAlphaSelect));
+            letterView.setPadding(0, getResources().getDimensionPixelSize(R.dimen.alpha_menu_padding),
+                    getResources().getDimensionPixelSize(R.dimen.alpha_menu_padding),
+                    getResources().getDimensionPixelSize(R.dimen.alpha_menu_padding));
+
+            letterView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    TextView thisLetterView = (TextView) view;
+                    String firstLetter = thisLetterView.getText().toString();
+                    Log.d(TAG,"User clicked on letter option " + firstLetter);
+
+                    LinearLayoutManager layoutManager = (LinearLayoutManager) mTitlesListView.getLayoutManager();
+
+                    if( firstLetter.length() == 1 ) {
+                        layoutManager.scrollToPositionWithOffset(mTitlesViewModel.getListPositionByStartLetter().get(firstLetter.toUpperCase()), 0);
+
+                    } else {
+                        // I don't know WHAT was just clicked on.
+                        Log.e(TAG, "Found string " + firstLetter + " in the alpha menu.");
+                    }
+                }
+            });
+
+            alphaSelectLayout.addView(letterView);
+        }
+    } // buildAlphaSelectView()
 
 }

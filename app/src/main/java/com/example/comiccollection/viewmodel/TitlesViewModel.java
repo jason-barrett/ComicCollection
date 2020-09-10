@@ -9,6 +9,8 @@ import com.example.comiccollection.data.entities.Title;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -18,11 +20,16 @@ public class TitlesViewModel extends ViewModel implements TitlesListener {
     private MutableLiveData< ArrayList<Title> > mLiveTitles = new MutableLiveData<ArrayList<Title>>();
     private FirestoreComicRepository repository = FirestoreComicRepository.getInstance();
 
+    private TitlesListManager mTitlesListManager = new TitlesListManager();
+
     private boolean mTryLoadAgain = true;
+
+    private Map<String, Integer> mListPositionByStartLetter;
 
     private String TAG = TitlesListener.class.getSimpleName();
 
     public MutableLiveData< ArrayList<Title> > getTitles() { return mLiveTitles; }
+
 
     /****************************************************************************************
      * Interface methods to the UI.
@@ -53,10 +60,8 @@ public class TitlesViewModel extends ViewModel implements TitlesListener {
     @Override
     public void onTitlesReady(List<Title> titles) {
         Log.i(TAG, "Loaded titles successfully.");
-        for( Title title : titles ) {
-            Log.d(TAG, "Loaded title " + title.getName());
-        }
 
+        mListPositionByStartLetter = mTitlesListManager.mapListPositionByStartLetter(titles);
         mLiveTitles.setValue( (ArrayList<Title>) titles );
     }
 
@@ -79,4 +84,9 @@ public class TitlesViewModel extends ViewModel implements TitlesListener {
              */
         }
     }
+
+    public Map<String, Integer> getListPositionByStartLetter() {
+        return mListPositionByStartLetter;
+    }
+
 }
