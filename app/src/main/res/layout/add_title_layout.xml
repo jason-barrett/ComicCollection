@@ -35,4 +35,14 @@
         android:layout_marginRight="4dp"
         android:layout_marginBottom="4dp"
         android:hint="@string/title_entry_last_issue"/>
+
+    <TextView
+        android:id="@+id/title_box_error_text"
+        android:textColor="@color/colorErrorText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="4dp"
+        android:layout_marginRight="4dp"
+        android:layout_marginBottom="4dp"/>
+
 </androidx.appcompat.widget.LinearLayoutCompat>

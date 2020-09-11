@@ -9,12 +9,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.example.comiccollection.data.entities.Title;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.DialogFragment;
 
 public class AddTitleDialogFragment extends TitleDialogFragment {
 
@@ -29,7 +29,14 @@ public class AddTitleDialogFragment extends TitleDialogFragment {
     EditText firstIssueField;
     EditText lastIssueField;
 
+    TextView errorTextView;
+    String errorText;
+
     String TAG = AddTitleDialogFragment.class.getSimpleName();
+
+    public void setErrorText(String errorText) {
+        this.errorText = errorText;
+    }
 
     @Override
     public void onAttach(Context context) {
@@ -57,6 +64,11 @@ public class AddTitleDialogFragment extends TitleDialogFragment {
         nameField = view.findViewById(R.id.edit_title_name);
         firstIssueField = view.findViewById(R.id.edit_title_first_issue);
         lastIssueField = view.findViewById(R.id.edit_title_last_issue);
+
+        errorTextView = view.findViewById(R.id.title_box_error_text);
+        if( errorText != null ) {
+            errorTextView.setText(errorText);
+        }
 
         builder.setView(view)
                 .setTitle(R.string.add_title)

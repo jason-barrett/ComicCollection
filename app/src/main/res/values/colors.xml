@@ -5,4 +5,6 @@
     <color name="colorAccent">#03DAC5</color>
 
     <color name="colorAlphaSelect">#5B39C6</color>
+
+    <color name="colorErrorText">#FF0000</color>
 </resources>

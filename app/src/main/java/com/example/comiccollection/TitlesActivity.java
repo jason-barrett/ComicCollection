@@ -182,15 +182,27 @@ public class TitlesActivity extends AppCompatActivity
                 numbers.  Technically that is not illegal (e.g., the annuals), but the first and
                 last issues are used for comparison purposes.
                  */
-                Integer.parseInt(title.getFirstIssue());
-                Integer.parseInt(title.getLastIssue());
+                int firstIssue = Integer.parseInt(title.getFirstIssue());
+                int lastIssue = Integer.parseInt(title.getLastIssue());
 
-                // TODO: Disallow last issue < first issue
+                /*
+                Disallow last issue < first issue.
+                 */
+                if( lastIssue < firstIssue ) {
+                    fragment.dismiss();
+                    fragment.setErrorText(getResources().getString(R.string.title_error_last_issue_before_first_issue));
+                    fragment.show(getSupportFragmentManager(), null);
+                }
 
                 // TODO Disallow duplicate title names
 
-                Log.i(TAG,"Adding title " + title.toString());
-                mTitlesViewModel.addTitle(title);
+                else {
+                    /*
+                    Data entered looks clean.
+                     */
+                    Log.i(TAG, "Adding title " + title.toString());
+                    mTitlesViewModel.addTitle(title);
+                }
             } catch( NumberFormatException e ) {
                 Log.i(TAG, "User entered a non-numeric issue number.");
             }

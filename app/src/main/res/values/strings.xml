@@ -13,4 +13,7 @@
     <string name="negative_add_title">Cancel</string>
     <string name="negative_edit_title">Cancel</string>
 
+    <string name="title_error_last_issue_before_first_issue">The first issue must come before the last issue.</string>
+    <string name="title_error_duplicate_title">Duplicate title names are not allowed.</string>
+
 </resources>
