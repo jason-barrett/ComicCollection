@@ -89,4 +89,10 @@ public class TitlesViewModel extends ViewModel implements TitlesListener {
         return mListPositionByStartLetter;
     }
 
+    public boolean titleNameExists(Title newTitle) {
+        ArrayList<Title> titles = mLiveTitles.getValue();
+
+        return mTitlesListManager.titleNameExists(titles, newTitle);
+    }
+
 }

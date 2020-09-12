@@ -38,4 +38,18 @@ public class TitlesListManager {
         return listPositionByStartLetter;
     }
 
+    public boolean titleNameExists(List<Title> titles, Title newTitle) {
+        /*
+        We can expect the titles to be alphabetically sorted.  A binary search would be
+        a reasonable optimization here if the performance is not good.
+         */
+        for( Title title : titles ) {
+            if( newTitle.getName().equals(title.getName()) ) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
 }

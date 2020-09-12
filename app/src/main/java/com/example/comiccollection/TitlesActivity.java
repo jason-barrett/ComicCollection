@@ -181,21 +181,29 @@ public class TitlesActivity extends AppCompatActivity
                 Just double check that the user did not enter a character in one of the issue
                 numbers.  Technically that is not illegal (e.g., the annuals), but the first and
                 last issues are used for comparison purposes.
+
+                A non-numeric issue number will throw a NumberFormatException and fall into the
+                catch block.
                  */
                 int firstIssue = Integer.parseInt(title.getFirstIssue());
                 int lastIssue = Integer.parseInt(title.getLastIssue());
 
                 /*
+                Some more error checking.
+
                 Disallow last issue < first issue.
+
+                Disallow duplicate title names.
                  */
                 if( lastIssue < firstIssue ) {
                     fragment.dismiss();
                     fragment.setErrorText(getResources().getString(R.string.title_error_last_issue_before_first_issue));
                     fragment.show(getSupportFragmentManager(), null);
+                } else if ( mTitlesViewModel.titleNameExists(title) ) {
+                    fragment.dismiss();
+                    fragment.setErrorText(getResources().getString(R.string.title_error_duplicate_title));
+                    fragment.show(getSupportFragmentManager(), null);
                 }
-
-                // TODO Disallow duplicate title names
-
                 else {
                     /*
                     Data entered looks clean.
