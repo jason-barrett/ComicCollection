@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -21,7 +22,6 @@ import android.widget.TextView;
 import com.example.comiccollection.data.entities.Title;
 import com.example.comiccollection.viewmodel.TitlesViewModel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.firebase.FirebaseAppLifecycleListener;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -88,6 +88,12 @@ public class TitlesActivity extends AppCompatActivity
         mTitlesListView.setAdapter(mTitlesAdapter);
         mTitlesListView.setLayoutManager(new LinearLayoutManager(this));
         mTitlesListView.setHasFixedSize(true);
+
+        /*
+        Add a divider between each titie.
+         */
+        mTitlesListView.addItemDecoration(new DividerItemDecoration(mTitlesListView.getContext(),
+                DividerItemDecoration.HORIZONTAL));
 
         /*
         Kick off the initial titles load.
@@ -231,14 +237,36 @@ public class TitlesActivity extends AppCompatActivity
                 Just double check that the user did not enter a character in one of the issue
                 numbers.  Technically that is not illegal (e.g., the annuals), but the first and
                 last issues are used for comparison purposes.
+
+                A non-numeric issue number will throw a NumberFormatException and fall into the
+                catch block.
                  */
-                Integer.parseInt(title.getFirstIssue());
-                Integer.parseInt(title.getLastIssue());
+                int firstIssue = Integer.parseInt(title.getFirstIssue());
+                int lastIssue = Integer.parseInt(title.getLastIssue());
 
-                // TODO: Disallow last issue < first issue
+                /*
+                Some more error checking.
 
-                Log.i(TAG,"Modifying title " + title.toString());
-                mTitlesViewModel.modifyTitle(title);
+                Disallow last issue < first issue.
+
+                Disallow duplicate title names.
+                 */
+                if( lastIssue < firstIssue ) {
+                    fragment.dismiss();
+                    fragment.setErrorText(getResources().getString(R.string.title_error_last_issue_before_first_issue));
+                    fragment.show(getSupportFragmentManager(), null);
+                } else if ( mTitlesViewModel.titleNameExists(title) ) {
+                    fragment.dismiss();
+                    fragment.setErrorText(getResources().getString(R.string.title_error_duplicate_title));
+                    fragment.show(getSupportFragmentManager(), null);
+                }
+                else {
+                    /*
+                    Data entered looks clean.
+                     */
+                    Log.i(TAG, "Modifying title " + title.toString());
+                    mTitlesViewModel.modifyTitle(title);
+                }
             } catch( NumberFormatException e ) {
                 Log.i(TAG, "User entered a non-numeric issue number.");
             }
@@ -272,10 +300,10 @@ public class TitlesActivity extends AppCompatActivity
 
         Iterator<Map.Entry<String, Integer>> it = listPositionByStartLetter.entrySet().iterator();
         while( it.hasNext() ) {
-            TextView letterView = new TextView(this);
+            TextView letterView = new TextView(alphaSelectLayout.getContext(), null, R.attr.scrollListItemStyle);
             letterView.setText(it.next().getKey());
             letterView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-            letterView.setTextColor(ContextCompat.getColor(this, R.color.colorAlphaSelect));
+            //letterView.setTextColor(ContextCompat.getColor(this, R.color.colorAlphaSelect));
             letterView.setPadding(0, getResources().getDimensionPixelSize(R.dimen.alpha_menu_padding),
                     getResources().getDimensionPixelSize(R.dimen.alpha_menu_padding),
                     getResources().getDimensionPixelSize(R.dimen.alpha_menu_padding));

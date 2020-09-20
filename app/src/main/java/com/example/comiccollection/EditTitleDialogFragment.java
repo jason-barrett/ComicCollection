@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.example.comiccollection.data.entities.Title;
 
@@ -29,7 +30,14 @@ public class EditTitleDialogFragment extends DialogFragment {
     EditText firstIssueField;
     EditText lastIssueField;
 
+    TextView errorTextView;
+    String errorText;
+
     String TAG = EditTitleDialogFragment.class.getSimpleName();
+
+    public void setErrorText(String errorText) {
+        this.errorText = errorText;
+    }
 
     public EditTitleDialogFragment(Title currentTitle) {
         this.currentTitle = currentTitle;
@@ -62,12 +70,16 @@ public class EditTitleDialogFragment extends DialogFragment {
         firstIssueField = view.findViewById(R.id.edit_title_first_issue);
         lastIssueField = view.findViewById(R.id.edit_title_last_issue);
 
+        errorTextView = view.findViewById(R.id.title_box_error_text);
+
         /*
         Pre-fill the text fields with the values for the current title being edited.
          */
         nameField.setText(currentTitle.getName());
         firstIssueField.setText(currentTitle.getFirstIssue());
         lastIssueField.setText(currentTitle.getLastIssue());
+
+        errorTextView.setText(errorText);
 
         builder.setView(view)
                 .setTitle(R.string.edit_title)

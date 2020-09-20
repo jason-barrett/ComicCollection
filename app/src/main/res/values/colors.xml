@@ -6,5 +6,8 @@
 
     <color name="colorAlphaSelect">#5B39C6</color>
 
+    <color name="colorItemText">@android:color/black</color>
     <color name="colorErrorText">#FF0000</color>
+
+    <color name="colorItemBackground">#FFFF99</color>
 </resources>
