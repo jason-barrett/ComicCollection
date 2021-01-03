@@ -1,4 +1,4 @@
-package com.example.comiccollection;
+package com.example.comiccollection.ui;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.example.comiccollection.R;
 import com.example.comiccollection.data.entities.Title;
 
 import androidx.annotation.NonNull;

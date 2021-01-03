@@ -5,6 +5,7 @@ import android.util.Log;
 import com.example.comiccollection.data.FirestoreComicRepository;
 import com.example.comiccollection.data.TitlesListener;
 import com.example.comiccollection.data.entities.Title;
+import com.google.firebase.firestore.ListenerRegistration;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -26,6 +27,8 @@ public class TitlesViewModel extends ViewModel implements TitlesListener {
 
     private Map<String, Integer> mListPositionByStartLetter;
 
+    private ListenerRegistration titlesRegistration;
+
     private String TAG = TitlesListener.class.getSimpleName();
 
     public MutableLiveData< ArrayList<Title> > getTitles() { return mLiveTitles; }
@@ -43,7 +46,7 @@ public class TitlesViewModel extends ViewModel implements TitlesListener {
         This is an asynchronous call to the repository, which will call one of our callback
         methods when complete.
          */
-        repository.loadAndListenForTitles(this);
+        titlesRegistration = repository.loadAndListenForTitles(this);
     }
 
     public void addTitle(Title title) {
@@ -62,7 +65,14 @@ public class TitlesViewModel extends ViewModel implements TitlesListener {
         Log.i(TAG, "Loaded titles successfully.");
 
         mListPositionByStartLetter = mTitlesListManager.mapListPositionByStartLetter(titles);
+
+        //TODO: If I change this to run in a worker thread, this call needs to be to postValue().
         mLiveTitles.setValue( (ArrayList<Title>) titles );
+
+        /*
+        A successful load resets the flag to try the load again on the next failure.
+         */
+        mTryLoadAgain = true;
     }
 
     @Override
@@ -73,17 +83,37 @@ public class TitlesViewModel extends ViewModel implements TitlesListener {
          */
         if( mTryLoadAgain ) {
             Log.w(TAG, "Could not load titles, will try again.");
-            loadTitles();
+
+            /*
+            Clear the registration so that we don't get a second copy of the listener.
+             */
+            titlesRegistration.remove();
             mTryLoadAgain = false;
+
+            /*
+             The Firestore documentation (https://firebase.google.com/docs/firestore/query-data/listen)
+             says, "After an error, the listener will not receive any more events..."
+
+             Take one shot at restarting it.
+             */
+            loadTitles();
+
         } else {
             Log.w(TAG, "Failed to load titles on second try, giving up.");
             mTryLoadAgain = true;   // Reset for next time.
 
-            /* TODO Do we want to provide some indication back to the user here, especially if
+            /*
+            TODO Do we want to provide some indication back to the user here, especially if
             the contents of the LiveData are null?
+
+            As currently coded, the second failure basically means 'restart the app'.
              */
         }
     }
+
+    /****************************************************************************************
+     * Helper methods for the UI display.
+     ****************************************************************************************/
 
     public Map<String, Integer> getListPositionByStartLetter() {
         return mListPositionByStartLetter;

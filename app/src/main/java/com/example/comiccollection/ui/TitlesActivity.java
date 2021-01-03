@@ -1,15 +1,13 @@
-package com.example.comiccollection;
+package com.example.comiccollection.ui;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -19,6 +17,7 @@ import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.comiccollection.R;
 import com.example.comiccollection.data.entities.Title;
 import com.example.comiccollection.viewmodel.TitlesViewModel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;

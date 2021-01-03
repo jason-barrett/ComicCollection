@@ -1,13 +1,13 @@
-package com.example.comiccollection;
+package com.example.comiccollection.ui;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.example.comiccollection.R;
 import com.example.comiccollection.data.entities.Title;
 
 import java.util.ArrayList;

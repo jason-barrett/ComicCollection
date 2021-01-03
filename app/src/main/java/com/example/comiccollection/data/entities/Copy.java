@@ -2,49 +2,71 @@ package com.example.comiccollection.data.entities;
 
 import java.util.Date;
 
-public class Copy {
+public abstract class Copy {
     /*
     This is an entity class for 'Copy', that is, a copy of an issue that may be in my collection,
     or may not.
      */
+    private String mTitle;
+    private String mIssue;
+
     private String mGrade;
-    private String mDealer;
-    private double mCost;
+    private String mPageQuality;
+
+    private String mNotes;
+
     private Date mDateOffered;
     private Date mDateSold;
-    private Date mDatePurchased;
-    private boolean mOwned;
+
+    private String mDocumentId;
+
+    public String getTitle() {
+        return mTitle;
+    }
+
+    public void setTitle(String title) {
+        this.mTitle = title;
+    }
+
+    public String getIssue() {
+        return mIssue;
+    }
+
+    public void setIssue(String issue) {
+        this.mIssue = issue;
+    }
+
+    public String getPageQuality() {
+        return mPageQuality;
+    }
+
+    public void setPageQuality(String pageQuality) {
+        this.mPageQuality = pageQuality;
+    }
 
     public String getGrade() {
         return mGrade;
     }
 
     public void setGrade(String grade) {
-        this.mGrade = mGrade;
+        this.mGrade = grade;
     }
 
-    public String getDealer() {
-        return mDealer;
+    public String getNotes() {
+        return mNotes;
     }
 
-    public void setDealer(String dealer) {
-        this.mDealer = mDealer;
+    public void setNotes(String notes) {
+        this.mNotes = notes;
     }
 
-    public double getCost() {
-        return mCost;
-    }
-
-    public void setCost(double cost) {
-        this.mCost = mCost;
-    }
 
     public Date getDateOffered() {
         return mDateOffered;
     }
 
     public void setDateOffered(Date dateOffered) {
-        this.mDateOffered = mDateOffered;
+        this.mDateOffered = dateOffered;
     }
 
     public Date getDateSold() {
@@ -52,22 +74,11 @@ public class Copy {
     }
 
     public void setDateSold(Date dateSold) {
-        this.mDateSold = mDateSold;
+        this.mDateSold = dateSold;
     }
 
-    public Date getDatePurchased() {
-        return mDatePurchased;
-    }
+    public String getDocumentId() { return mDocumentId; }
 
-    public void setDatePurchased(Date datePurchased) {
-        this.mDatePurchased = mDatePurchased;
-    }
+    public void setDocumentId(String documentId) { mDocumentId = documentId; }
 
-    public boolean isOwned() {
-        return mOwned;
-    }
-
-    public void setOwned(boolean owned) {
-        this.mOwned = mOwned;
-    }
 }

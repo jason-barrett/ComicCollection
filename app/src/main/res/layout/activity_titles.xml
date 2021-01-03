@@ -4,9 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".TitlesActivity">
+    tools:context=".ui.TitlesActivity">
 
-    <com.example.comiccollection.ContextMenuRecyclerView
+    <com.example.comiccollection.ui.ContextMenuRecyclerView
         android:id="@+id/titles_list"
         android:layout_width="0dp"
         android:layout_height="0dp"

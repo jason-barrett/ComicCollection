@@ -10,6 +10,10 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 import java.util.List;
 
+/*
+This class is responsible for mapping a QuerySnapshot object returned from the database
+containing query results for a set of titles, to a list of title entities.
+ */
 public class TitlesMapper {
 
     static String TAG = TitlesMapper.class.getSimpleName();

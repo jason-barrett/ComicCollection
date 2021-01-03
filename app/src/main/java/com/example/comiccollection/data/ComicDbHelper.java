@@ -37,15 +37,32 @@ public class ComicDbHelper {
     public static final String CC_ISSUE_NUMBER = "issue";
     public static final String CC_ISSUE_TITLE = "title";
     public static final String CC_ISSUE_WANTED = "iWantIt";
+    public static final String CC_ISSUE_OWNED = "owned";
+    public static final String CC_ISSUE_SOLD = "sold";
+    public static final String CC_ISSUE_UNOWNED = "unowned";
 
     /*
-    The following names are the data elements in the 'copies' collection.
+    The following names are the data elements in the 'owned' or 'unowned' collections.  They
+    represent individual copies of a certain issue.
      */
     public static final String CC_COPY_GRADE = "grade";
-    public static final String CC_COPY_DEALER = "dealer";
+    public static final String CC_COPY_PAGE_QUALITY = "pageQuality";
+    public static final String CC_COPY_NOTES = "notes";
     public static final String CC_COPY_COST = "cost";
+    public static final String CC_COPY_DEALER = "dealer";
+    public static final String CC_COPY_PURCHASER = "purchaser";
+
+    public static final String CC_COPY_ISSUE = "issue";
+    public static final String CC_COPY_TITLE = "title";
+
+    // TODO: The same copy may have multiple cost / dateOffered pairs over time.
+    public static final String CC_COPY_OFFERS = "offers";
     public static final String CC_COPY_DATE_OFFERED = "dateOffered";
+    public static final String CC_COPY_OFFER_PRICE = "offerPrice";
+
+    public static final String CC_COPY_SALE_PRICE = "salePrice";
     public static final String CC_COPY_DATE_SOLD = "dateSold";
     public static final String CC_COPY_DATE_PURCHASED = "datePurchased";
-    public static final String CC_COPY_OWNED = "owned";
+
+    public static final String CC_COPY_VALUE = "value";
 }
