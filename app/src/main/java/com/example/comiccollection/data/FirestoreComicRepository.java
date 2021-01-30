@@ -52,7 +52,11 @@ public class FirestoreComicRepository implements ComicRepository {
         Firestore knows the details of the database to fetch because of the configuration
         in the google-services.json config file in the app directory.
          */
-        db = FirebaseFirestore.getInstance();
+        //db = FirebaseFirestore.getInstance();
+    }
+
+    public FirestoreComicRepository(FirebaseFirestore db) {
+        this.db = db;
     }
 
     /*

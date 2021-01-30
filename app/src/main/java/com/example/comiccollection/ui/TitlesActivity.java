@@ -18,6 +18,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.comiccollection.R;
+import com.example.comiccollection.application.AppContainer;
+import com.example.comiccollection.application.ComicCollectionApplication;
 import com.example.comiccollection.data.entities.Title;
 import com.example.comiccollection.viewmodel.TitlesViewModel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -56,11 +58,28 @@ public class TitlesActivity extends AppCompatActivity
         mAlphaSelectView = (HorizontalScrollView) findViewById(R.id.scroll_first_letters);
 
         /*
-        Instantiate the ViewModel and create an Observer to update the UI.  The Observer is
-        observing the LiveData in the ViewModel, representing the current list of titles
-        in the database.
+        The app container for dependency injection needs to be explicitly initialized once.
+
+        Ideally, it would initiate itself on applications startup.  However, the FirebaseFirestore
+        dependency cannot be initialized until startup has completed because of how that class
+        creates its instance.
+
+        So we're left with doing it here when the first activity starts up.
          */
-        mTitlesViewModel = new ViewModelProvider(this).get(TitlesViewModel.class);
+        AppContainer appContainer = ((ComicCollectionApplication)getApplication()).getAppContainer();
+        appContainer.initialize();
+
+        /*
+        Instantiate a ViewModel.  The container will build me one with the dependencies it needs.
+         */
+        //mTitlesViewModel = new ViewModelProvider(this).get(TitlesViewModel.class)
+        mTitlesViewModel = appContainer.getTitlesViewModelFactory()
+            .create(TitlesViewModel.class);
+
+        /*
+        Create an Observer to update the UI.  The Observer is observing the LiveData in the
+        ViewModel, representing the current list of titles in the database.
+         */
         final Observer<ArrayList<Title>> titlesObserver = new Observer< ArrayList<Title>>() {
 
             @Override

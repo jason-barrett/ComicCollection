@@ -2,6 +2,7 @@ package com.example.comiccollection.viewmodel;
 
 import android.util.Log;
 
+import com.example.comiccollection.application.ComicCollectionApplication;
 import com.example.comiccollection.data.FirestoreComicRepository;
 import com.example.comiccollection.data.TitlesListener;
 import com.example.comiccollection.data.entities.Title;
@@ -19,7 +20,8 @@ import androidx.lifecycle.ViewModel;
 public class TitlesViewModel extends ViewModel implements TitlesListener {
 
     private MutableLiveData< ArrayList<Title> > mLiveTitles = new MutableLiveData<ArrayList<Title>>();
-    private FirestoreComicRepository repository = FirestoreComicRepository.getInstance();
+
+    private FirestoreComicRepository repository;
 
     private TitlesListManager mTitlesListManager = new TitlesListManager();
 
@@ -31,8 +33,17 @@ public class TitlesViewModel extends ViewModel implements TitlesListener {
 
     private String TAG = TitlesListener.class.getSimpleName();
 
-    public MutableLiveData< ArrayList<Title> > getTitles() { return mLiveTitles; }
 
+    /*
+    Constructor.
+     */
+    public TitlesViewModel(FirestoreComicRepository comicRepository) {
+        this.repository = comicRepository;
+    }
+
+    public MutableLiveData< ArrayList<Title> > getTitles() {
+        return mLiveTitles;
+    }
 
     /****************************************************************************************
      * Interface methods to the UI.
