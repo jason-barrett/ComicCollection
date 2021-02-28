@@ -13,8 +13,8 @@ public interface ComicRepository {
     public void deleteTitle(Title title);
 
 
-    public void getIssuesByTitleOnce(String titleName);
-    public void getIssuesByTitleAndListen(String titleName, IssuesListener onIssuesReady);
+    public void getIssuesByTitleOnce(String titleName, IssuesListener issuesListener);
+    public void getIssuesByTitleAndListen(String titleName, IssuesListener issuesListener);
     public void addIssue(Issue issue);
     public void modifyIssue(Issue issue);
     public void deleteIssue(Issue issue);

@@ -107,6 +107,9 @@ public class FirestoreComicRepository implements ComicRepository {
          */
         titlesRegistration = db.collection(ComicDbHelper.CC_COLLECTION_TITLE).addSnapshotListener(
                 new EventListener<QuerySnapshot>() {
+                    /*
+                    Note this onEvent() handler will be scheduled and run on the UI thread.
+                     */
                     @Override
                     public void onEvent(@Nullable QuerySnapshot value,
                                         @Nullable FirebaseFirestoreException e) {
@@ -227,7 +230,7 @@ public class FirestoreComicRepository implements ComicRepository {
     }
 
     @Override
-    public void getIssuesByTitleOnce(String titleName) {
+    public void getIssuesByTitleOnce(String titleName, final IssuesListener issuesListener) {
         /*
         This is used for an initial load of all issues, including all associated copies.
 
@@ -379,6 +382,8 @@ public class FirestoreComicRepository implements ComicRepository {
                                 issue.setUnownedCopies((ArrayList<UnownedCopy>)unownedCopiesByIssue.get(issue.getIssueNumber()));
                                 issue.setSoldCopies((ArrayList<SoldCopy>)soldCopiesByIssue.get(issue.getIssueNumber()));
                             }
+
+                            issuesListener.onIssuesReady(issuesList);
 
                         } else {
                             Log.e(TAG, "Failed to gather issues information");

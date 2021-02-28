@@ -27,6 +27,12 @@ public class TitlesViewModel extends ViewModel implements TitlesListener {
 
     private boolean mTryLoadAgain = true;
 
+    /*
+    There is a scrolling list of alpha characters on the bottom of the screen.  If the user
+    clicks on a character, the screen will scroll to the first title starting with that
+    character.  This map maps each letter to the position in the Titles list of the first title
+    that starts with that letter.
+     */
     private Map<String, Integer> mListPositionByStartLetter;
 
     private ListenerRegistration titlesRegistration;

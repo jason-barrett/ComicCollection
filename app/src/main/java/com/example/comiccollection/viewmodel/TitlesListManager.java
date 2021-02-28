@@ -10,9 +10,33 @@ import java.util.TreeMap;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+/*
+This class contains convenience methods for managing a List of Title objects.
 
+This class holds no state.  The List itself is passed into each utility method.
+
+ */
 public class TitlesListManager {
 
+    /*
+    Given a list of titles, sorted alphabetically, this method provides a Map whose entries
+    are:
+       Key - A letter of the alphabet
+       Value - The zero-based position in the master list whose Title object represents the
+       first title to begin with that letter.
+
+    For instance, if the list contains:
+      Action Comics
+      Adventure Comics
+      Batman
+      Captain America
+
+   Then the method will provide a map as follows:
+     'A' -> 0
+     'B' -> 2
+     'C' -> 3
+
+     */
     public Map<String, Integer> mapListPositionByStartLetter(List<Title> titles) {
         Map<String, Integer> listPositionByStartLetter = new TreeMap<String, Integer>();
 
@@ -38,6 +62,9 @@ public class TitlesListManager {
         return listPositionByStartLetter;
     }
 
+    /*
+    This method checks whether or not a given Title object exists by name in the master list.
+     */
     public boolean titleNameExists(List<Title> titles, Title newTitle) {
         /*
         We can expect the titles to be alphabetically sorted.  A binary search would be
