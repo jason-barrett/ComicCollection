@@ -10,4 +10,6 @@
     <color name="colorErrorText">#FF0000</color>
 
     <color name="colorItemBackground">#FFFF99</color>
+
+    <color name="colorUpgrade">#008000</color>
 </resources>

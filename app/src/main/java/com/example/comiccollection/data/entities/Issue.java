@@ -82,4 +82,14 @@ public class Issue {
     public String getDocumentId() { return mDocumentId; }
 
     public void setDocumentId(String documentId) { mDocumentId = documentId; }
+
+    /*
+    Answer the question, how many copies of this issue do I own?
+     */
+    public int numberOfCopiesOwned() {
+        if( mOwnedCopies == null ) {
+            return 0;
+        }
+        return mOwnedCopies.size();
+    }
 }

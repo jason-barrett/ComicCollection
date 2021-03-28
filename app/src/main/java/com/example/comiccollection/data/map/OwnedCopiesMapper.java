@@ -66,13 +66,17 @@ public class OwnedCopiesMapper {
                 ownedCopy.setDealer(document.getString(ComicDbHelper.CC_COPY_DEALER));
             }
             if( document.contains(ComicDbHelper.CC_COPY_COST) ) {
-                ownedCopy.setCost(document.getDouble(ComicDbHelper.CC_COPY_COST));
+                String costAsString = document.getString(ComicDbHelper.CC_COPY_COST);
+                ownedCopy.setCost(FirestoreTypeUtils.handleDoubleAsString(costAsString, ownedCopy,
+                        ComicDbHelper.CC_COPY_COST));
             }
             if( document.contains(ComicDbHelper.CC_COPY_DATE_PURCHASED) ) {
                 ownedCopy.setDatePurchased(document.getDate(ComicDbHelper.CC_COPY_DATE_PURCHASED));
             }
             if( document.contains(ComicDbHelper.CC_COPY_VALUE) ) {
-                ownedCopy.setValue(document.getDouble(ComicDbHelper.CC_COPY_VALUE));
+                String valueAsString = document.getString(ComicDbHelper.CC_COPY_VALUE);
+                ownedCopy.setValue(FirestoreTypeUtils.handleDoubleAsString(valueAsString, ownedCopy,
+                        ComicDbHelper.CC_COPY_VALUE));
             }
 
             ownedCopy.setDocumentId(document.getId());
@@ -81,8 +85,10 @@ public class OwnedCopiesMapper {
         } catch( RuntimeException e ) {
             Log.e(TAG, "Cannot map OwnedCopy document " + document.getId()
                     + ", may be malformed.");
+            Log.e(TAG, e.getMessage());
         }
 
         return null;
     }
+
 }

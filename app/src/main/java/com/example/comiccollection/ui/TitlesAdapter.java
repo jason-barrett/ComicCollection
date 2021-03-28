@@ -26,8 +26,8 @@ public class TitlesAdapter extends RecyclerView.Adapter {
     Specify a listener that will receive click events from the view holders, along with
     the knowledge of which View was clicked and which Title that represents in the data.
      */
-    public interface TitleClickListener {
-        public void onClick(View view, Title title);
+    public interface TitleClickListener{
+        public void onClick(View view, String titleName);
     }
     TitleClickListener mListener;
 
@@ -81,7 +81,8 @@ public class TitlesAdapter extends RecyclerView.Adapter {
         return mTitles.size();
     }
 
-    public class TitlesViewHolder extends RecyclerView.ViewHolder implements /*View.OnLongClickListener,*/ View.OnCreateContextMenuListener {
+    public class TitlesViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener,
+            View.OnCreateContextMenuListener {
 
         TextView mTitleView;
         View mTitlesItemView;
@@ -96,12 +97,24 @@ public class TitlesAdapter extends RecyclerView.Adapter {
             Set the OnCreateContextMenu listener for the main view.
              */
             titlesItemView.setOnCreateContextMenuListener(this);
+            titlesItemView.setOnClickListener(this);
         }
 
         public TextView getTitleView() {
             return mTitleView;
         }
 
+        /*
+        implements View.OnClickListener
+         */
+        @Override
+        public void onClick(View view) {
+            mListener.onClick(view, (String)mTitleView.getText());
+        }
+
+        /*
+        implements View.OnCreateContextMenuListener
+         */
         @Override
         public void onCreateContextMenu(ContextMenu contextMenu, View view, ContextMenu.ContextMenuInfo contextMenuInfo) {
 

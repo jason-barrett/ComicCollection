@@ -95,6 +95,10 @@ public class UnownedCopiesMapper {
 
             if( document.contains(ComicDbHelper.CC_COPY_SALE_PRICE) ) {
                 unownedCopy.setSalePrice(document.getDouble(ComicDbHelper.CC_COPY_SALE_PRICE));
+                String priceAsString = document.getString(ComicDbHelper.CC_COPY_SALE_PRICE);
+                unownedCopy.setSalePrice(FirestoreTypeUtils
+                        .handleDoubleAsString(priceAsString, unownedCopy,
+                                ComicDbHelper.CC_COPY_SALE_PRICE));
             }
             if( document.contains(ComicDbHelper.CC_COPY_DATE_SOLD) ) {
                 unownedCopy.setDateSold(document.getDate(ComicDbHelper.CC_COPY_DATE_SOLD));

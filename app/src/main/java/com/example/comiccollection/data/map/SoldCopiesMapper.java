@@ -65,7 +65,10 @@ public class SoldCopiesMapper {
                 soldCopy.setPurchaser(document.getString(ComicDbHelper.CC_COPY_PURCHASER));
             }
             if( document.contains(ComicDbHelper.CC_COPY_SALE_PRICE) ) {
-                soldCopy.setSalePrice(document.getDouble(ComicDbHelper.CC_COPY_SALE_PRICE));
+                String salePriceAsString = document.getString(ComicDbHelper.CC_COPY_SALE_PRICE);
+                soldCopy.setSalePrice(FirestoreTypeUtils
+                        .handleDoubleAsString(salePriceAsString, soldCopy,
+                                ComicDbHelper.CC_COPY_SALE_PRICE));
             }
             if( document.contains(ComicDbHelper.CC_COPY_DATE_SOLD) ) {
                 soldCopy.setDateSold(document.getDate(ComicDbHelper.CC_COPY_DATE_SOLD));
@@ -77,6 +80,7 @@ public class SoldCopiesMapper {
         } catch( RuntimeException e ) {
             Log.e(TAG, "Cannot map SoldCopy document " + document.getId()
                     + ", may be malformed.");
+            Log.e(TAG, e.getMessage());
         }
 
         return null;

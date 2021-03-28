@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -36,6 +37,7 @@ public class TitlesActivity extends AppCompatActivity
     private RecyclerView mTitlesListView;
     private HorizontalScrollView mAlphaSelectView;
 
+    //TODO: I think I can remove this.
     private ArrayList<Title> mTitlesList;
 
     private TitlesViewModel mTitlesViewModel;
@@ -52,7 +54,7 @@ public class TitlesActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_titles);
 
-        mTitlesListView = (ContextMenuRecyclerView) findViewById(R.id.titles_list);
+        mTitlesListView = (RecyclerView) findViewById(R.id.titles_list);
         mTitlesAdapter = new TitlesAdapter(this);
 
         mAlphaSelectView = (HorizontalScrollView) findViewById(R.id.scroll_first_letters);
@@ -155,10 +157,18 @@ public class TitlesActivity extends AppCompatActivity
 
     /*
       This is the click handler for the TitlesAdapter for the list of titles.
+
+      When I click on a title, I want to launch the list of issues for that title.
      */
     @Override
-    public void onClick(View view, Title title) {
+    public void onClick(View view, String titleName) {
 
+        Log.d(TAG, "User clicked on view for title: " + titleName);
+
+        Intent intent = new Intent(this, IssuesActivity.class);
+        intent.putExtra("Title", titleName);
+
+        startActivity(intent);
     }
 
     @Override

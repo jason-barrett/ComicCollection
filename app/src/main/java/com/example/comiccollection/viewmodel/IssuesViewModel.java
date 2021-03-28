@@ -4,6 +4,7 @@ import com.example.comiccollection.data.FirestoreComicRepository;
 import com.example.comiccollection.data.IssuesListener;
 import com.example.comiccollection.data.entities.Issue;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -21,7 +22,7 @@ public class IssuesViewModel extends ViewModel implements IssuesListener {
     /*
     The ViewModel retains a LiveData array of issues, which the Activity will observe.
      */
-    private MutableLiveData<List<Issue>> mIssuesList = new MutableLiveData<List<Issue>>();
+    private MutableLiveData<ArrayList<Issue>> mIssuesList = new MutableLiveData<ArrayList<Issue>>();
 
     /*
     A helper class to perform operations on the master list of Issues.
@@ -32,14 +33,23 @@ public class IssuesViewModel extends ViewModel implements IssuesListener {
     Constructor.  Inject the repository dependency.
      */
     public IssuesViewModel(FirestoreComicRepository repository) {
+
         this.repository = repository;
     }
 
     /*
     Get the LiveData Issues list.
      */
-    public MutableLiveData<List<Issue>> getIssuesList() {
+    public MutableLiveData<ArrayList<Issue>> getIssuesList() {
         return mIssuesList;
+    }
+
+    /*
+    Launch the initial load of data for issues of the given title.
+    */
+    public void loadIssues(String title) {
+        repository.getIssuesByTitleOnce(title, this);
+        repository.getIssuesByTitleAndListen(title, this);
     }
 
     /*
@@ -48,7 +58,7 @@ public class IssuesViewModel extends ViewModel implements IssuesListener {
      */
     @Override
     public void onIssuesReady(List<Issue> issues) {
-        mIssuesList.setValue(issues);
+        mIssuesList.setValue((ArrayList<Issue>)issues);
     }
 
     /*
@@ -61,9 +71,9 @@ public class IssuesViewModel extends ViewModel implements IssuesListener {
      */
     @Override
     public void onIssueChangesReady(List<Issue> issuesToAddOrReplace, List<Issue> issuesToRemove) {
-        List<Issue> localIssues = mIssuesList.getValue();
+        ArrayList<Issue> localIssues = mIssuesList.getValue();
 
-        List<Issue> modifiedIssues = mIssuesListManager.implementIssuesListModifications(localIssues,
+        ArrayList<Issue> modifiedIssues = mIssuesListManager.implementIssuesListModifications(localIssues,
                 issuesToAddOrReplace, issuesToRemove);
 
         mIssuesList.setValue(modifiedIssues);

@@ -16,4 +16,11 @@
     <string name="title_error_last_issue_before_first_issue">The first issue must come before the last issue.</string>
     <string name="title_error_duplicate_title">Duplicate title names are not allowed.</string>
 
+    <!-- For view and entry of issues -->
+    <string name="toggle_button_owned">Owned</string>
+    <string name="toggle_button_wanted">Wanted</string>
+
+    <!-- Indicates that an upgrade is wanted for this issue -->
+    <string name="upgrade_wanted">UPGRADE</string>
+
 </resources>

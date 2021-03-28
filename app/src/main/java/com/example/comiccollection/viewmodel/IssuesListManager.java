@@ -1,5 +1,7 @@
 package com.example.comiccollection.viewmodel;
 
+import android.util.Log;
+
 import com.example.comiccollection.data.entities.Issue;
 
 import java.util.ArrayList;
@@ -14,6 +16,8 @@ This class holds no state.  The List itself is passed into each utility method.
  */
 public class IssuesListManager {
 
+    private String TAG = this.getClass().getSimpleName();
+
     /*
     This method atomically implements a set of changes (adds, replacements, and removals)
     to a list of Issues.
@@ -26,7 +30,7 @@ public class IssuesListManager {
     'remove-then-add' for the same document ID should be impossible.
 
      */
-    public List<Issue> implementIssuesListModifications(List<Issue> masterIssuesList,
+    public ArrayList<Issue> implementIssuesListModifications(List<Issue> masterIssuesList,
                                                         List<Issue> issuesToAddOrReplace,
                                                         List<Issue> issuesToRemove) {
 
@@ -36,7 +40,13 @@ public class IssuesListManager {
         and return the copy when we're done, instead of acting directly on the reference
         passed in.
          */
-        List<Issue> localIssues = new ArrayList<>(masterIssuesList);
+        ArrayList<Issue> localIssues;
+        if( masterIssuesList != null ) {
+            localIssues = new ArrayList<>(masterIssuesList);
+        } else {
+            Log.w(TAG, "Modifications posted to empty list");
+            localIssues = new ArrayList<>();
+        }
 
         /*
         In the general case, the list of issues will be much larger than the add/remove lists
@@ -62,6 +72,7 @@ public class IssuesListManager {
         }  //while (replaceIssuesIterator.hasNext())
 
         for( Issue addIssue : issuesToAddOrReplace ) {
+            Log.i(TAG, "Adding issue " + addIssue.getTitle() + " " + addIssue.getIssueNumber());
             localIssues.add(addIssue);
         }
 
@@ -78,6 +89,9 @@ public class IssuesListManager {
             while( localIssuesIterator.hasNext() ) {
                 Issue issue = localIssuesIterator.next();
                 if( removeIssue.getDocumentId().equals(issue.getDocumentId()) ) {
+                    Log.i(TAG, "Removing issue " + removeIssue.getTitle() + " "
+                            + removeIssue.getIssueNumber());
+
                     localIssuesIterator.remove();
                 }
             }

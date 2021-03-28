@@ -1,18 +1,28 @@
 package com.example.comiccollection;
 
 import com.example.comiccollection.data.FirestoreComicRepository;
+import com.example.comiccollection.data.TitlesListener;
 import com.example.comiccollection.data.entities.Title;
+import com.example.comiccollection.viewmodel.TitlesViewModel;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
+import com.google.firebase.firestore.ListenerRegistration;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.lang.InterruptedException;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+
+import androidx.annotation.UiThread;
+import androidx.lifecycle.MutableLiveData;
 
 import static org.junit.Assert.*;
 
@@ -20,7 +30,7 @@ import static org.junit.Assert.*;
 This class will test that a set of titles is correctly read from a Firestore database, using
 an emulator for the database.
 
-The class under test is FirestoreComicRepository.
+The class under test is TitlesViewModel.
  */
 @RunWith(MockitoJUnitRunner.class)
 public class TitlesReadFromDbTest {
@@ -32,6 +42,10 @@ public class TitlesReadFromDbTest {
     FirebaseFirestore db;
 
     FirestoreComicRepository repository;
+
+    TitlesViewModel titlesViewModel;
+
+    private final CountDownLatch waiter = new CountDownLatch(1);
 
     @Before
     public void setup() {
@@ -60,10 +74,29 @@ public class TitlesReadFromDbTest {
         Inject the emulated database into a comic repository for test purposes.
          */
         repository = new FirestoreComicRepository(db);
+
+        /*
+        Now inject THAT repository into the ViewModel under test.
+         */
+        titlesViewModel = new TitlesViewModel(repository);
     }
 
-    @Test
-    public void titles_loadAndListenForTitles_Correct() {
+    //@Test
+    public void titles_loadTitles_Correct() {
+        titlesViewModel.loadTitles();
 
+        /*
+        Wait a period of time for the titles load to finish.  After this time has passed, the
+        ViewModel's mLiveTitles array should have the correct list of titles.
+         */
+        try{
+            waiter.await(2000, TimeUnit.MILLISECONDS);
+        } catch( InterruptedException ex ) {
+
+        }
+
+        ArrayList<Title> titles = titlesViewModel.getTitles().getValue();
+        assert( titles.size() > 0 );
     }
+
 }
