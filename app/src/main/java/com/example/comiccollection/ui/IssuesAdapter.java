@@ -1,5 +1,6 @@
 package com.example.comiccollection.ui;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,6 +28,8 @@ public class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssuesView
         this.issueList = issueList;
     }
 
+    public String TAG = IssuesAdapter.class.getSimpleName();
+
     @NonNull
     @Override
     public IssuesViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -46,14 +49,15 @@ public class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssuesView
         /*
         Concatenate the title and issue number.  This is the main part of the display.
          */
-        String titleAndIssue = issue.getTitle() + " " + issue.getIssueNumber();
+        String titleAndIssue = issue.getTitleAndIssueNumber();
         issuesViewHolder.getTitleAndIssueView().setText(titleAndIssue);
 
         /*
         I want an upgrade if I own at least one copy, and the 'want it' flag is still
         set to true.
          */
-        if( issue.numberOfCopiesOwned() > 0 && issue.isWanted() ) {
+        if( issue.upgradeWanted() ) {
+            Log.d(TAG, "User wants upgrade of " + titleAndIssue);
             issuesViewHolder.getUpgradeView().setText(R.string.upgrade_wanted);
         }
 

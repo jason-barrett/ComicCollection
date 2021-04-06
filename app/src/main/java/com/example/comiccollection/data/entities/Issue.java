@@ -92,4 +92,22 @@ public class Issue {
         }
         return mOwnedCopies.size();
     }
+
+    /*
+    Do I own this issue but want an upgrade?
+     */
+    public boolean upgradeWanted() {
+        if( numberOfCopiesOwned() > 0 && isWanted()) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /*
+    A convenience method to return the issue together with its title.
+     */
+    public String getTitleAndIssueNumber() {
+        return getTitle() + " " + getIssueNumber();
+    }
 }

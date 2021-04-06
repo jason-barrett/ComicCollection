@@ -284,6 +284,7 @@ public class FirestoreComicRepository implements ComicRepository {
                         The task will be successful only if ALL of the passed-in tasks
                         succeeded.
                          */
+                        Log.i(TAG, "All copies of all issues found.");
                         if( task.isSuccessful() ) {
                             List<Task<?>> taskList = task.getResult();
 
@@ -328,6 +329,9 @@ public class FirestoreComicRepository implements ComicRepository {
                                     new HashMap<String, List<OwnedCopy>>();
 
                             for( OwnedCopy ownedCopy : ownedCopiesList ) {
+                                Log.d(TAG, "Found an owned copy of " +
+                                        ownedCopy.getTitle() + " " + ownedCopy.getIssue());
+
                                 String issueOfCopy = ownedCopy.getIssue();
 
                                 List<OwnedCopy> subList;

@@ -36,7 +36,7 @@ public class ComicDbHelper {
      */
     public static final String CC_ISSUE_NUMBER = "issue";
     public static final String CC_ISSUE_TITLE = "title";
-    public static final String CC_ISSUE_WANTED = "iWantIt";
+    public static final String CC_ISSUE_WANTED = "iwantit";
     public static final String CC_ISSUE_OWNED = "owned";
     public static final String CC_ISSUE_SOLD = "sold";
     public static final String CC_ISSUE_UNOWNED = "unowned";

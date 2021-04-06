@@ -10,6 +10,6 @@
     <TextView android:id="@+id/title_item_title"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
-        style="@style/TitleItemStyle"/>
+        style="@style/ListItemStyle"/>
 
 </LinearLayout>

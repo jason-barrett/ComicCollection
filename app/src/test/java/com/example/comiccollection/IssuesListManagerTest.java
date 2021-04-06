@@ -1,5 +1,7 @@
 package com.example.comiccollection;
 
+import android.util.Log;
+
 import com.example.comiccollection.data.entities.Issue;
 import com.example.comiccollection.data.entities.UnownedCopy;
 import com.example.comiccollection.viewmodel.IssuesListManager;
@@ -9,6 +11,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -16,7 +21,8 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(PowerMockRunner.class)
+@PrepareForTest({Log.class})
 public class IssuesListManagerTest {
 
     /*
@@ -32,6 +38,8 @@ public class IssuesListManagerTest {
 
     @Before
     public void setup() {
+        PowerMockito.mockStatic(Log.class);
+
         batman227 = new Issue();
         batman227.setDocumentId("11111");
         batman227.setTitle("Batman");

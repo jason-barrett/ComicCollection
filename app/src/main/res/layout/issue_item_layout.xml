@@ -3,7 +3,9 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    style="@style/ListItemStyle"
+    >
 
     <TextView
         android:id="@+id/tvTitleAndIssue"
@@ -13,6 +15,7 @@
         app:layout_constraintTop_toTopOf="@id/tvUpgrade"
         app:layout_constraintBottom_toBottomOf="@id/tvValue"
         app:layout_constraintRight_toLeftOf="@id/tvUpgrade"
+        style="@style/ListItemStyle"
         />
 
     <TextView
@@ -24,6 +27,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toTopOf="@id/tvValue"
         app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintHorizontal_bias="1"
         />
 
     <TextView

@@ -1,5 +1,7 @@
 package com.example.comiccollection.viewmodel;
 
+import android.util.Log;
+
 import com.example.comiccollection.data.FirestoreComicRepository;
 import com.example.comiccollection.data.IssuesListener;
 import com.example.comiccollection.data.entities.Issue;
@@ -29,6 +31,8 @@ public class IssuesViewModel extends ViewModel implements IssuesListener {
      */
     private IssuesListManager mIssuesListManager = new IssuesListManager();
 
+    private String TAG = IssuesViewModel.class.getSimpleName();
+
     /*
     Constructor.  Inject the repository dependency.
      */
@@ -48,7 +52,15 @@ public class IssuesViewModel extends ViewModel implements IssuesListener {
     Launch the initial load of data for issues of the given title.
     */
     public void loadIssues(String title) {
+        /*
+        This is going to perform all of the collection group queries to fetch all the copy
+        information one time.
+         */
         repository.getIssuesByTitleOnce(title, this);
+
+        /*
+        This is going to listen for changes to the issue itself.
+         */
         repository.getIssuesByTitleAndListen(title, this);
     }
 
@@ -58,6 +70,11 @@ public class IssuesViewModel extends ViewModel implements IssuesListener {
      */
     @Override
     public void onIssuesReady(List<Issue> issues) {
+        Log.d(TAG, "Issues load is ready.");
+        for( Issue issue : issues ) {
+            Log.d(TAG, "Found " + issue.getOwnedCopies().size() + " owned copies of " +
+                    issue.getTitleAndIssueNumber());
+        }
         mIssuesList.setValue((ArrayList<Issue>)issues);
     }
 
@@ -71,6 +88,7 @@ public class IssuesViewModel extends ViewModel implements IssuesListener {
      */
     @Override
     public void onIssueChangesReady(List<Issue> issuesToAddOrReplace, List<Issue> issuesToRemove) {
+        Log.d(TAG, "Issue changes are ready.");
         ArrayList<Issue> localIssues = mIssuesList.getValue();
 
         ArrayList<Issue> modifiedIssues = mIssuesListManager.implementIssuesListModifications(localIssues,

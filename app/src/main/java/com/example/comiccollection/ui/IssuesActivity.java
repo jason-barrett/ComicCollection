@@ -1,5 +1,6 @@
 package com.example.comiccollection.ui;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.app.Application;
@@ -46,7 +47,7 @@ public class IssuesActivity extends AppCompatActivity {
      */
     private String mTitle;
 
-    private final String TAG = TitlesActivity.class.getSimpleName();
+    private final String TAG = IssuesActivity.class.getSimpleName();
 
 
     @Override
@@ -82,7 +83,14 @@ public class IssuesActivity extends AppCompatActivity {
         mForwardNearButton = (Button)findViewById(R.id.btnForwardNear);
 
         mOwnedButton = (ToggleButton)findViewById(R.id.tBtnOwned);
+        /*
+        TODO: Set the listener to filter the issues list accordingly.
+         */
+
         mWantedButton = (ToggleButton)findViewById(R.id.tBtnWanted);
+        /*
+        TODO: Set the listener to filter the issues list accordingly.
+         */
 
         /*
         Which title is this Activity for?
@@ -101,6 +109,15 @@ public class IssuesActivity extends AppCompatActivity {
         final Observer<ArrayList<Issue>> issueObserver = new Observer<ArrayList<Issue>>() {
             @Override
             public void onChanged(ArrayList<Issue> issueList) {
+                Log.d(TAG, "Issue list changed");
+                for( Issue issue : issueList ) {
+                    if( issue.getOwnedCopies() != null ) {
+                        Log.d(TAG, issue.getOwnedCopies().size() + " copies owned of " + issue.getTitleAndIssueNumber());
+                    }
+                }
+                /*
+                TODO: Change to obey the toggle settings.
+                 */
                 mIssuesAdapter.updateIssues(issueList);
                 mIssuesAdapter.notifyDataSetChanged();
             }
