@@ -72,8 +72,10 @@ public class IssuesViewModel extends ViewModel implements IssuesListener {
     public void onIssuesReady(List<Issue> issues) {
         Log.d(TAG, "Issues load is ready.");
         for( Issue issue : issues ) {
-            Log.d(TAG, "Found " + issue.getOwnedCopies().size() + " owned copies of " +
-                    issue.getTitleAndIssueNumber());
+            if( issue.getOwnedCopies() != null ) {
+                Log.d(TAG, "Found " + issue.getOwnedCopies().size() + " owned copies of " +
+                        issue.getTitleAndIssueNumber());
+            }
         }
         mIssuesList.setValue((ArrayList<Issue>)issues);
     }

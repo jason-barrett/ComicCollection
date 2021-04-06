@@ -16,7 +16,9 @@ import java.util.List;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssuesViewHolder> {
+import static com.example.comiccollection.R.string.upgrade_wanted;
+
+public class IssuesAdapter extends RecyclerView.Adapter {
 
     public List<Issue> issueList;
 
@@ -41,8 +43,8 @@ public class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssuesView
     }
 
     @Override
-    public void onBindViewHolder(@NonNull IssuesViewHolder holder, int position) {
-        IssuesViewHolder issuesViewHolder = holder;
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+        IssuesViewHolder issuesViewHolder = (IssuesViewHolder)holder;
 
         Issue issue = issueList.get(position);
 
@@ -50,20 +52,24 @@ public class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssuesView
         Concatenate the title and issue number.  This is the main part of the display.
          */
         String titleAndIssue = issue.getTitleAndIssueNumber();
+        Log.d(TAG, "Binding to " + titleAndIssue + " at position " + position);
         issuesViewHolder.getTitleAndIssueView().setText(titleAndIssue);
 
         /*
         I want an upgrade if I own at least one copy, and the 'want it' flag is still
         set to true.
          */
+
         if( issue.upgradeWanted() ) {
             Log.d(TAG, "User wants upgrade of " + titleAndIssue);
-            issuesViewHolder.getUpgradeView().setText(R.string.upgrade_wanted);
+            issuesViewHolder.getUpgradeView().setText(upgrade_wanted);
         }
 
         /*
         TODO: Leaving value unimplemented for now.  Will add a calculator in a later build.
          */
+        //issuesViewHolder.getValueView().setText("$0.00");
+        Log.d(TAG, "OnBindViewHolder: done");
     }
 
     @Override
