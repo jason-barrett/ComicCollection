@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    style="@style/ListItemStyle"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
@@ -21,8 +22,11 @@
         android:layout_height="wrap_content"
         android:textAlignment="center"
         android:textColor="@color/colorUpgrade"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/guideline"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.5"
         tools:text="UPGRADE" />
 
     <TextView
@@ -30,9 +34,17 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAlignment="center"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
+        android:textColor="@color/colorUpgrade"
+        app:layout_constraintEnd_toStartOf="@+id/guideline"
+        app:layout_constraintStart_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tvUpgrade"
         tools:text="$200.00" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="280dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
