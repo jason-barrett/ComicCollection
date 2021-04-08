@@ -1,20 +1,19 @@
 package com.example.comiccollection.ui;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.app.Application;
 import android.util.Log;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.ToggleButton;
 
 import com.example.comiccollection.R;
 import com.example.comiccollection.data.entities.Issue;
+import com.example.comiccollection.ui.filters.IssuesFilter;
 import com.example.comiccollection.viewmodel.IssuesViewModel;
 import com.example.comiccollection.viewmodel.IssuesViewModelFactory;
 import com.example.comiccollection.application.AppContainer;
 import com.example.comiccollection.application.ComicCollectionApplication;
-
 
 import java.util.ArrayList;
 
@@ -46,6 +45,13 @@ public class IssuesActivity extends AppCompatActivity {
     created by an intent, and the title is passed in the intent.
      */
     private String mTitle;
+
+    /*
+    Active filters are part of the global state of the activity.  These control which issues
+    are shown and which are filtered out.
+    */
+    private IssuesToggleState mIssuesToggleState;
+    private IssuesFilter mIssuesFilter;
 
     private final String TAG = IssuesActivity.class.getSimpleName();
 
@@ -82,15 +88,65 @@ public class IssuesActivity extends AppCompatActivity {
         mForwardFarButton = (Button)findViewById(R.id.btnForwardFar);
         mForwardNearButton = (Button)findViewById(R.id.btnForwardNear);
 
-        mOwnedButton = (ToggleButton)findViewById(R.id.tBtnOwned);
         /*
-        TODO: Set the listener to filter the issues list accordingly.
+        Initialize the toggle state which will be managed by the toggle buttons.
          */
+        mIssuesFilter = new IssuesFilter();
+        mIssuesToggleState = new IssuesToggleState();
+
+        mOwnedButton = (ToggleButton)findViewById(R.id.tBtnOwned);
+        mOwnedButton.setChecked(true);
+        mOwnedButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                Log.d(TAG, "Show Owned set to " + b);
+                Log.d(TAG, "Toggle state was " + mIssuesToggleState);
+                mIssuesToggleState.setShowOwned(b);
+                Log.d(TAG, "Toggle state is now " + mIssuesToggleState);
+
+                /*
+                Give a visual indication by color, whether the toggle is on or off.
+                 */
+                if( b ) {
+                    compoundButton.setTextColor(getResources().getColor(R.color.colorToggleButtonOnText, null));
+                } else {
+                    compoundButton.setTextColor(getResources().getColor(R.color.colorToggleButtonOffText, null));
+                }
+
+                ArrayList<Issue> filteredIssueList = mIssuesFilter.getFilteredIssueData(mIssuesToggleState,
+                        mIssuesViewModel.getIssuesList().getValue());
+
+                mIssuesAdapter.updateIssues(filteredIssueList);
+                mIssuesAdapter.notifyDataSetChanged();
+            }
+        });
 
         mWantedButton = (ToggleButton)findViewById(R.id.tBtnWanted);
-        /*
-        TODO: Set the listener to filter the issues list accordingly.
-         */
+        mWantedButton.setChecked(true);
+        mWantedButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                Log.d(TAG, "Show Wanted set to " + b);
+                Log.d(TAG, "Toggle state was " + mIssuesToggleState);
+                mIssuesToggleState.setShowWanted(b);
+                Log.d(TAG, "Toggle state is now " + mIssuesToggleState);
+
+                /*
+                Give a visual indication by color, whether the toggle is on or off.
+                 */
+                if( b ) {
+                    compoundButton.setTextColor(getResources().getColor(R.color.colorToggleButtonOnText, null));
+                } else {
+                    compoundButton.setTextColor(getResources().getColor(R.color.colorToggleButtonOffText, null));
+                }
+
+                ArrayList<Issue> filteredIssueList = mIssuesFilter.getFilteredIssueData(mIssuesToggleState,
+                        mIssuesViewModel.getIssuesList().getValue());
+
+                mIssuesAdapter.updateIssues(filteredIssueList);
+                mIssuesAdapter.notifyDataSetChanged();
+            }
+        });
 
         /*
         Which title is this Activity for?
@@ -116,9 +172,11 @@ public class IssuesActivity extends AppCompatActivity {
                     }
                 }
                 /*
-                TODO: Change to obey the toggle settings.
+                Apply the toggle settings to filter the new data set for display.
                  */
-                mIssuesAdapter.updateIssues(issueList);
+                ArrayList<Issue> filteredIssueList = mIssuesFilter.getFilteredIssueData(mIssuesToggleState, issueList);
+
+                mIssuesAdapter.updateIssues(filteredIssueList);
                 mIssuesAdapter.notifyDataSetChanged();
             }
         };
@@ -135,4 +193,5 @@ public class IssuesActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
     }
+
 }

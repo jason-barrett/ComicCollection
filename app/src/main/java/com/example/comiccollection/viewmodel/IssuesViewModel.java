@@ -61,6 +61,7 @@ public class IssuesViewModel extends ViewModel implements IssuesListener {
         /*
         This is going to listen for changes to the issue itself.
          */
+
         repository.getIssuesByTitleAndListen(title, this);
     }
 

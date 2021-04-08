@@ -63,6 +63,8 @@ public class IssuesAdapter extends RecyclerView.Adapter {
         if( issue.upgradeWanted() ) {
             Log.d(TAG, "User wants upgrade of " + titleAndIssue);
             issuesViewHolder.getUpgradeView().setText(upgrade_wanted);
+        } else {
+            issuesViewHolder.getUpgradeView().setText("");
         }
 
         /*
