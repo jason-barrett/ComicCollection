@@ -3,6 +3,7 @@ package com.example.comiccollection.ui;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ToggleButton;
@@ -53,8 +54,20 @@ public class IssuesActivity extends AppCompatActivity {
     private IssuesToggleState mIssuesToggleState;
     private IssuesFilter mIssuesFilter;
 
-    private final String TAG = IssuesActivity.class.getSimpleName();
+    /*
+    The number of Issues in the list to scroll forward (or back) when the near forward
+    (or rewind) button on the screen is pressed.
+     */
+    private final int NEAR_SCROLL_ITEMS = 15;
 
+    /*
+    The number of Issues in the list to scroll forward (or back) when the far forward
+    (or rewind) button on the screen is pressed.
+     */
+    private final int FAR_SCROLL_ITEMS = 50;
+
+
+    private final String TAG = IssuesActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,7 +76,7 @@ public class IssuesActivity extends AppCompatActivity {
 
         /*
         Set up the ViewModel which contains the LiveData that is the canonical
-        source of current data.  Become an observer of the Issues data.
+        source of current data.
          */
         AppContainer appContainer = ((ComicCollectionApplication)getApplication()).getAppContainer();
         /* appContainer.initialize() only gets called in the first activity */
@@ -71,7 +84,7 @@ public class IssuesActivity extends AppCompatActivity {
         mIssuesViewModel = issuesViewModelFactory.create(IssuesViewModel.class);
 
         /*
-        Create the RecyclerView.
+        Create and set up the RecyclerView.
          */
         mIssuesAdapter = new IssuesAdapter();
 
@@ -81,12 +94,19 @@ public class IssuesActivity extends AppCompatActivity {
         mIssuesRecyclerView.setHasFixedSize(true);
 
         /*
-        Initialize the member objects for other controls.
+        Initialize the navigation buttons.
          */
         mRewindFarButton = (Button)findViewById(R.id.btnRewindFar);
+        mRewindFarButton.setOnClickListener((v) -> scrollBackward(FAR_SCROLL_ITEMS));
+
         mRewindNearButton = (Button)findViewById(R.id.btnRewindNear);
+        mRewindNearButton.setOnClickListener((v) -> scrollBackward(NEAR_SCROLL_ITEMS));
+
         mForwardFarButton = (Button)findViewById(R.id.btnForwardFar);
+        mForwardFarButton.setOnClickListener((v) -> scrollForward(FAR_SCROLL_ITEMS));
+
         mForwardNearButton = (Button)findViewById(R.id.btnForwardNear);
+        mForwardNearButton.setOnClickListener((v) -> scrollForward(NEAR_SCROLL_ITEMS));
 
         /*
         Initialize the toggle state which will be managed by the toggle buttons.
@@ -100,9 +120,7 @@ public class IssuesActivity extends AppCompatActivity {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 Log.d(TAG, "Show Owned set to " + b);
-                Log.d(TAG, "Toggle state was " + mIssuesToggleState);
                 mIssuesToggleState.setShowOwned(b);
-                Log.d(TAG, "Toggle state is now " + mIssuesToggleState);
 
                 /*
                 Give a visual indication by color, whether the toggle is on or off.
@@ -113,11 +131,7 @@ public class IssuesActivity extends AppCompatActivity {
                     compoundButton.setTextColor(getResources().getColor(R.color.colorToggleButtonOffText, null));
                 }
 
-                ArrayList<Issue> filteredIssueList = mIssuesFilter.getFilteredIssueData(mIssuesToggleState,
-                        mIssuesViewModel.getIssuesList().getValue());
-
-                mIssuesAdapter.updateIssues(filteredIssueList);
-                mIssuesAdapter.notifyDataSetChanged();
+                sendDataToAdapter();
             }
         });
 
@@ -127,9 +141,7 @@ public class IssuesActivity extends AppCompatActivity {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 Log.d(TAG, "Show Wanted set to " + b);
-                Log.d(TAG, "Toggle state was " + mIssuesToggleState);
                 mIssuesToggleState.setShowWanted(b);
-                Log.d(TAG, "Toggle state is now " + mIssuesToggleState);
 
                 /*
                 Give a visual indication by color, whether the toggle is on or off.
@@ -140,24 +152,9 @@ public class IssuesActivity extends AppCompatActivity {
                     compoundButton.setTextColor(getResources().getColor(R.color.colorToggleButtonOffText, null));
                 }
 
-                ArrayList<Issue> filteredIssueList = mIssuesFilter.getFilteredIssueData(mIssuesToggleState,
-                        mIssuesViewModel.getIssuesList().getValue());
-
-                mIssuesAdapter.updateIssues(filteredIssueList);
-                mIssuesAdapter.notifyDataSetChanged();
+                sendDataToAdapter();
             }
         });
-
-        /*
-        Which title is this Activity for?
-         */
-        Intent intent = getIntent();
-        mTitle = intent.getStringExtra("Title");
-        if( mTitle == null || mTitle.isEmpty() ) {
-            Log.e(TAG, "Started IssuesActivity with no Title");
-            finish();
-            return;
-        }
 
         /*
         Observe the issue data for this title from the ViewModel.
@@ -171,27 +168,108 @@ public class IssuesActivity extends AppCompatActivity {
                         Log.d(TAG, issue.getOwnedCopies().size() + " copies owned of " + issue.getTitleAndIssueNumber());
                     }
                 }
+
                 /*
                 Apply the toggle settings to filter the new data set for display.
                  */
-                ArrayList<Issue> filteredIssueList = mIssuesFilter.getFilteredIssueData(mIssuesToggleState, issueList);
-
-                mIssuesAdapter.updateIssues(filteredIssueList);
-                mIssuesAdapter.notifyDataSetChanged();
+                sendDataToAdapter();
             }
         };
 
         mIssuesViewModel.getIssuesList().observe(this, issueObserver);
 
         /*
+        Which title is this Activity for?
+         */
+        Intent intent = getIntent();
+        mTitle = intent.getStringExtra("Title");
+        if( mTitle == null || mTitle.isEmpty() ) {
+            Log.e(TAG, "Started IssuesActivity with no Title");
+            finish();
+            return;
+        }
+
+        /*
         Perform the initial data load.
          */
         mIssuesViewModel.loadIssues(mTitle);
-    }
+
+    }  /* onCreate() */
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+    }
+
+    /*
+    Prepare and send changed and/or filtered data to the adapter to be re-displayed.
+     */
+    private void sendDataToAdapter() {
+        /*
+        Filter the master list from the ViewModel, with the current toggle state.
+         */
+        ArrayList<Issue> filteredIssueList = mIssuesFilter.getFilteredIssueData(mIssuesToggleState,
+                mIssuesViewModel.getIssuesList().getValue());
+
+        /*
+        Send the updated list to the adapter for display.
+         */
+        mIssuesAdapter.updateIssues(filteredIssueList);
+        mIssuesAdapter.notifyDataSetChanged();
+    }
+
+
+    /*
+    Scroll forward in the list visible on screen by the specified number of items.
+     */
+    private void scrollForward(int numItems) {
+        LinearLayoutManager layoutManager = (LinearLayoutManager)mIssuesRecyclerView
+                .getLayoutManager();
+
+        /*
+        Make sure we're working with the current issue list, which may have been filtered.
+        For example, we may be navigating through the want list only.
+         */
+        ArrayList<Issue> currentIssueList = (ArrayList<Issue>)mIssuesAdapter.getCurrentIssueList();
+
+        /*
+        I also want to know where the top view is *now*.  This will return me the adapter
+        position, that is the index in the current data set of the current topmost view.
+        */
+        int firstPosition = layoutManager.findFirstVisibleItemPosition();
+
+        /*
+        Find the position we want to scroll to.  If we'd scroll off the end of the list,
+        just stay where we are.  An enhancement might be to scroll so that the last item
+        is at the bottom of the screen.
+         */
+        int positionToScrollTo = firstPosition + numItems;
+        if( positionToScrollTo < currentIssueList.size() ) {
+            layoutManager.scrollToPositionWithOffset(positionToScrollTo, 0);
+        }
+    }
+    /*
+    Scroll backward in the list visible on screen by the specified number of items.
+     */
+    private void scrollBackward(int numItems) {
+        LinearLayoutManager layoutManager = (LinearLayoutManager)mIssuesRecyclerView
+                .getLayoutManager();
+
+        /*
+        I also want to know where the top view is *now*.  This will return me the adapter
+        position, that is the index in the current data set of the current topmost view.
+        */
+        int firstPosition = layoutManager.findFirstVisibleItemPosition();
+
+        /*
+        Find the position we want to scroll to.  If the position is negative, just scroll to
+        the top.
+         */
+        int positionToScrollTo = firstPosition - numItems;
+        if( positionToScrollTo < 0 ) {
+            positionToScrollTo = 0;
+        }
+        layoutManager.scrollToPositionWithOffset(positionToScrollTo, 0);
     }
 
 }

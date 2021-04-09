@@ -22,6 +22,8 @@ public class IssuesAdapter extends RecyclerView.Adapter {
 
     public List<Issue> issueList;
 
+    public String TAG = IssuesAdapter.class.getSimpleName();
+
     public IssuesAdapter() {
         issueList = new ArrayList<Issue>();
     }
@@ -30,7 +32,10 @@ public class IssuesAdapter extends RecyclerView.Adapter {
         this.issueList = issueList;
     }
 
-    public String TAG = IssuesAdapter.class.getSimpleName();
+    public List<Issue> getCurrentIssueList() {
+        return issueList;
+    }
+
 
     @NonNull
     @Override
