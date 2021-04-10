@@ -150,30 +150,17 @@ public class IssuesListManagerTest {
          */
         assertEquals(6, modifiedIssues.size());
 
-        boolean got313 = false;
-        boolean got357 = false;
-        boolean got227 = false;
-        boolean got232 = false;
-        boolean want254 = true;
-        for (Issue issue : modifiedIssues) {
-            if (issue.getIssueNumber().equals("313")) {
-                got313 = true;
-            } else if (issue.getIssueNumber().equals("357")) {
-                got357 = true;
-            } else if (issue.getIssueNumber().equals("227")) {
-                got227 = true;
-            } else if (issue.getIssueNumber().equals("232")) {
-                got232 = true;
-            } else if (issue.getIssueNumber().equals("254")) {
-                want254 = issue.isWanted();
-            }
-        }
+        //Assert additions.
+        assertTrue(modifiedIssues.contains(batman313));
+        assertTrue(modifiedIssues.contains(batman357));
 
-        assert (got313 == true);
-        assert (got357 == true);
-        assert (got227 == false);
-        assert (got232 == false);
-        assert (want254 == false);
+        //Assert replacement.
+        assertTrue(modifiedIssues.contains(batman254_bought));
+        assertFalse(modifiedIssues.contains(batman254));
+
+        //Assert removals.
+        assertFalse(modifiedIssues.contains(batman227));
+        assertFalse(modifiedIssues.contains(batman232));
     }
 
     /*
@@ -228,15 +215,7 @@ public class IssuesListManagerTest {
         Check what we got back.
          */
         assertEquals(5, modifiedIssues.size());
-
-        boolean got244 = false;
-        for (Issue issue : modifiedIssues) {
-            if (issue.getIssueNumber().equals("244")) {
-                got244 = true;
-            }
-        }
-
-        assert (got244 == false);
+        assertFalse(modifiedIssues.contains(batman244));
     }
 
     /*

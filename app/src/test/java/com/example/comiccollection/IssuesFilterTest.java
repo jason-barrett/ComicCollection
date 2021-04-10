@@ -17,6 +17,13 @@ import java.util.ArrayList;
 public class IssuesFilterTest {
 
     ArrayList<Issue> issues;
+    Issue ff200;
+    Issue ff201;
+    Issue ff202;
+    Issue ff203;
+    Issue ff204;
+    Issue ff205;
+    Issue ff450;
 
     @Before
     public void setup() {
@@ -25,7 +32,7 @@ public class IssuesFilterTest {
         /*
         Add some issues that are in my collection.  (200-202)
          */
-        Issue ff200 = new Issue();
+        ff200 = new Issue();
         ff200.setTitle("Fantastic Four");
         ff200.setIssueNumber("200");
         ff200.setWanted(false);
@@ -38,7 +45,7 @@ public class IssuesFilterTest {
         ownedCopyList200.add(ownedFF200);
         ff200.setOwnedCopies(ownedCopyList200);
 
-        Issue ff201 = new Issue();
+        ff201 = new Issue();
         ff201.setTitle("Fantastic Four");
         ff201.setIssueNumber("201");
         ff201.setWanted(false);
@@ -59,7 +66,7 @@ public class IssuesFilterTest {
 
         ff201.setOwnedCopies(ownedCopyList201);
 
-        Issue ff202 = new Issue();
+        ff202 = new Issue();
         ff202.setTitle("Fantastic Four");
         ff202.setIssueNumber("202");
         ff202.setWanted(false);
@@ -75,7 +82,7 @@ public class IssuesFilterTest {
         /*
         Add an issue in my collection, but I'd like an upgrade. (203)
          */
-        Issue ff203 = new Issue();
+        ff203 = new Issue();
         ff203.setTitle("Fantastic Four");
         ff203.setIssueNumber("203");
         ff203.setWanted(true);
@@ -91,12 +98,12 @@ public class IssuesFilterTest {
         /*
         Add some issues I don't own, but that are on my want list. (204-205)
          */
-        Issue ff204 = new Issue();
+        ff204 = new Issue();
         ff204.setTitle("Fantastic Four");
         ff204.setIssueNumber("204");
         ff204.setWanted(true);
 
-        Issue ff205 = new Issue();
+        ff205 = new Issue();
         ff205.setTitle("Fantastic Four");
         ff205.setIssueNumber("205");
         ff205.setWanted(true);
@@ -104,7 +111,7 @@ public class IssuesFilterTest {
         /*
         Add an issue I don't own or care about (450)
          */
-        Issue ff450 = new Issue();
+        ff450 = new Issue();
         ff450.setTitle("Fantastic Four");
         ff450.setIssueNumber("450");
         ff450.setWanted(false);
@@ -150,31 +157,10 @@ public class IssuesFilterTest {
         I expect this to return 200-203.
          */
         assertEquals(4, filteredIssueList.size());
-
-        boolean got200 = false;
-        boolean got201 = false;
-        boolean got202 = false;
-        boolean got203 = false;
-
-        for( Issue issue : filteredIssueList ) {
-            if (issue.getIssueNumber().equals("200")) {
-                got200 = true;
-            }
-            if (issue.getIssueNumber().equals("201")) {
-                got201 = true;
-            }
-            if (issue.getIssueNumber().equals("202")) {
-                got202 = true;
-            }
-            if (issue.getIssueNumber().equals("203")) {
-                got203 = true;
-            }
-        }
-
-        assertTrue(got200);
-        assertTrue(got201);
-        assertTrue(got202);
-        assertTrue(got203);
+        assertTrue(filteredIssueList.contains(ff200));
+        assertTrue(filteredIssueList.contains(ff201));
+        assertTrue(filteredIssueList.contains(ff202));
+        assertTrue(filteredIssueList.contains(ff203));
     }
 
     @Test
@@ -192,25 +178,9 @@ public class IssuesFilterTest {
         I expect this to return 203-205 (203 because of the upgrade).
          */
         assertEquals(3, filteredIssueList.size());
-
-        boolean got203 = false;
-        boolean got204 = false;
-        boolean got205 = false;
-
-        for( Issue issue : filteredIssueList ) {
-            if( issue.getIssueNumber().equals("203") ) {
-                got203 = true;
-            }
-            if( issue.getIssueNumber().equals("204") ) {
-                got204 = true;
-            }
-            if( issue.getIssueNumber().equals("205") ) {
-                got205 = true;
-            }
-        }
-        assertTrue(got204);
-        assertTrue(got205);
-        assertTrue(got203);
+        assertTrue(filteredIssueList.contains(ff204));
+        assertTrue(filteredIssueList.contains(ff205));
+        assertTrue(filteredIssueList.contains(ff203));
     }
 
     @Test
@@ -228,16 +198,7 @@ public class IssuesFilterTest {
         I expect this to return just 450.
          */
         assertEquals(1, filteredIssueList.size());
-
-        boolean got450 = false;
-
-        for( Issue issue : filteredIssueList ) {
-            if( issue.getIssueNumber().equals("450") ) {
-                got450 = true;
-            }
-
-            assertTrue(got450);
-        }
+        assertTrue(filteredIssueList.contains(ff450));
     }
 
 }
