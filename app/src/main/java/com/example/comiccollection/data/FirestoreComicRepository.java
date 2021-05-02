@@ -19,6 +19,8 @@ import com.example.comiccollection.data.map.OwnedCopiesMapper;
 import com.example.comiccollection.data.map.SoldCopiesMapper;
 import com.example.comiccollection.data.map.TitlesMapper;
 import com.example.comiccollection.data.map.UnownedCopiesMapper;
+import com.example.comiccollection.data.modifiers.IssuesModifier;
+import com.example.comiccollection.data.modifiers.IssuesSorter;
 import com.example.comiccollection.data.modifiers.TitlesModifier;
 import com.example.comiccollection.data.modifiers.TitlesSorter;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -68,6 +70,7 @@ public class FirestoreComicRepository implements ComicRepository {
     For example, the titles may be sorted alphabetically or in some custom way.
      */
     private List<TitlesModifier> titlesModifiers = new ArrayList<TitlesModifier>();
+    private List<IssuesModifier> issuesModifiers = new ArrayList<IssuesModifier>();
 
     /*
     Store the registration for the titles query that comes back from the FirebaseFirestore
@@ -248,6 +251,14 @@ public class FirestoreComicRepository implements ComicRepository {
          */
 
         /*
+        Register modifiers to implement the business logic.
+
+         - Sort the titles alphabetically.
+         */
+        issuesModifiers.add(new IssuesSorter());
+
+
+        /*
         Set a Task to query for the issues.
          */
         Task<QuerySnapshot> issuesTask = db.collection(ComicDbHelper.CC_COLLECTION_ISSUES)
@@ -387,6 +398,16 @@ public class FirestoreComicRepository implements ComicRepository {
                                 issue.setOwnedCopies((ArrayList<OwnedCopy>)ownedCopiesByIssue.get(issue.getIssueNumber()));
                                 issue.setUnownedCopies((ArrayList<UnownedCopy>)unownedCopiesByIssue.get(issue.getIssueNumber()));
                                 issue.setSoldCopies((ArrayList<SoldCopy>)soldCopiesByIssue.get(issue.getIssueNumber()));
+                            }
+
+                            /*
+                            Before sending the list back, apply any registered business logic methods.
+                            */
+                            if( issuesModifiers != null ) {
+                                for (IssuesModifier m : issuesModifiers) {
+                                    Log.i(TAG, "Running logic in " + m.getClass().getSimpleName());
+                                    issuesList = m.modify((ArrayList<Issue>) issuesList);
+                                }
                             }
 
                             issuesListener.onIssuesReady(issuesList);
