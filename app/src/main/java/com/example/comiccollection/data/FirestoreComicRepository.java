@@ -33,6 +33,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.WriteBatch;
+import com.google.firestore.v1.Write;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -504,6 +506,39 @@ public class FirestoreComicRepository implements ComicRepository {
                     }
                 }
         );
+    }
+
+    @Override
+    public void addIssuesBatch(ArrayList<Issue> issues) {
+        /*
+        Create a batch to do a bulk add of all of the issues in the list.
+
+        Note: Google recommends doing bulk adds using a server client library, which would allow
+        me to write Java code to do parallel writes on the server.  I can do this with a Google
+        Cloud account, which I think is free.  This is a potential enhancement.
+         */
+        WriteBatch batch = db.batch();
+
+        /*
+        Add all of the issues to the batch.  There is a limit of 500 writes per batch, which
+        would be impractical anyway for this use case.
+         */
+        for( Issue issue : issues ) {
+            DocumentReference docRef = db.collection("issues").document();
+
+            HashMap<String, Object> thisIssue = new HashMap<String, Object>();
+            thisIssue.put(ComicDbHelper.CC_ISSUE_TITLE, issue.getTitle());
+            thisIssue.put(ComicDbHelper.CC_ISSUE_NUMBER, issue.getIssueNumber());
+            thisIssue.put(ComicDbHelper.CC_ISSUE_WANTED, issue.isWanted());
+
+            batch.set(docRef, thisIssue);
+        }
+
+        /*
+        Commit the batch.
+         */
+        batch.commit().addOnCompleteListener((t) -> Log.i(TAG, "Batch add of issues completed successfully"))
+                .addOnFailureListener((t) -> Log.e(TAG, "Failed to add batch of issues"));
     }
 
     @Override

@@ -17,6 +17,14 @@ import com.example.comiccollection.data.entities.Title;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+/*
+This fragment pops up a UI dialog that allows the user to add a title.  The dialog will ask the user
+for:
+
+ - the name of the title (e.g., "Justice League")
+ - the first issue of interest (often #1 but not always)
+ - the last issue of interest
+ */
 public class AddTitleDialogFragment extends TitleDialogFragment {
 
     public interface AddTitleDialogListener {
@@ -96,6 +104,9 @@ public class AddTitleDialogFragment extends TitleDialogFragment {
         return builder.create();
     }
 
+    /*
+    Return a Title object for the title newly created by this dialog.
+     */
     public Title getNewTitle() {
         return newTitle;
     }

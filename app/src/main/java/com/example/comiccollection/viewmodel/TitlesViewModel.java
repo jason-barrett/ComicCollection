@@ -5,6 +5,7 @@ import android.util.Log;
 import com.example.comiccollection.application.ComicCollectionApplication;
 import com.example.comiccollection.data.FirestoreComicRepository;
 import com.example.comiccollection.data.TitlesListener;
+import com.example.comiccollection.data.entities.Issue;
 import com.example.comiccollection.data.entities.Title;
 import com.google.firebase.firestore.ListenerRegistration;
 
@@ -74,6 +75,15 @@ public class TitlesViewModel extends ViewModel implements TitlesListener {
 
     public void modifyTitle(Title title) { repository.modifyTitle(title); }
 
+    /*
+    This method looks a little out of place because it is acting upon Issue objects and this is
+    the *Titles* ViewModel.  The TitlesActivity needs to add issues to the repository directly
+    in the case where a new title is created or new issues added in bulk.
+     */
+    public void addIssuesToTitle(ArrayList<Issue> issues) {
+        repository.addIssuesBatch(issues);
+    }
+
     /****************************************************************************************
      * Listeners to the data (model) layer.
      ****************************************************************************************/
@@ -136,6 +146,10 @@ public class TitlesViewModel extends ViewModel implements TitlesListener {
         return mListPositionByStartLetter;
     }
 
+    /*
+    Check if a new title object represents a title that already exists in the dataset managed
+    by this ViewModel.
+     */
     public boolean titleNameExists(Title newTitle) {
         ArrayList<Title> titles = mLiveTitles.getValue();
 

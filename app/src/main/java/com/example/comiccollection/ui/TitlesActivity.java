@@ -21,6 +21,7 @@ import android.widget.TextView;
 import com.example.comiccollection.R;
 import com.example.comiccollection.application.AppContainer;
 import com.example.comiccollection.application.ComicCollectionApplication;
+import com.example.comiccollection.data.entities.Issue;
 import com.example.comiccollection.data.entities.Title;
 import com.example.comiccollection.viewmodel.TitlesViewModel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -240,10 +241,26 @@ public class TitlesActivity extends AppCompatActivity
                 }
                 else {
                     /*
-                    Data entered looks clean.
+                    Data entered looks clean.  Add the new title to the ViewModel.
                      */
                     Log.i(TAG, "Adding title " + title.toString());
                     mTitlesViewModel.addTitle(title);
+
+                    /*
+                    Add issues to the database for the first-last issue range specified.  Default
+                    everything to the want list.
+                     */
+                    ArrayList<Issue> newIssues = new ArrayList<Issue>();
+                    for( int issueNumber = firstIssue; issueNumber <= lastIssue; issueNumber++) {
+                        Issue issue = new Issue();
+                        issue.setTitle(title.getName());
+                        issue.setIssueNumber(Integer.toString(issueNumber));
+                        issue.setWanted(true);
+
+                        newIssues.add(issue);
+                    }
+                    mTitlesViewModel.addIssuesToTitle(newIssues);
+
                 }
             } catch( NumberFormatException e ) {
                 Log.i(TAG, "User entered a non-numeric issue number.");
