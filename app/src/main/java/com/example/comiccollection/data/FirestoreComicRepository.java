@@ -37,6 +37,7 @@ import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.WriteBatch;
 import com.google.firestore.v1.Write;
+import com.google.gson.internal.$Gson$Preconditions;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -229,9 +230,18 @@ public class FirestoreComicRepository implements ComicRepository {
     }
 
     @Override
-    public void deleteTitle(Title title) {
+    public void deleteTitle(Title title, TitlesDeletionListener listener) {
         Log.i(TAG, "Deleting title " + title.getName());
+
         db.collection(ComicDbHelper.CC_COLLECTION_TITLE).document(title.getDocumentId()).delete();
+
+        /*
+        Also delete all issues belonging to that title.
+
+        The second argument is a little syntactic sugar that replaces the IssueDeletionListener
+        argument with a method reference.
+         */
+        deleteIssuesByTitle(title, listener::onDeleteFailed);
     }
 
     @Override
@@ -594,7 +604,7 @@ public class FirestoreComicRepository implements ComicRepository {
     }
 
     @Override
-    public void deleteIssue(Issue issue) {
+    public void deleteIssue(Issue issue, IssuesDeletionListener listener) {
 
         Log.i(TAG, "Deleting issue " + issue.getIssueNumber() + " of title " + issue.getTitle());
 
@@ -606,11 +616,7 @@ public class FirestoreComicRepository implements ComicRepository {
         Function, which can be called from a mobile app or better yet, from an OnDelete trigger.
 
         However, Cloud Functions are not available in the free Firestore product.  :-(
-
-        TODO: Add a listener so that the UI layer can be notified of a deletion failure due
-        to too many subdocuments.  Can we check for the availability of a Cloud Function?
-        Can we create a Cloud Function programmatically if we have paid access?
-         */
+        */
         List<OwnedCopy> ownedCopies;
         if( (ownedCopies = issue.getOwnedCopies()) != null ) {
             for( OwnedCopy ownedCopy : ownedCopies ) {
@@ -618,7 +624,9 @@ public class FirestoreComicRepository implements ComicRepository {
                         .document(issue.getDocumentId())
                         .collection(ComicDbHelper.CC_ISSUE_OWNED)
                         .document(ownedCopy.getDocumentId())
-                        .delete();
+                        .delete()
+                        .addOnFailureListener(e -> listener.onDeleteFailed(e.getMessage())
+                        );
             }
         }
 
@@ -629,7 +637,8 @@ public class FirestoreComicRepository implements ComicRepository {
                         .document(issue.getDocumentId())
                         .collection(ComicDbHelper.CC_ISSUE_UNOWNED)
                         .document(unownedCopy.getDocumentId())
-                        .delete();
+                        .delete()
+                        .addOnFailureListener(e -> listener.onDeleteFailed(e.getMessage()));
             }
         }
 
@@ -640,7 +649,8 @@ public class FirestoreComicRepository implements ComicRepository {
                         .document(issue.getDocumentId())
                         .collection(ComicDbHelper.CC_ISSUE_SOLD)
                         .document(soldCopy.getDocumentId())
-                        .delete();
+                        .delete()
+                        .addOnFailureListener(e -> listener.onDeleteFailed(e.getMessage()));
             }
         }
 
@@ -648,8 +658,37 @@ public class FirestoreComicRepository implements ComicRepository {
         Now all of the sub-collections are gone, we can go ahead and delete the issue
         itself.
          */
-        db.collection(ComicDbHelper.CC_COLLECTION_ISSUES).document(issue.getDocumentId()).delete();
+        db.collection(ComicDbHelper.CC_COLLECTION_ISSUES)
+                .document(issue.getDocumentId())
+                .delete()
+                .addOnFailureListener(e -> listener.onDeleteFailed(e.getMessage()));
     }
 
+    /*
+    This method deletes all issues for a given title.  It propagates an error message from
+    Firestore through the IssuesDeletionListener.
+     */
+    public void deleteIssuesByTitle(Title title, IssuesDeletionListener listener) {
+        getIssuesByTitleOnce(title.getName(), new IssuesListener() {
+            @Override
+            public void onIssuesReady(List<Issue> issues) {
+                for( Issue issue : issues ) {
+                    deleteIssue(issue, message -> {
+                        listener.onDeleteFailed(message);
+                    });
+                }
+            }
+
+            @Override
+            public void onIssueChangesReady(List<Issue> issuesToAddOrReplace, List<Issue> issuesToRemove) {
+
+            }
+
+            @Override
+            public void onIssueLoadFailed() {
+                listener.onDeleteFailed("Could not load issues for deletion for title " + title.getName());
+            }
+        });
+    }
 
 }

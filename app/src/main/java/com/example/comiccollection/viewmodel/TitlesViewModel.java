@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.example.comiccollection.application.ComicCollectionApplication;
 import com.example.comiccollection.data.FirestoreComicRepository;
+import com.example.comiccollection.data.TitlesDeletionListener;
 import com.example.comiccollection.data.TitlesListener;
 import com.example.comiccollection.data.entities.Issue;
 import com.example.comiccollection.data.entities.Title;
@@ -18,7 +19,7 @@ import java.util.TreeMap;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-public class TitlesViewModel extends ViewModel implements TitlesListener {
+public class TitlesViewModel extends ViewModel implements TitlesListener, TitlesDeletionListener {
 
     private MutableLiveData< ArrayList<Title> > mLiveTitles = new MutableLiveData<ArrayList<Title>>();
 
@@ -71,7 +72,7 @@ public class TitlesViewModel extends ViewModel implements TitlesListener {
         repository.addTitle(title);
     }
 
-    public void deleteTitle(Title title) { repository.deleteTitle(title); }
+    public void deleteTitle(Title title) { repository.deleteTitle(title, this); }
 
     public void modifyTitle(Title title) { repository.modifyTitle(title); }
 
@@ -136,6 +137,14 @@ public class TitlesViewModel extends ViewModel implements TitlesListener {
             As currently coded, the second failure basically means 'restart the app'.
              */
         }
+    }
+
+    @Override
+    public void onDeleteFailed(String message) {
+        /*
+        TODO: Propagate this message back to the Activity to show in a snackbar.  (Or just have
+        the activity implement this interface.)
+         */
     }
 
     /****************************************************************************************

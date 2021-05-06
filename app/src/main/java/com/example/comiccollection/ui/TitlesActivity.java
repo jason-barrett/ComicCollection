@@ -311,6 +311,15 @@ public class TitlesActivity extends AppCompatActivity
                      */
                     Log.i(TAG, "Modifying title " + title.toString());
                     mTitlesViewModel.modifyTitle(title);
+
+                    /*
+                    If the user has expanded the issues on the want list, add the new ones to
+                    the database.
+                     */
+
+                    /* If the user has removed issues from the want list, make sure he wants to
+                    remove them from the database.
+                     */
                 }
             } catch( NumberFormatException e ) {
                 Log.i(TAG, "User entered a non-numeric issue number.");

@@ -11,7 +11,7 @@ public interface ComicRepository {
     public ListenerRegistration loadAndListenForTitles(TitlesListener onTitlesReady);
     public void addTitle(Title title);
     public void modifyTitle(Title title);
-    public void deleteTitle(Title title);
+    public void deleteTitle(Title title, TitlesDeletionListener listener);
 
 
     public void getIssuesByTitleOnce(String titleName, IssuesListener issuesListener);
@@ -19,5 +19,6 @@ public interface ComicRepository {
     public void addIssue(Issue issue);
     public void addIssuesBatch(ArrayList<Issue> issues);
     public void modifyIssue(Issue issue);
-    public void deleteIssue(Issue issue);
+    public void deleteIssue(Issue issue, IssuesDeletionListener listener);
+    public void deleteIssuesByTitle(Title title, IssuesDeletionListener listener);
 }
