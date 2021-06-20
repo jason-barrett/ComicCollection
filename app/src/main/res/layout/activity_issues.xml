@@ -23,7 +23,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toLeftOf="@id/btnRewindNear"
         app:layout_constraintTop_toBottomOf="@id/rvIssues"
-        app:layout_constraintBottom_toTopOf="@id/tBtnOwned"/>
+        app:layout_constraintBottom_toBottomOf="parent"/>
 
     <Button
         android:id="@+id/btnRewindNear"
@@ -33,7 +33,7 @@
         app:layout_constraintLeft_toRightOf="@id/btnRewindFar"
         app:layout_constraintRight_toLeftOf="@id/btnForwardNear"
         app:layout_constraintTop_toTopOf="@id/btnRewindFar"
-        app:layout_constraintBottom_toTopOf="@id/tBtnOwned"/>
+        app:layout_constraintBottom_toBottomOf="parent"/>
 
     <Button
         android:id="@+id/btnForwardNear"
@@ -43,7 +43,7 @@
         app:layout_constraintLeft_toRightOf="@id/btnRewindNear"
         app:layout_constraintRight_toLeftOf="@id/btnForwardFar"
         app:layout_constraintTop_toTopOf="@id/btnRewindFar"
-        app:layout_constraintBottom_toTopOf="@id/tBtnOwned"/>
+        app:layout_constraintBottom_toBottomOf="parent"/>
 
     <Button
         android:id="@+id/btnForwardFar"
@@ -53,33 +53,6 @@
         app:layout_constraintLeft_toRightOf="@id/btnForwardNear"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="@id/btnRewindFar"
-        app:layout_constraintBottom_toTopOf="@id/tBtnOwned"/>
-
-    <ToggleButton
-        android:id="@+id/tBtnOwned"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:textOn="@string/toggle_button_owned"
-        android:textOff="@string/toggle_button_owned"
-        android:textColor="@color/colorToggleButtonOnText"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toLeftOf="@id/tBtnWanted"
-        app:layout_constraintTop_toBottomOf="@id/btnRewindFar"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintVertical_bias="1"/>
-
-    <ToggleButton
-        android:id="@+id/tBtnWanted"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:textOn="@string/toggle_button_wanted"
-        android:textOff="@string/toggle_button_wanted"
-        android:textColor="@color/colorToggleButtonOnText"
-        app:layout_constraintLeft_toRightOf="@id/tBtnOwned"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btnRewindFar"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintVertical_bias="1"/>
-
+        app:layout_constraintBottom_toBottomOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

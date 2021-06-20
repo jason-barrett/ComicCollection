@@ -2,13 +2,11 @@ package com.example.comiccollection.ui;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ToggleButton;
@@ -22,7 +20,6 @@ import com.example.comiccollection.application.AppContainer;
 import com.example.comiccollection.application.ComicCollectionApplication;
 
 import java.util.ArrayList;
-import java.util.concurrent.Executor;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
@@ -43,9 +40,6 @@ public class IssuesActivity extends AppCompatActivity {
     private Button mRewindNearButton;
     private Button mForwardFarButton;
     private Button mForwardNearButton;
-
-    private ToggleButton mOwnedButton;
-    private ToggleButton mWantedButton;
 
     /*
     This activity is showing the issues for a specific title.  This activity is always
@@ -119,48 +113,6 @@ public class IssuesActivity extends AppCompatActivity {
          */
         mIssuesFilter = new IssuesFilter();
         mIssuesToggleState = new IssuesToggleState();
-
-        mOwnedButton = (ToggleButton)findViewById(R.id.tBtnOwned);
-        mOwnedButton.setChecked(true);
-        mOwnedButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                Log.d(TAG, "Show Owned set to " + b);
-                mIssuesToggleState.setShowOwned(b);
-
-                /*
-                Give a visual indication by color, whether the toggle is on or off.
-                 */
-                if( b ) {
-                    compoundButton.setTextColor(getResources().getColor(R.color.colorToggleButtonOnText, null));
-                } else {
-                    compoundButton.setTextColor(getResources().getColor(R.color.colorToggleButtonOffText, null));
-                }
-
-                sendDataToAdapter();
-            }
-        });
-
-        mWantedButton = (ToggleButton)findViewById(R.id.tBtnWanted);
-        mWantedButton.setChecked(true);
-        mWantedButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                Log.d(TAG, "Show Wanted set to " + b);
-                mIssuesToggleState.setShowWanted(b);
-
-                /*
-                Give a visual indication by color, whether the toggle is on or off.
-                 */
-                if( b ) {
-                    compoundButton.setTextColor(getResources().getColor(R.color.colorToggleButtonOnText, null));
-                } else {
-                    compoundButton.setTextColor(getResources().getColor(R.color.colorToggleButtonOffText, null));
-                }
-
-                sendDataToAdapter();
-            }
-        });
 
         /*
         Observe the issue data for this title from the ViewModel.
@@ -295,6 +247,7 @@ public class IssuesActivity extends AppCompatActivity {
         I also want to know where the top view is *now*.  This will return me the adapter
         position, that is the index in the current data set of the current topmost view.
         */
+        assert layoutManager != null;
         int firstPosition = layoutManager.findFirstVisibleItemPosition();
 
         /*
@@ -318,6 +271,7 @@ public class IssuesActivity extends AppCompatActivity {
         I also want to know where the top view is *now*.  This will return me the adapter
         position, that is the index in the current data set of the current topmost view.
         */
+        assert layoutManager != null;
         int firstPosition = layoutManager.findFirstVisibleItemPosition();
 
         /*
