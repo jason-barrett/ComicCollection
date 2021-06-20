@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:id="@+id/issue_view_options"
+           android:checkableBehavior="single">
+        <item android:id="@+id/item_show_collection"
+              android:title="@string/show_collection" />
+        <item android:id="@+id/item_show_want_list"
+              android:title="@string/show_want_list"/>
+        <item android:id="@+id/item_show_all_issues"
+              android:title="@string/show_all_issues"
+              android:checked="true"/>
+    </group>
+</menu>

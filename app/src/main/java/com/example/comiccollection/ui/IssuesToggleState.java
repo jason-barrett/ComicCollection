@@ -14,6 +14,9 @@ public class IssuesToggleState {
         this.mShowWanted = mShowWanted;
     }
 
+    /*
+    Initialize the toggle state to show everything.
+     */
     public IssuesToggleState() {
         this(true, true);
     }

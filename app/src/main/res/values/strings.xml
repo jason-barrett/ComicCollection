@@ -23,4 +23,9 @@
     <!-- Indicates that an upgrade is wanted for this issue -->
     <string name="upgrade_wanted">UPGRADE</string>
 
+    <!-- Menu options for display preferences for issues -->
+    <string name="show_collection">Show Collection</string>
+    <string name="show_want_list">Show Want List</string>
+    <string name="show_all_issues">Show All</string>
+
 </resources>

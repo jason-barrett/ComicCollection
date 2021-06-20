@@ -1,8 +1,13 @@
 package com.example.comiccollection.ui;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
@@ -17,6 +22,7 @@ import com.example.comiccollection.application.AppContainer;
 import com.example.comiccollection.application.ComicCollectionApplication;
 
 import java.util.ArrayList;
+import java.util.concurrent.Executor;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
@@ -201,9 +207,62 @@ public class IssuesActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.issues_pref_menu, menu);
+
+        return true;
+    }
+
+    @SuppressLint("NonConstantResourceId")
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch( item.getItemId() ) {
+            /*
+            The following three items form a group of radio buttons, which controls which
+            set of issues are displayed:
+               - The collection (issues owned)
+               - The want list
+               - All known issues, owned or not
+             */
+            case R.id.item_show_collection:
+                mIssuesToggleState.setShowOwned(true);
+                mIssuesToggleState.setShowWanted(false);
+
+                item.setChecked(true);
+
+                sendDataToAdapter();
+                return true;
+
+            case R.id.item_show_want_list:
+                mIssuesToggleState.setShowOwned(false);
+                mIssuesToggleState.setShowWanted(true);
+
+                item.setChecked(true);
+
+                sendDataToAdapter();
+                return true;
+
+            case R.id.item_show_all_issues:
+                mIssuesToggleState.setShowOwned(true);
+                mIssuesToggleState.setShowWanted(true);
+
+                item.setChecked(true);
+
+                sendDataToAdapter();
+                return true;
+
+            default:
+                Log.w(TAG, "User somehow selected an item not on the menu");
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
     /*
-    Prepare and send changed and/or filtered data to the adapter to be re-displayed.
-     */
+        Prepare and send changed and/or filtered data to the adapter to be re-displayed.
+         */
     private void sendDataToAdapter() {
         /*
         Filter the master list from the ViewModel, with the current toggle state.
