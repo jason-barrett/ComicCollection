@@ -9,6 +9,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import com.example.comiccollection.R;
@@ -31,6 +32,12 @@ public class IssuesActivity extends AppCompatActivity {
     private IssuesViewModel mIssuesViewModel;
     private RecyclerView mIssuesRecyclerView;
     private IssuesAdapter mIssuesAdapter;
+
+    /*
+    This banner at the top of the screen will show the user which set of issues is currently
+    on display; i.e., all, want list, owned.
+     */
+    private TextView mBanner;
 
     /*
     This activity contains controls to move through the list, and to toggle whether to show
@@ -115,6 +122,13 @@ public class IssuesActivity extends AppCompatActivity {
         mIssuesToggleState = new IssuesToggleState();
 
         /*
+        Set up the banner that shows what issue set is currently displayed.  The default is
+        to show all issues.
+         */
+        mBanner = (TextView)findViewById(R.id.tvIssuesBanner);
+        mBanner.setText(R.string.showing_all_issues);
+
+        /*
         Observe the issue data for this title from the ViewModel.
          */
         final Observer<ArrayList<Issue>> issueObserver = new Observer<ArrayList<Issue>>() {
@@ -186,6 +200,8 @@ public class IssuesActivity extends AppCompatActivity {
                 item.setChecked(true);
 
                 sendDataToAdapter();
+
+                mBanner.setText(R.string.showing_collection);
                 return true;
 
             case R.id.item_show_want_list:
@@ -195,6 +211,8 @@ public class IssuesActivity extends AppCompatActivity {
                 item.setChecked(true);
 
                 sendDataToAdapter();
+
+                mBanner.setText(R.string.showing_want_list);
                 return true;
 
             case R.id.item_show_all_issues:
@@ -204,6 +222,8 @@ public class IssuesActivity extends AppCompatActivity {
                 item.setChecked(true);
 
                 sendDataToAdapter();
+
+                mBanner.setText(R.string.showing_all_issues);
                 return true;
 
             default:

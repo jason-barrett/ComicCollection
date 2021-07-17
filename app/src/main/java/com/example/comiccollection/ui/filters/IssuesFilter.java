@@ -36,8 +36,7 @@ public class IssuesFilter {
                     .collect(Collectors.toList());
         } else {
             // Just show everything.
-            filteredList = (ArrayList<Issue>)masterList.stream()
-                    .collect(Collectors.toList());
+            filteredList = (ArrayList<Issue>) new ArrayList<>(masterList);
         }
         return filteredList;
     }

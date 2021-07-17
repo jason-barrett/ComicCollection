@@ -28,4 +28,9 @@
     <string name="show_want_list">Show Want List</string>
     <string name="show_all_issues">Show All</string>
 
+    <!-- Banner values for current display preference for issues -->
+    <string name="showing_collection">MY COLLECTION</string>
+    <string name="showing_want_list">MY WANT LIST</string>
+    <string name="showing_all_issues">ALL ISSUES</string>
+
 </resources>

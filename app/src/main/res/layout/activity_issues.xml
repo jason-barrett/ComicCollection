@@ -6,12 +6,23 @@
     android:layout_height="match_parent"
     tools:context=".ui.IssuesActivity">
 
+    <TextView
+        android:id="@+id/tvIssuesBanner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:textAlignment="center"
+        android:background="@color/colorItemBackground"/>
+
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvIssues"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@+id/btnRewindFar"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvIssuesBanner"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"/>
 
