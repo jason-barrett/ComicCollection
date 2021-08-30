@@ -12,8 +12,9 @@ public class SoldCopy extends Copy {
 
     private Date mDateSold;
 
-    public SoldCopy() {
-        super();
+    public SoldCopy() { super(); }
+    public SoldCopy(String title, String issue) {
+        super(title, issue);
     }
     public String getPurchaser() {
         return mPurchaser;

@@ -14,9 +14,15 @@ public class OwnedCopy extends Copy {
 
     private double mValue;
 
-    public OwnedCopy() {
-        super();
+    public OwnedCopy() { super(); }
+    /*
+    A non-trivial constructor to create a Copy just to mark the fact that an issue is
+    owned.  Details can be added later, but the title and issue are essential information.
+     */
+    public OwnedCopy(String title, String issue) {
+        super(title, issue);
     }
+
     public String getDealer() {
         return mDealer;
     }

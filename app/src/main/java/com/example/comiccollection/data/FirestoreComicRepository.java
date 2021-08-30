@@ -584,7 +584,7 @@ public class FirestoreComicRepository implements ComicRepository {
                 new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(@NonNull Void aVoid) {
-                        Log.i(TAG, "Successfully added issue " + issue.getIssueNumber()
+                        Log.i(TAG, "Successfully modified issue " + issue.getIssueNumber()
                                 + " of title " + issue.getTitle());
                     }
                 })
@@ -592,7 +592,7 @@ public class FirestoreComicRepository implements ComicRepository {
                         new OnFailureListener() {
                             @Override
                             public void onFailure(@NonNull Exception e) {
-                                Log.e(TAG, "Failed to add issue " + issue.getIssueNumber()
+                                Log.e(TAG, "Failed to modify issue " + issue.getIssueNumber()
                                         + " of title " + issue.getTitle());
 
                                 //TODO: Refactor to propagate this error back to the screen / user.

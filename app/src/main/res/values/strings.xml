@@ -33,4 +33,9 @@
     <string name="showing_want_list">MY WANT LIST</string>
     <string name="showing_all_issues">ALL ISSUES</string>
 
+    <!-- Action menu items for the issues screen, when one or more issues are selected.  -->
+    <string name="mark_owned">Mark Owned</string>
+    <string name="mark_wanted">Mark Wanted</string>
+    <string name="dont_want">Don\'t Want</string>
+
 </resources>

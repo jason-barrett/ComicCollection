@@ -20,6 +20,15 @@ public abstract class Copy {
 
     private String mDocumentId;
 
+    public Copy() {}
+    /*
+    Create the simplest possible Copy with just the title and issue number.
+     */
+    public Copy(String title, String issue) {
+        mTitle = title;
+        mIssue = issue;
+    }
+
     public String getTitle() {
         return mTitle;
     }

@@ -65,6 +65,10 @@ public class IssuesViewModel extends ViewModel implements IssuesListener {
         repository.getIssuesByTitleAndListen(title, this);
     }
 
+    public void modifyIssue(Issue issue) {
+        repository.modifyIssue(issue);
+    }
+
     /*
     This method is called when the initial load of issues is complete, including the load
     of the sub-documents for the copies.

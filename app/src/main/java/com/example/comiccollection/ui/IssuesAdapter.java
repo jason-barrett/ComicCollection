@@ -8,26 +8,50 @@ import android.widget.TextView;
 
 import com.example.comiccollection.R;
 import com.example.comiccollection.data.entities.Issue;
+import com.example.comiccollection.data.entities.Title;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.selection.ItemDetailsLookup;
+import androidx.recyclerview.selection.SelectionTracker;
 import androidx.recyclerview.widget.RecyclerView;
 
 import static com.example.comiccollection.R.string.upgrade_wanted;
 
 public class IssuesAdapter extends RecyclerView.Adapter {
 
+    /*
+    The list of issues currently being displayed in the activity.
+     */
     public List<Issue> issueList;
 
     public String TAG = IssuesAdapter.class.getSimpleName();
 
+    /*
+    The adapter needs to know about the selection tracker so it can set views that have
+    been selected as 'activated' for display purposes.
+     */
+    private SelectionTracker<Long> selectionTracker = null;
+
+    /*
+    Construct and initialize the adapter with a given list of issues.
+     */
     public IssuesAdapter() {
         issueList = new ArrayList<Issue>();
     }
 
+    public void setSelectionTracker(SelectionTracker<Long> selectionTracker) {
+        this.selectionTracker = selectionTracker;
+    }
+
+    /*
+    Provide a new list of issues to supersede the current list this adapter is
+    managing.  For instance, the list may have been filtered to a smaller list, and
+    the smaller list should be displayed.
+     */
     public void updateIssues(List<Issue> issueList) {
         this.issueList = issueList;
     }
@@ -36,6 +60,9 @@ public class IssuesAdapter extends RecyclerView.Adapter {
         return issueList;
     }
 
+    public Issue getIssueAt(int position) {
+        return issueList.get(position);
+    }
 
     @NonNull
     @Override
@@ -64,7 +91,6 @@ public class IssuesAdapter extends RecyclerView.Adapter {
         I want an upgrade if I own at least one copy, and the 'want it' flag is still
         set to true.
          */
-
         if( issue.upgradeWanted() ) {
             Log.d(TAG, "User wants upgrade of " + titleAndIssue);
             issuesViewHolder.getUpgradeView().setText(upgrade_wanted);
@@ -76,12 +102,24 @@ public class IssuesAdapter extends RecyclerView.Adapter {
         TODO: Leaving value unimplemented for now.  Will add a calculator in a later build.
          */
         //issuesViewHolder.getValueView().setText("$0.00");
+
+        /*
+        Set the activation status of the master item view according to whether or not it is
+        currently selected.
+         */
+        issuesViewHolder.getItemView().setActivated(selectionTracker.isSelected((long) position));
+
         Log.d(TAG, "OnBindViewHolder: done");
     }
 
     @Override
     public int getItemCount() {
         return issueList.size();
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return (long) position;
     }
 
     /*
@@ -124,6 +162,24 @@ public class IssuesAdapter extends RecyclerView.Adapter {
 
         public TextView getValueView() {
             return valueView;
+        }
+
+        /*
+        This method returns an object that the system can use to get details on the view
+        that a user pressed or tapped, to start or continue a multiple-item selection.
+         */
+        public ItemDetailsLookup.ItemDetails<Long> getItemDetails() {
+            return new ItemDetailsLookup.ItemDetails<Long>() {
+                @Override
+                public int getPosition() {
+                    return IssuesViewHolder.this.getAbsoluteAdapterPosition();
+                }
+
+               @Override
+                public Long getSelectionKey() {
+                    return IssuesAdapter.this.getItemId(getPosition());
+                }
+            };
         }
     }
 }

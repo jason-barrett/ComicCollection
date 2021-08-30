@@ -42,7 +42,8 @@ dependencies {
     implementation 'com.google.firebase:firebase-firestore:22.0.0'
 
     /* RecyclerView */
-    implementation 'androidx.recyclerview:recyclerview:1.1.0'
+    implementation 'androidx.recyclerview:recyclerview:1.2.1'
+    implementation 'androidx.recyclerview:recyclerview-selection:1.1.0'
 
     /* Lifecycle Components */
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
@@ -50,6 +51,7 @@ dependencies {
 
     /* Floating Action Button and other Material components */
     implementation 'com.google.android.material:material:1.0.0'
+    implementation 'org.jetbrains:annotations:15.0'
 
     /* JUnit Testing */
     testImplementation 'junit:junit:4.12'

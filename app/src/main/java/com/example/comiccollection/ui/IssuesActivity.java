@@ -7,27 +7,37 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.ActionMode.Callback;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.TextView;
-import android.widget.ToggleButton;
 
 import com.example.comiccollection.R;
 import com.example.comiccollection.data.entities.Issue;
+import com.example.comiccollection.data.entities.OwnedCopy;
 import com.example.comiccollection.ui.filters.IssuesFilter;
+import com.example.comiccollection.ui.selection.IssuesItemDetailsLookup;
+import com.example.comiccollection.ui.selection.IssuesItemKeyProvider;
 import com.example.comiccollection.viewmodel.IssuesViewModel;
 import com.example.comiccollection.viewmodel.IssuesViewModelFactory;
 import com.example.comiccollection.application.AppContainer;
 import com.example.comiccollection.application.ComicCollectionApplication;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.view.ActionMode;
 import androidx.lifecycle.Observer;
+import androidx.recyclerview.selection.Selection;
+import androidx.recyclerview.selection.SelectionPredicates;
+import androidx.recyclerview.selection.SelectionTracker;
+import androidx.recyclerview.selection.StorageStrategy;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class IssuesActivity extends AppCompatActivity {
+public class IssuesActivity extends AppCompatActivity implements ActionMode.Callback{
 
     private IssuesViewModel mIssuesViewModel;
     private RecyclerView mIssuesRecyclerView;
@@ -62,6 +72,17 @@ public class IssuesActivity extends AppCompatActivity {
     private IssuesFilter mIssuesFilter;
 
     /*
+    A selection tracker object (from the RecyclerView selection library) to keep the state of
+    which items have been selected (for example, to mark them all owned).
+     */
+    private SelectionTracker<Long> selectionTracker;
+
+    /*
+    A handle to the ActionMode, which will replace the action bar with the ActionMode menu.
+     */
+    android.view.ActionMode actionMode;
+
+    /*
     The number of Issues in the list to scroll forward (or back) when the near forward
     (or rewind) button on the screen is pressed.
      */
@@ -91,14 +112,63 @@ public class IssuesActivity extends AppCompatActivity {
         mIssuesViewModel = issuesViewModelFactory.create(IssuesViewModel.class);
 
         /*
-        Create and set up the RecyclerView.
+        Create and set up the RecyclerView and its Adapter.
+
+        The Adapter will have stable IDs so that those IDs can be used as keys for
+        multi-selection.
          */
         mIssuesAdapter = new IssuesAdapter();
+        mIssuesAdapter.setHasStableIds(true);
 
         mIssuesRecyclerView = (RecyclerView)findViewById(R.id.rvIssues);
         mIssuesRecyclerView.setAdapter(mIssuesAdapter);
         mIssuesRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mIssuesRecyclerView.setHasFixedSize(true);
+
+        /*
+        Create a selection tracker to allow for multiple item selection.  This will be used,
+        for example, when the user wants to mark issues as owned.
+
+        The key type is Long.  We will use the adapter position as the key.
+         */
+        selectionTracker = new SelectionTracker.Builder<Long>(
+                "IssueSelectionID",
+                mIssuesRecyclerView,
+                new IssuesItemKeyProvider(mIssuesRecyclerView),
+                new IssuesItemDetailsLookup(mIssuesRecyclerView),
+                StorageStrategy.createLongStorage()
+        ).withSelectionPredicate(SelectionPredicates.<Long>createSelectAnything())
+                .build();
+
+       selectionTracker.addObserver(new SelectionTracker.SelectionObserver<Long>() {
+           @SuppressLint("RestrictedApi")
+           @Override
+           protected void onSelectionCleared() {
+               super.onSelectionCleared();
+
+               /*
+               Nothing is selected, so dismiss the ActionMode.
+                */
+               actionMode.finish();
+           }
+
+           @Override
+           public void onSelectionChanged() {
+               super.onSelectionChanged();
+
+               /*
+               If we are not currently showing the ActionMode, show it now.
+                */
+               if( actionMode == null ) {
+                   actionMode = IssuesActivity.this.startActionMode((Callback) IssuesActivity.this);
+               }
+           }
+       });
+
+        /*
+        Now that I have the tracker, provide it to the recycler view's adapter.
+         */
+        mIssuesAdapter.setSelectionTracker(selectionTracker);
 
         /*
         Initialize the navigation buttons.
@@ -305,4 +375,102 @@ public class IssuesActivity extends AppCompatActivity {
         layoutManager.scrollToPositionWithOffset(positionToScrollTo, 0);
     }
 
+    @Override
+    public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.issues_action_mode_menu, menu);
+
+        return true;
+    }
+
+    @Override
+    public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+        return false;
+    }
+
+    @Override
+    public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+
+        Selection<Long> selection = selectionTracker.getSelection();
+        Iterator<Long> iter = selection.iterator();
+
+        switch( item.getItemId() ) {
+            case R.id.mark_owned:
+                /*
+                Everything in the selection should be marked in the data store as owned.
+                 */
+                while(iter.hasNext()) {
+                    /*
+                    Get the Issue represented by this selected item.
+                     */
+                    Long selectionKey = iter.next();
+                    Issue issue = mIssuesAdapter.getIssueAt(selectionKey.intValue());
+
+                    /*
+                    To mark the issue owned, there has to be an OwnedCopy.  We don't know
+                    anything about the copy yet, but create a simple object to add to the
+                    datastore to mark the fact that *a* copy is owned.
+
+                    If there is an owned copy (or more) already, do nothing.
+                     */
+                    if( issue.numberOfCopiesOwned() == 0 ) {
+                        ArrayList<OwnedCopy> markCopy = new ArrayList<OwnedCopy>();
+                        markCopy.add(new OwnedCopy(issue.getTitle(), issue.getIssueNumber()));
+                        issue.setOwnedCopies(markCopy);
+                        mIssuesViewModel.modifyIssue(issue);
+                    }
+                }
+
+            case R.id.mark_wanted:
+                /*
+                Everything in the selection should be marked as 'wanted'.  If an issue is
+                already on the want list, no harm.  If the issue is already owned, it will
+                be interpreted as the user wants an upgrade.
+                 */
+                while(iter.hasNext()) {
+                    /*
+                    Get the Issue represented by this selected item.
+                     */
+                    Long selectionKey = iter.next();
+                    Issue issue = mIssuesAdapter.getIssueAt(selectionKey.intValue());
+
+                    issue.setWanted(true);
+                    mIssuesViewModel.modifyIssue(issue);
+                }
+
+                return true;
+
+            case R.id.dont_want:
+                /*
+                Everything in the selection should be marked as 'not wanted'.
+                 */
+                while(iter.hasNext()) {
+                    /*
+                    Get the Issue represented by this selected item.
+                     */
+                    Long selectionKey = iter.next();
+                    Issue issue = mIssuesAdapter.getIssueAt(selectionKey.intValue());
+
+                    issue.setWanted(false);
+                    mIssuesViewModel.modifyIssue(issue);
+                }
+        }
+
+        /*
+        Destroy the ActionMode.  I've made a selection, so I'll get my normal screen
+        mode back.
+         */
+        mode.finish();
+
+        return true;
+    }
+
+    @Override
+    public void onDestroyActionMode(ActionMode mode) {
+        /*
+        Clear the selection when the ActionMode goes away.
+         */
+        selectionTracker.clearSelection();
+        actionMode = null;
+    }
 }

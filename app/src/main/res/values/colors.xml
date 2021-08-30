@@ -12,6 +12,7 @@
     <color name="colorToggleButtonOffText">@android:color/white</color>
 
     <color name="colorItemBackground">#FFFF99</color>
+    <color name="colorHighlightedItemBackground">#99FF99</color>
 
     <color name="colorUpgrade">#008000</color>
 </resources>

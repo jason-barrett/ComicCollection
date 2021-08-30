@@ -16,6 +16,7 @@ import com.example.comiccollection.data.entities.Title;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
 
 /*
 This fragment pops up a UI dialog that allows the user to add a title.  The dialog will ask the user
@@ -25,7 +26,7 @@ for:
  - the first issue of interest (often #1 but not always)
  - the last issue of interest
  */
-public class AddTitleDialogFragment extends TitleDialogFragment {
+public class AddTitleDialogFragment extends DialogFragment {
 
     public interface AddTitleDialogListener {
         public void onDialogClickAdd(AddTitleDialogFragment fragment);
