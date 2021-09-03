@@ -3,6 +3,7 @@ package com.example.comiccollection.viewmodel;
 import android.util.Log;
 
 import com.example.comiccollection.data.entities.Issue;
+import com.example.comiccollection.data.modifiers.IssuesSorter;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -98,6 +99,8 @@ public class IssuesListManager {
 
         }
 
+        IssuesSorter issuesSorter = new IssuesSorter();
+        localIssues = (ArrayList<Issue>) issuesSorter.modify(localIssues);
         return localIssues;
     }
 }
