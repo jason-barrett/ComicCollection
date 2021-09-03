@@ -98,58 +98,6 @@ public class IssuesListManager {
 
         }
 
-        /***
-        boolean removalHappened = false;
-        Iterator<Issue> localIssuesIterator = localIssues.iterator();
-        while( localIssuesIterator.hasNext() ) {
-            Issue issue = localIssuesIterator.next();
-            Iterator<Issue> replaceIssuesIterator = issuesToAddOrReplace.iterator();
-            Iterator<Issue> removeIssuesIterator = issuesToRemove.iterator();
-         ***/
-
-            /*
-            For each issue / document, the removal loop is first because a remove overrides
-            a replacement / change.
-             */
-            /***
-            removalHappened = false;
-            while( removeIssuesIterator.hasNext() ) {
-                Issue removeIssue = removeIssuesIterator.next();
-
-                if( removeIssue.getDocumentId().equals(issue.getDocumentId()) ) {
-                    localIssuesIterator.remove();
-                    removalHappened = true;
-
-                    removeIssuesIterator.remove();
-                }
-            }
-
-            if( removalHappened ) {
-                continue;
-            }
-            ***/
-            /***
-            while( replaceIssuesIterator.hasNext() ) {
-                Issue replaceIssue = replaceIssuesIterator.next();
-                if( replaceIssue.getDocumentId().equals(issue.getDocumentId()) ) {
-                    localIssuesIterator.remove();
-             ***/
-
-                    /*
-                    Leaving the issue on the replace list means it will get added at the
-                    end with the 'new' issues'.  If I add it now, I'll hit a
-                    ConcurrentModificationException.
-                     */
-                    /***
-                }
-            }
-        }
-
-        for( Issue addIssue : issuesToAddOrReplace ) {
-            localIssues.add(addIssue);
-        }
-                     ***/
-
         return localIssues;
     }
 }

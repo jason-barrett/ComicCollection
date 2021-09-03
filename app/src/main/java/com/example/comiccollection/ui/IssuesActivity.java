@@ -7,7 +7,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.ActionMode.Callback;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -25,8 +24,6 @@ import com.example.comiccollection.application.ComicCollectionApplication;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.view.ActionMode;
 import androidx.lifecycle.Observer;
@@ -80,7 +77,7 @@ public class IssuesActivity extends AppCompatActivity implements ActionMode.Call
     /*
     A handle to the ActionMode, which will replace the action bar with the ActionMode menu.
      */
-    android.view.ActionMode actionMode;
+    ActionMode actionMode;
 
     /*
     The number of Issues in the list to scroll forward (or back) when the near forward
@@ -156,11 +153,11 @@ public class IssuesActivity extends AppCompatActivity implements ActionMode.Call
            public void onSelectionChanged() {
                super.onSelectionChanged();
 
-               /*
-               If we are not currently showing the ActionMode, show it now.
-                */
                if( actionMode == null ) {
-                   actionMode = IssuesActivity.this.startActionMode((Callback) IssuesActivity.this);
+                   /*
+                    If we are not currently showing the ActionMode, show it now.
+                    */
+                   actionMode = IssuesActivity.this.startSupportActionMode((ActionMode.Callback) IssuesActivity.this);
                }
            }
        });
@@ -303,8 +300,8 @@ public class IssuesActivity extends AppCompatActivity implements ActionMode.Call
     }
 
     /*
-        Prepare and send changed and/or filtered data to the adapter to be re-displayed.
-         */
+     Prepare and send changed and/or filtered data to the adapter to be re-displayed.
+     */
     private void sendDataToAdapter() {
         /*
         Filter the master list from the ViewModel, with the current toggle state.
@@ -417,6 +414,12 @@ public class IssuesActivity extends AppCompatActivity implements ActionMode.Call
                         ArrayList<OwnedCopy> markCopy = new ArrayList<OwnedCopy>();
                         markCopy.add(new OwnedCopy(issue.getTitle(), issue.getIssueNumber()));
                         issue.setOwnedCopies(markCopy);
+
+                        /*
+                        By default, if I own it, I don't want it.
+                         */
+                        issue.setWanted(false);
+
                         mIssuesViewModel.modifyIssue(issue);
                     }
                 }
