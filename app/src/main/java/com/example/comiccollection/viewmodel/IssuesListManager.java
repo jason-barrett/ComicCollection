@@ -57,21 +57,20 @@ public class IssuesListManager {
         while( replaceIssuesIterator.hasNext() ) {
             Issue replaceIssue = replaceIssuesIterator.next();
 
-            Iterator<Issue> localIssuesIterator = localIssues.iterator();
-            while( localIssuesIterator.hasNext() ) {
-                Issue issue = localIssuesIterator.next();
-                if( replaceIssue.getDocumentId().equals(issue.getDocumentId()) ) {
-                    localIssuesIterator.remove();
+            /*
+            As a first step, take the issues to be replaced out of the local copy of the
+            master list.
 
-                    /*
-                    Leaving the issue on the replace list means it will get added at the
-                    end with the 'new' issues'.  If I add it now, I'll hit a
-                    ConcurrentModificationException.
-                     */
-                }
-            }
-        }  //while (replaceIssuesIterator.hasNext())
+            Leaving the issue on the replace list means it will get added at the
+            end with the 'new' issues'.  If I add it now, I'll hit a
+            ConcurrentModificationException.
+             */
+            localIssues.removeIf(issue -> replaceIssue.getDocumentId().equals(issue.getDocumentId()));
+        }
 
+        /*
+        Second step, add everything new or being replaced to the local copy of the master list.
+         */
         for( Issue addIssue : issuesToAddOrReplace ) {
             Log.i(TAG, "Adding issue " + addIssue.getTitle() + " " + addIssue.getIssueNumber());
             localIssues.add(addIssue);
@@ -99,6 +98,9 @@ public class IssuesListManager {
 
         }
 
+        /*
+        Finally, sort the new list for presentation.
+         */
         IssuesSorter issuesSorter = new IssuesSorter();
         localIssues = (ArrayList<Issue>) issuesSorter.modify(localIssues);
         return localIssues;
