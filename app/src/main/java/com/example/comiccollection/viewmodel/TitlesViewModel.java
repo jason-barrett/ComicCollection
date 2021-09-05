@@ -2,8 +2,7 @@ package com.example.comiccollection.viewmodel;
 
 import android.util.Log;
 
-import com.example.comiccollection.application.ComicCollectionApplication;
-import com.example.comiccollection.data.FirestoreComicRepository;
+import com.example.comiccollection.data.firestore.FirestoreComicRepository;
 import com.example.comiccollection.data.TitlesDeletionListener;
 import com.example.comiccollection.data.TitlesListener;
 import com.example.comiccollection.data.entities.Issue;
@@ -11,10 +10,8 @@ import com.example.comiccollection.data.entities.Title;
 import com.google.firebase.firestore.ListenerRegistration;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;

@@ -2,12 +2,11 @@ package com.example.comiccollection.viewmodel;
 
 import android.util.Log;
 
-import com.example.comiccollection.data.FirestoreComicRepository;
+import com.example.comiccollection.data.firestore.FirestoreComicRepository;
 import com.example.comiccollection.data.IssuesListener;
 import com.example.comiccollection.data.entities.Issue;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import androidx.lifecycle.MutableLiveData;

@@ -1,6 +1,6 @@
 package com.example.comiccollection.application;
 
-import com.example.comiccollection.data.FirestoreComicRepository;
+import com.example.comiccollection.data.firestore.FirestoreComicRepository;
 import com.example.comiccollection.viewmodel.IssuesViewModelFactory;
 import com.example.comiccollection.viewmodel.TitlesViewModelFactory;
 import com.google.firebase.firestore.FirebaseFirestore;

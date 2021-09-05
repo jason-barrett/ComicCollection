@@ -1,24 +1,28 @@
-package com.example.comiccollection.data;
+package com.example.comiccollection.data.firestore;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CountDownLatch;
 
 import android.util.Log;
 
-import com.example.comiccollection.data.entities.Copy;
+import com.example.comiccollection.data.ComicDbHelper;
+import com.example.comiccollection.data.ComicRepository;
+import com.example.comiccollection.data.IssuesDeletionListener;
+import com.example.comiccollection.data.IssuesListener;
+import com.example.comiccollection.data.TitlesDeletionListener;
+import com.example.comiccollection.data.TitlesListener;
 import com.example.comiccollection.data.entities.Issue;
 import com.example.comiccollection.data.entities.OwnedCopy;
 import com.example.comiccollection.data.entities.SoldCopy;
 import com.example.comiccollection.data.entities.Title;
 import com.example.comiccollection.data.entities.UnownedCopy;
-import com.example.comiccollection.data.map.IssuesMapper;
-import com.example.comiccollection.data.map.OwnedCopiesMapper;
-import com.example.comiccollection.data.map.SoldCopiesMapper;
-import com.example.comiccollection.data.map.TitlesMapper;
-import com.example.comiccollection.data.map.UnownedCopiesMapper;
+import com.example.comiccollection.data.firestore.map.IssuesMapper;
+import com.example.comiccollection.data.firestore.map.OwnedCopiesMapper;
+import com.example.comiccollection.data.firestore.map.SoldCopiesMapper;
+import com.example.comiccollection.data.firestore.map.TitlesMapper;
+import com.example.comiccollection.data.firestore.map.UnownedCopiesMapper;
 import com.example.comiccollection.data.modifiers.IssuesModifier;
 import com.example.comiccollection.data.modifiers.IssuesSorter;
 import com.example.comiccollection.data.modifiers.TitlesModifier;
@@ -36,8 +40,6 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.WriteBatch;
-import com.google.firestore.v1.Write;
-import com.google.gson.internal.$Gson$Preconditions;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;

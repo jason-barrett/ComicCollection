@@ -1,9 +1,8 @@
-package com.example.comiccollection.data.map;
+package com.example.comiccollection.data.firestore.map;
 
 import android.util.Log;
 
 import com.example.comiccollection.data.entities.Copy;
-import com.example.comiccollection.data.entities.OwnedCopy;
 
 public class FirestoreTypeUtils {
     static String TAG = FirestoreTypeUtils.class.getSimpleName();

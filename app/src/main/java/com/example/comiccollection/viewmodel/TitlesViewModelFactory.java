@@ -1,6 +1,6 @@
 package com.example.comiccollection.viewmodel;
 
-import com.example.comiccollection.data.FirestoreComicRepository;
+import com.example.comiccollection.data.firestore.FirestoreComicRepository;
 
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;

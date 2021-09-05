@@ -1,10 +1,9 @@
-package com.example.comiccollection.data.map;
+package com.example.comiccollection.data.firestore.map;
 
 import android.util.Log;
 
 import com.example.comiccollection.data.ComicDbHelper;
 import com.example.comiccollection.data.entities.Issue;
-import com.example.comiccollection.data.entities.Copy;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 

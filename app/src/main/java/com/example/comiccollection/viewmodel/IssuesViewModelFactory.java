@@ -1,7 +1,8 @@
 package com.example.comiccollection.viewmodel;
 
-import com.example.comiccollection.data.FirestoreComicRepository;
+import com.example.comiccollection.data.firestore.FirestoreComicRepository;
 
+import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -13,8 +14,9 @@ public class IssuesViewModelFactory implements ViewModelProvider.Factory {
         this.comicRepository = comicRepository;
     }
 
+    @NonNull
     @Override
-    public <T extends ViewModel> T create(Class<T> modelClass) {
+    public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
         return (T) new IssuesViewModel(comicRepository);
     }
 }
