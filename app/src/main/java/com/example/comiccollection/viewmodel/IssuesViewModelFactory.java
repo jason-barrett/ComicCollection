@@ -6,17 +6,27 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
+import javax.inject.Inject;
+import javax.inject.Provider;
+import javax.inject.Singleton;
+
+@Singleton
 public class IssuesViewModelFactory implements ViewModelProvider.Factory {
 
-    public FirestoreComicRepository comicRepository;
+    private final Provider<IssuesViewModel> issuesViewModelProvider;
 
-    public IssuesViewModelFactory(FirestoreComicRepository comicRepository) {
-        this.comicRepository = comicRepository;
+    @Inject
+    public IssuesViewModelFactory(Provider<IssuesViewModel> issuesViewModelProvider) {
+        this.issuesViewModelProvider = issuesViewModelProvider;
     }
 
     @NonNull
     @Override
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
-        return (T) new IssuesViewModel(comicRepository);
+        if( modelClass == IssuesViewModel.class ) {
+            return (T) issuesViewModelProvider.get();
+        } else {
+            throw new RuntimeException("Unsupported ViewModel class: " + modelClass);
+        }
     }
 }

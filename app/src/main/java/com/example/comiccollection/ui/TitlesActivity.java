@@ -19,16 +19,18 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.comiccollection.R;
-import com.example.comiccollection.application.AppContainer;
 import com.example.comiccollection.application.ComicCollectionApplication;
 import com.example.comiccollection.data.entities.Issue;
 import com.example.comiccollection.data.entities.Title;
 import com.example.comiccollection.viewmodel.TitlesViewModel;
+import com.example.comiccollection.viewmodel.TitlesViewModelFactory;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
+
+import javax.inject.Inject;
 
 public class TitlesActivity extends AppCompatActivity
         implements AddTitleDialogFragment.AddTitleDialogListener,
@@ -38,11 +40,11 @@ public class TitlesActivity extends AppCompatActivity
     private RecyclerView mTitlesListView;
     private HorizontalScrollView mAlphaSelectView;
 
-    //TODO: I think I can remove this.
-    private ArrayList<Title> mTitlesList;
-
+    @Inject TitlesViewModelFactory mTitlesViewModelFactory;
     private TitlesViewModel mTitlesViewModel;
     private TitlesAdapter mTitlesAdapter;
+
+    ArrayList<Title> mTitlesList;
 
     private final String TAG = TitlesActivity.class.getSimpleName();
 
@@ -61,23 +63,11 @@ public class TitlesActivity extends AppCompatActivity
         mAlphaSelectView = (HorizontalScrollView) findViewById(R.id.scroll_first_letters);
 
         /*
-        The app container for dependency injection needs to be explicitly initialized once.
-
-        Ideally, it would initiate itself on applications startup.  However, the FirebaseFirestore
-        dependency cannot be initialized until startup has completed because of how that class
-        creates its instance.
-
-        So we're left with doing it here when the first activity starts up.
-         */
-        AppContainer appContainer = ((ComicCollectionApplication)getApplication()).getAppContainer();
-        appContainer.initialize();
-
-        /*
         Instantiate a ViewModel.  The container will build me one with the dependencies it needs.
          */
-        //mTitlesViewModel = new ViewModelProvider(this).get(TitlesViewModel.class)
-        mTitlesViewModel = appContainer.getTitlesViewModelFactory()
-            .create(TitlesViewModel.class);
+        ((ComicCollectionApplication)getApplication()).getAppComponent().inject(this);
+        mTitlesViewModel = new ViewModelProvider(this, mTitlesViewModelFactory)
+                .get(TitlesViewModel.class);
 
         /*
         Create an Observer to update the UI.  The Observer is observing the LiveData in the

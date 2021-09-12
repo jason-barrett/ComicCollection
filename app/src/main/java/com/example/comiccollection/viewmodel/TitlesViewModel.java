@@ -16,6 +16,8 @@ import java.util.Map;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import javax.inject.Inject;
+
 public class TitlesViewModel extends ViewModel implements TitlesListener, TitlesDeletionListener {
 
     private MutableLiveData< ArrayList<Title> > mLiveTitles = new MutableLiveData<ArrayList<Title>>();
@@ -42,6 +44,7 @@ public class TitlesViewModel extends ViewModel implements TitlesListener, Titles
     /*
     Constructor.
      */
+    @Inject
     public TitlesViewModel(FirestoreComicRepository comicRepository) {
         this.repository = comicRepository;
     }

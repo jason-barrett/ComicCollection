@@ -12,6 +12,8 @@ import java.util.List;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import javax.inject.Inject;
+
 public class IssuesViewModel extends ViewModel implements IssuesListener {
 
     /*
@@ -35,6 +37,7 @@ public class IssuesViewModel extends ViewModel implements IssuesListener {
     /*
     Constructor.  Inject the repository dependency.
      */
+    @Inject
     public IssuesViewModel(FirestoreComicRepository repository) {
 
         this.repository = repository;

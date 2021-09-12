@@ -44,6 +44,9 @@ import com.google.firebase.firestore.WriteBatch;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 public class FirestoreComicRepository implements ComicRepository {
     /*
     This class manages access to the Firestore data.
@@ -54,6 +57,7 @@ public class FirestoreComicRepository implements ComicRepository {
 
     private FirebaseFirestore db;
 
+    @Singleton
     private FirestoreComicRepository() {
         /*
         Firestore knows the details of the database to fetch because of the configuration
@@ -61,6 +65,7 @@ public class FirestoreComicRepository implements ComicRepository {
          */
     }
 
+    @Inject
     public FirestoreComicRepository(FirebaseFirestore db) {
         this.db = db;
     }
@@ -89,6 +94,8 @@ public class FirestoreComicRepository implements ComicRepository {
 
     /*
     The Firestore repository is a singleton.  Return the existing instance to the requestor.
+
+    TODO: I should no longer need this once I've tagged it as a singleton in Dagger.
      */
     public synchronized static FirestoreComicRepository getInstance() {
         if( mInstance == null ) {

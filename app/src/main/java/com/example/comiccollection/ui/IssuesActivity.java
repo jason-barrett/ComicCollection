@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.comiccollection.R;
+import com.example.comiccollection.application.ComicCollectionApplication;
 import com.example.comiccollection.data.entities.Issue;
 import com.example.comiccollection.data.entities.OwnedCopy;
 import com.example.comiccollection.ui.filters.IssuesFilter;
@@ -18,8 +19,6 @@ import com.example.comiccollection.ui.selection.IssuesItemDetailsLookup;
 import com.example.comiccollection.ui.selection.IssuesItemKeyProvider;
 import com.example.comiccollection.viewmodel.IssuesViewModel;
 import com.example.comiccollection.viewmodel.IssuesViewModelFactory;
-import com.example.comiccollection.application.AppContainer;
-import com.example.comiccollection.application.ComicCollectionApplication;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -27,6 +26,7 @@ import java.util.Iterator;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.view.ActionMode;
 import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.selection.Selection;
 import androidx.recyclerview.selection.SelectionPredicates;
 import androidx.recyclerview.selection.SelectionTracker;
@@ -34,7 +34,12 @@ import androidx.recyclerview.selection.StorageStrategy;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import javax.inject.Inject;
+
 public class IssuesActivity extends AppCompatActivity implements ActionMode.Callback{
+
+    @Inject
+    IssuesViewModelFactory mIssuesViewModelFactory;
 
     private IssuesViewModel mIssuesViewModel;
     private RecyclerView mIssuesRecyclerView;
@@ -103,10 +108,9 @@ public class IssuesActivity extends AppCompatActivity implements ActionMode.Call
         Set up the ViewModel which contains the LiveData that is the canonical
         source of current data.
          */
-        AppContainer appContainer = ((ComicCollectionApplication)getApplication()).getAppContainer();
-        /* appContainer.initialize() only gets called in the first activity */
-        IssuesViewModelFactory issuesViewModelFactory = appContainer.issuesViewModelFactory;
-        mIssuesViewModel = issuesViewModelFactory.create(IssuesViewModel.class);
+        ((ComicCollectionApplication)getApplication()).getAppComponent().inject(this);
+        mIssuesViewModel = new ViewModelProvider(this, mIssuesViewModelFactory)
+                .get(IssuesViewModel.class);
 
         /*
         Create and set up the RecyclerView and its Adapter.

@@ -2,15 +2,17 @@ package com.example.comiccollection.application;
 
 import android.app.Application;
 
-/*
-This is a custom application class to allow for dependency injection for better testability.
+import com.example.comiccollection.di.AppComponent;
+import com.example.comiccollection.di.DaggerAppComponent;
 
-At some point I will learn Dagger and do the DI automatically.
+/*
+This is a custom application class to allow for dependency injection.
  */
 public class ComicCollectionApplication extends Application {
-    public AppContainer appContainer = new AppContainer();
+    AppComponent appComponent = DaggerAppComponent.create();
 
-    public AppContainer getAppContainer() {
-        return appContainer;
+    public AppComponent getAppComponent() {
+        return appComponent;
     }
 }
+

@@ -1,5 +1,15 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.google.gms.google-services'
+apply plugin: 'idea'
+
+/*
+Tell gradle where to find generated code (e.g.,  by Dagger)
+ */
+idea {
+    module {
+        sourceDirs += file("$buildDir/generated")
+    }
+}
 
 android {
     compileSdkVersion 29
@@ -64,4 +74,10 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 
+    /* Dagger for dependency injection */
+    implementation 'com.google.dagger:dagger:2.38.1'
+    implementation 'com.google.dagger:dagger-android:2.38.1'
+    implementation 'com.google.dagger:dagger-android-support:2.38.1'
+    annotationProcessor 'com.google.dagger:dagger-compiler:2.38.1'
+    annotationProcessor 'com.google.dagger:dagger-android-processor:2.38.1'
 }
