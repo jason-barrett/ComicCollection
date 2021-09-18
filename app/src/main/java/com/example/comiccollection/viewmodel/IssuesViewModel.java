@@ -2,6 +2,7 @@ package com.example.comiccollection.viewmodel;
 
 import android.util.Log;
 
+import com.example.comiccollection.data.ComicRepository;
 import com.example.comiccollection.data.firestore.FirestoreComicRepository;
 import com.example.comiccollection.data.IssuesListener;
 import com.example.comiccollection.data.entities.Issue;
@@ -20,7 +21,7 @@ public class IssuesViewModel extends ViewModel implements IssuesListener {
     The main data repository that feeds information into the ViewModel for
     display.
      */
-    private FirestoreComicRepository repository;
+    private ComicRepository repository;
 
     /*
     The ViewModel retains a LiveData array of issues, which the Activity will observe.
@@ -38,7 +39,7 @@ public class IssuesViewModel extends ViewModel implements IssuesListener {
     Constructor.  Inject the repository dependency.
      */
     @Inject
-    public IssuesViewModel(FirestoreComicRepository repository) {
+    public IssuesViewModel(ComicRepository repository) {
 
         this.repository = repository;
     }

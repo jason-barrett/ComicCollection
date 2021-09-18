@@ -2,6 +2,7 @@ package com.example.comiccollection.viewmodel;
 
 import android.util.Log;
 
+import com.example.comiccollection.data.ComicRepository;
 import com.example.comiccollection.data.firestore.FirestoreComicRepository;
 import com.example.comiccollection.data.TitlesDeletionListener;
 import com.example.comiccollection.data.TitlesListener;
@@ -22,7 +23,7 @@ public class TitlesViewModel extends ViewModel implements TitlesListener, Titles
 
     private MutableLiveData< ArrayList<Title> > mLiveTitles = new MutableLiveData<ArrayList<Title>>();
 
-    private FirestoreComicRepository repository;
+    private ComicRepository repository;
 
     private TitlesListManager mTitlesListManager = new TitlesListManager();
 
@@ -45,7 +46,7 @@ public class TitlesViewModel extends ViewModel implements TitlesListener, Titles
     Constructor.
      */
     @Inject
-    public TitlesViewModel(FirestoreComicRepository comicRepository) {
+    public TitlesViewModel(ComicRepository comicRepository) {
         this.repository = comicRepository;
     }
 

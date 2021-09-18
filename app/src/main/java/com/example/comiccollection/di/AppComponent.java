@@ -11,7 +11,7 @@ import dagger.Component;
 There is one component graph, scoped to the application.
  */
 @Singleton
-@Component (modules = DatastoreModule.class)
+@Component (modules = {DatastoreModule.class, FirebaseFirestoreModule.class})
 public interface AppComponent {
     void inject(TitlesActivity titlesActivity);
     void inject(IssuesActivity issuesActivity);
