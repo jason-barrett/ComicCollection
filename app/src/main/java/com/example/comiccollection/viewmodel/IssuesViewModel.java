@@ -3,6 +3,7 @@ package com.example.comiccollection.viewmodel;
 import android.util.Log;
 
 import com.example.comiccollection.data.ComicRepository;
+import com.example.comiccollection.data.entities.OwnedCopy;
 import com.example.comiccollection.data.firestore.FirestoreComicRepository;
 import com.example.comiccollection.data.IssuesListener;
 import com.example.comiccollection.data.entities.Issue;
@@ -69,7 +70,11 @@ public class IssuesViewModel extends ViewModel implements IssuesListener {
     }
 
     public void modifyIssue(Issue issue) {
-        repository.modifyIssue(issue);
+        repository.modifyIssue(issue, this);
+    }
+
+    public void addOwnedCopyOfIssue(OwnedCopy ownedCopy, Issue issue) {
+        repository.addOwnedCopyOfIssue(ownedCopy, issue, this);
     }
 
     /*

@@ -420,15 +420,16 @@ public class IssuesActivity extends AppCompatActivity implements ActionMode.Call
                         issue.setOwnedCopies(markCopy);
 
                         /*
-                        TODO: The copy needs to be explicitly added to the DB.
+                        The copy needs to be explicitly added to the DB.
                          */
-                       mIssuesViewModel.modifyIssue(issue);
+                        mIssuesViewModel.addOwnedCopyOfIssue(markCopy.get(0), issue);
                     }
 
                     /*
                      By default, if I own it, I don't want it.
                      */
                     issue.setWanted(false);
+                    mIssuesViewModel.modifyIssue(issue);
                 }
 
             case R.id.mark_wanted:

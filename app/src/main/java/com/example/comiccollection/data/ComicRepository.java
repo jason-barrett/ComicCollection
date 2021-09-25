@@ -1,6 +1,7 @@
 package com.example.comiccollection.data;
 
 import com.example.comiccollection.data.entities.Issue;
+import com.example.comiccollection.data.entities.OwnedCopy;
 import com.example.comiccollection.data.entities.Title;
 import com.google.firebase.firestore.ListenerRegistration;
 
@@ -18,7 +19,9 @@ public interface ComicRepository {
     public void getIssuesByTitleAndListen(String titleName, IssuesListener issuesListener);
     public void addIssue(Issue issue);
     public void addIssuesBatch(ArrayList<Issue> issues);
-    public void modifyIssue(Issue issue);
+    public void modifyIssue(Issue issue, IssuesListener issuesListener);
     public void deleteIssue(Issue issue, IssuesDeletionListener listener);
     public void deleteIssuesByTitle(Title title, IssuesDeletionListener listener);
+
+    public void addOwnedCopyOfIssue(OwnedCopy ownedCopy, Issue issue, IssuesListener issuesListener);
 }

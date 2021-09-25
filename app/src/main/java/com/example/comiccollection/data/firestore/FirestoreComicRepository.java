@@ -582,7 +582,7 @@ public class FirestoreComicRepository implements ComicRepository {
     }
 
     @Override
-    public void modifyIssue(Issue issue) {
+    public void modifyIssue(Issue issue, IssuesListener issuesListener) {
         Map<String, Object> newIssue = new HashMap<String, Object>();
 
         newIssue.put(ComicDbHelper.CC_ISSUE_TITLE, issue.getTitle());
@@ -596,6 +596,10 @@ public class FirestoreComicRepository implements ComicRepository {
                     public void onSuccess(@NonNull Void aVoid) {
                         Log.i(TAG, "Successfully modified issue " + issue.getIssueNumber()
                                 + " of title " + issue.getTitle());
+                        ArrayList<Issue> modifiedIssues = new ArrayList<>();
+                        ArrayList<Issue> removedIssues = new ArrayList<>();
+                        modifiedIssues.add(issue);
+                        issuesListener.onIssueChangesReady(modifiedIssues, removedIssues);
                     }
                 })
                 .addOnFailureListener(
@@ -700,4 +704,33 @@ public class FirestoreComicRepository implements ComicRepository {
         });
     }
 
+    @Override
+    public void addOwnedCopyOfIssue(OwnedCopy ownedCopy, Issue issue, IssuesListener issuesListener) {
+        Map<String, Object> newCopy = new HashMap<>();
+        newCopy.put(ComicDbHelper.CC_COPY_TITLE, ownedCopy.getTitle());
+        newCopy.put(ComicDbHelper.CC_COPY_ISSUE, ownedCopy.getIssue());
+        newCopy.put(ComicDbHelper.CC_COPY_GRADE, ownedCopy.getGrade());
+        newCopy.put(ComicDbHelper.CC_COPY_PAGE_QUALITY, ownedCopy.getPageQuality());
+        newCopy.put(ComicDbHelper.CC_COPY_NOTES, ownedCopy.getNotes());
+        newCopy.put(ComicDbHelper.CC_COPY_COST, ownedCopy.getCost());
+        newCopy.put(ComicDbHelper.CC_COPY_DATE_PURCHASED, ownedCopy.getDatePurchased());
+        newCopy.put(ComicDbHelper.CC_COPY_DEALER, ownedCopy.getDealer());
+
+        db.collection(ComicDbHelper.CC_COLLECTION_ISSUES)
+                .document(issue.getDocumentId())
+                .collection(ComicDbHelper.CC_ISSUE_OWNED)
+                .add(newCopy)
+                .addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentReference> task) {
+                        ArrayList<Issue> modifiedIssues = new ArrayList<>();
+                        ArrayList<Issue> removedIssues = new ArrayList<>();
+                        modifiedIssues.add(issue);
+                        issuesListener.onIssueChangesReady(modifiedIssues, removedIssues);
+                    }
+                })
+                .addOnFailureListener((e) -> Log.e(TAG, "Failed to add owned copy of "
+                        + issue.getTitleAndIssueNumber() + "; " + e.getMessage()));
+
+    }
 }
