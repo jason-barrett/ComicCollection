@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public interface ComicRepository {
-    public ListenerRegistration loadAndListenForTitles(TitlesListener onTitlesReady);
+    public void loadAndListenForTitles(TitlesListener titlesListener);
     public void addTitle(Title title);
     public void modifyTitle(Title title);
     public void deleteTitle(Title title, TitlesDeletionListener listener);

@@ -37,8 +37,6 @@ public class TitlesViewModel extends ViewModel implements TitlesListener, Titles
      */
     private Map<String, Integer> mListPositionByStartLetter;
 
-    private ListenerRegistration titlesRegistration;
-
     private String TAG = TitlesListener.class.getSimpleName();
 
 
@@ -66,7 +64,7 @@ public class TitlesViewModel extends ViewModel implements TitlesListener, Titles
         This is an asynchronous call to the repository, which will call one of our callback
         methods when complete.
          */
-        titlesRegistration = repository.loadAndListenForTitles(this);
+        repository.loadAndListenForTitles(this);
     }
 
     public void addTitle(Title title) {
@@ -113,10 +111,6 @@ public class TitlesViewModel extends ViewModel implements TitlesListener, Titles
         if( mTryLoadAgain ) {
             Log.w(TAG, "Could not load titles, will try again.");
 
-            /*
-            Clear the registration so that we don't get a second copy of the listener.
-             */
-            titlesRegistration.remove();
             mTryLoadAgain = false;
 
             /*

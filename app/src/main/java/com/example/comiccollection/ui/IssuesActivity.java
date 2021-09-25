@@ -422,14 +422,13 @@ public class IssuesActivity extends AppCompatActivity implements ActionMode.Call
                         /*
                         TODO: The copy needs to be explicitly added to the DB.
                          */
-
-                        /*
-                        By default, if I own it, I don't want it.
-                         */
-                        issue.setWanted(false);
-
-                        mIssuesViewModel.modifyIssue(issue);
+                       mIssuesViewModel.modifyIssue(issue);
                     }
+
+                    /*
+                     By default, if I own it, I don't want it.
+                     */
+                    issue.setWanted(false);
                 }
 
             case R.id.mark_wanted:

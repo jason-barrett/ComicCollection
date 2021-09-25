@@ -106,7 +106,7 @@ public class FirestoreComicRepository implements ComicRepository {
     }
 
     @Override
-    public ListenerRegistration loadAndListenForTitles(final TitlesListener titlesListener) {
+    public void loadAndListenForTitles(final TitlesListener titlesListener) {
 
         /*
         Register modifiers to implement the business logic.
@@ -135,6 +135,7 @@ public class FirestoreComicRepository implements ComicRepository {
                             Log.e(TAG, "Error fetching " + ComicDbHelper.CC_COLLECTION_TITLE
                                     + ": " + e);
 
+                            titlesRegistration.remove();
                             titlesListener.onTitleLoadFailed();
 
                             return;
@@ -145,6 +146,7 @@ public class FirestoreComicRepository implements ComicRepository {
                          */
                         if( value == null ) {
                             Log.e(TAG, "Got a null query snapshot, back end connection may have failed.");
+                            titlesRegistration.remove();
                             titlesListener.onTitleLoadFailed();
 
                             return;
@@ -176,7 +178,6 @@ public class FirestoreComicRepository implements ComicRepository {
                 } // new EventListener()
         ); // addSnapshotListener()
 
-        return titlesRegistration;
     }
 
     @Override
