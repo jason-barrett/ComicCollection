@@ -38,4 +38,17 @@
     <string name="mark_wanted">Mark Wanted</string>
     <string name="dont_want">Don\'t Want</string>
 
+    <!-- Banner values for fragments in the Copies activity -->
+    <string name="owned_banner">OWNED</string>
+    <string name="forsale_banner">FOR SALE</string>
+    <string name="sold_banner">SOLD</string>
+
+    <!-- Keys for extras passed into a new CopiesActivity -->
+    <string name="title_extra">copy_title</string>
+    <string name="issue_extra">copy_issue</string>
+
+    <!-- Format string for showing a title and issue together -->
+    <string name="title_and_issue">%1$s %2$s</string>
+
+
 </resources>

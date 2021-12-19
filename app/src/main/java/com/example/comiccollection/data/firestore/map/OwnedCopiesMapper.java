@@ -4,11 +4,13 @@ import android.util.Log;
 
 import com.example.comiccollection.data.ComicDbHelper;
 import com.example.comiccollection.data.entities.OwnedCopy;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /*
 This class is responsible for mapping a QuerySnapshot object containing a set of owned copies
@@ -21,7 +23,7 @@ public class OwnedCopiesMapper {
     public static List<OwnedCopy> map(QuerySnapshot value) {
         List<OwnedCopy> ownedCopyList = new ArrayList<OwnedCopy>();
 
-        for( QueryDocumentSnapshot document : value ) {
+        for( DocumentSnapshot document : value ) {
             if( document.exists() ) {
                 OwnedCopy ownedCopy = map(document);
                 if (ownedCopy != null) {
@@ -32,7 +34,7 @@ public class OwnedCopiesMapper {
         return ownedCopyList;
     }
 
-    public static OwnedCopy map(QueryDocumentSnapshot document) {
+    public static OwnedCopy map(DocumentSnapshot document) {
         if (document == null || !document.exists()) {
             return null;
         }
@@ -85,7 +87,7 @@ public class OwnedCopiesMapper {
         } catch( RuntimeException e ) {
             Log.e(TAG, "Cannot map OwnedCopy document " + document.getId()
                     + ", may be malformed.");
-            Log.e(TAG, e.getMessage());
+            Log.e(TAG, Objects.requireNonNull(e.getMessage()));
         }
 
         return null;

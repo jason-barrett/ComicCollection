@@ -17,6 +17,7 @@
         <item name="android:textSize">18sp</item>
     </style>
 
+    <!-- A style for the items that appear in lists of titles, issues, etc. -->
     <style name="ListItemStyle">
         <item name="android:textStyle">bold</item>
         <item name="android:textSize">20dp</item>
@@ -25,6 +26,17 @@
         <item name="android:paddingTop">10dp</item>
         <item name="android:paddingBottom">10dp</item>
         <item name="android:background">@drawable/item_background</item>
+    </style>
+
+    <!-- A style for the banner on top of the lists of copies. -->
+    <style name="CopyBannerStyle">
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">20dp</item>
+        <item name="android:textColor">@color/colorItemText</item>
+        <item name="android:paddingLeft">8dp</item>
+        <item name="android:paddingTop">10dp</item>
+        <item name="android:paddingBottom">10dp</item>
+        <item name="android:background">@drawable/copy_banner_background</item>
     </style>
 
 </resources>

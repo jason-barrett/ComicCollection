@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.example.comiccollection.data.ComicDbHelper;
 import com.example.comiccollection.data.entities.Issue;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -23,7 +24,7 @@ public class IssuesMapper {
 
         List<Issue> issues = new ArrayList<Issue>();
 
-        for( QueryDocumentSnapshot document : value ) {
+        for( DocumentSnapshot document : value ) {
             if( document.exists() ) {
                 Issue issue = map(document);
                 if( issue != null ) {
@@ -35,7 +36,7 @@ public class IssuesMapper {
         return issues;
     }  //end (map)
 
-    public static Issue map(QueryDocumentSnapshot document) {
+    public static Issue map(DocumentSnapshot document) {
         if (document == null || !document.exists()) {
             return null;
         }

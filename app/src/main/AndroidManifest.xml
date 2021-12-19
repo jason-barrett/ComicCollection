@@ -18,7 +18,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.IssuesActivity">
-
+        </activity>
+        <activity android:name=".ui.CopiesActivity">
         </activity>
     </application>
 

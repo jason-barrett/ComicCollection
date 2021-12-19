@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.example.comiccollection.data.ComicDbHelper;
 import com.example.comiccollection.data.entities.Title;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -26,7 +27,7 @@ public class TitlesMapper {
         Every document in the result is a title.  Read them into a list of
         Title entities.
         */
-        for (QueryDocumentSnapshot document : value) {
+        for (DocumentSnapshot document : value) {
             if (document.exists()) {
                 Title title = new Title();
                 title.setName(document.getString(ComicDbHelper.CC_TITLE_NAME));

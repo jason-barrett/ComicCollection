@@ -14,7 +14,7 @@ public interface ComicRepository {
     public void modifyTitle(Title title);
     public void deleteTitle(Title title, TitlesDeletionListener listener);
 
-
+    public void getIssue(String issueTitle, String issueNumber, SingleIssueListener listener);
     public void getIssuesByTitleOnce(String titleName, IssuesListener issuesListener);
     public void getIssuesByTitleAndListen(String titleName, IssuesListener issuesListener);
     public void addIssue(Issue issue);

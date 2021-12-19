@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -36,7 +37,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import javax.inject.Inject;
 
-public class IssuesActivity extends AppCompatActivity implements ActionMode.Callback{
+public class IssuesActivity extends AppCompatActivity
+        implements ActionMode.Callback, IssuesAdapter.OnClickListener{
 
     @Inject
     IssuesViewModelFactory mIssuesViewModelFactory;
@@ -118,7 +120,7 @@ public class IssuesActivity extends AppCompatActivity implements ActionMode.Call
         The Adapter will have stable IDs so that those IDs can be used as keys for
         multi-selection.
          */
-        mIssuesAdapter = new IssuesAdapter();
+        mIssuesAdapter = new IssuesAdapter(this);
         mIssuesAdapter.setHasStableIds(true);
 
         mIssuesRecyclerView = (RecyclerView)findViewById(R.id.rvIssues);
@@ -244,6 +246,12 @@ public class IssuesActivity extends AppCompatActivity implements ActionMode.Call
         super.onDestroy();
     }
 
+    /*
+    Present the user with a choice of preferences:
+     - Show collection
+     - Show want list
+     - Show all issues
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -252,6 +260,9 @@ public class IssuesActivity extends AppCompatActivity implements ActionMode.Call
         return true;
     }
 
+    /*
+    Handle the user's selection from the options menu.
+     */
     @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -483,5 +494,18 @@ public class IssuesActivity extends AppCompatActivity implements ActionMode.Call
          */
         selectionTracker.clearSelection();
         actionMode = null;
+    }
+
+    /*
+    A click handler for items (issues) in the RecyclerView.  This will take the user to the
+    copies view for that issue.
+     */
+    @Override
+    public void onClick(String issueTitle, String issueNumber) {
+        Intent intent = new Intent(this, CopiesActivity.class);
+        intent.putExtra(getString(R.string.title_extra), issueTitle);
+        intent.putExtra(getString(R.string.issue_extra), issueNumber);
+
+        startActivity(intent);
     }
 }

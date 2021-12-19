@@ -11,6 +11,7 @@ import com.example.comiccollection.data.ComicDbHelper;
 import com.example.comiccollection.data.ComicRepository;
 import com.example.comiccollection.data.IssuesDeletionListener;
 import com.example.comiccollection.data.IssuesListener;
+import com.example.comiccollection.data.SingleIssueListener;
 import com.example.comiccollection.data.TitlesDeletionListener;
 import com.example.comiccollection.data.TitlesListener;
 import com.example.comiccollection.data.entities.Issue;
@@ -34,10 +35,12 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.ListenerRegistration;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.WriteBatch;
 
@@ -251,6 +254,125 @@ public class FirestoreComicRepository implements ComicRepository {
         argument with a method reference.
          */
         deleteIssuesByTitle(title, listener::onDeleteFailed);
+    }
+
+    @Override
+    public void getIssue(String issueTitle, String issueNumber, SingleIssueListener listener) {
+        /*
+        Fetch a single issue from the repository.
+
+        I also need to attach all of the copy information, which needs to be queried separately
+        in Firestore.
+         */
+
+        /*
+        Set a Task to query for the issue.
+         */
+        Task<QuerySnapshot> issuesTask = db.collection(ComicDbHelper.CC_COLLECTION_ISSUES)
+                .whereEqualTo(ComicDbHelper.CC_ISSUE_TITLE, issueTitle)
+                .whereEqualTo(ComicDbHelper.CC_ISSUE_NUMBER, issueNumber)
+                .get();
+
+        /*
+        Set a task to query for owned copies.
+         */
+        Task<QuerySnapshot> ownedCopiesTask = db.collectionGroup(ComicDbHelper.CC_ISSUE_OWNED)
+                .whereEqualTo(ComicDbHelper.CC_COPY_TITLE, issueTitle)
+                .whereEqualTo(ComicDbHelper.CC_ISSUE_NUMBER, issueNumber)
+                .get();
+
+        /*
+        Set a task to query for unowned copies.
+         */
+        Task<QuerySnapshot> unownedCopiesTask = db.collectionGroup(ComicDbHelper.CC_ISSUE_UNOWNED)
+                .whereEqualTo(ComicDbHelper.CC_COPY_TITLE, issueTitle)
+                .whereEqualTo(ComicDbHelper.CC_ISSUE_NUMBER, issueNumber)
+                .get();
+
+        /*
+        Set a task to query for sold copies.
+         */
+        Task<QuerySnapshot> soldCopiesTask = db.collectionGroup(ComicDbHelper.CC_ISSUE_SOLD)
+                .whereEqualTo(ComicDbHelper.CC_COPY_TITLE, issueTitle)
+                .whereEqualTo(ComicDbHelper.CC_ISSUE_NUMBER, issueNumber)
+                .get();
+
+        /*
+        Wait for all tasks/queries to complete.
+         */
+        Tasks.whenAllComplete(issuesTask, ownedCopiesTask, unownedCopiesTask, soldCopiesTask)
+                .addOnCompleteListener(new OnCompleteListener<List<Task<?>>>() {
+                    @Override
+                    public void onComplete(@NonNull Task<List<Task<?>>> task) {
+                        ArrayList<Task<?>> completedTasks = (ArrayList<Task<?>>) task.getResult();
+                        /*
+                         Completed tasks will be in the list in the same order as in the call to
+                         whenAllComplete().  That is, issue, owned copies, unowned copies,
+                         sold copies.
+                         */
+                        Task<QuerySnapshot> issuesTask = (Task<QuerySnapshot>) completedTasks.get(0);
+                        QuerySnapshot issuesResult = issuesTask.getResult();
+
+                        if( issuesResult != null ) {
+                            /*
+                            An issue record should be unique by title and issue number.
+                             */
+                            DocumentSnapshot issueDocument = issuesResult.getDocuments().get(0);
+                            Issue issue = IssuesMapper.map(issueDocument);
+
+                            /*
+                            Add owned copies, if any.
+                             */
+                            Task<QuerySnapshot> ownedCopiesTask =
+                                    (Task<QuerySnapshot>) completedTasks.get(1);
+                            QuerySnapshot ownedCopiesResult = ownedCopiesTask.getResult();
+
+                            if( ownedCopiesResult != null ) {
+                                ArrayList<OwnedCopy> ownedCopiesList =
+                                        (ArrayList<OwnedCopy>)OwnedCopiesMapper.map(ownedCopiesResult);
+                                issue.setOwnedCopies(ownedCopiesList);
+                            }
+
+                            /*
+                            Add unowned copies, if any.
+                             */
+                            Task<QuerySnapshot> unownedCopiesTask =
+                                    (Task<QuerySnapshot>) completedTasks.get(2);
+                            QuerySnapshot unownedCopiesResult = unownedCopiesTask.getResult();
+
+                            if( unownedCopiesResult != null ) {
+                                ArrayList<UnownedCopy> unownedCopiesList =
+                                        (ArrayList<UnownedCopy>)UnownedCopiesMapper.map(unownedCopiesResult);
+                                issue.setUnownedCopies(unownedCopiesList);
+                            }
+
+                            /*
+                            Add sold copies, if any.
+                             */
+                            Task<QuerySnapshot> soldCopiesTask =
+                                    (Task<QuerySnapshot>) completedTasks.get(3);
+                            QuerySnapshot soldCopiesResult = soldCopiesTask.getResult();
+
+                            if( soldCopiesResult != null ) {
+                                ArrayList<SoldCopy> soldCopiesList =
+                                        (ArrayList<SoldCopy>)SoldCopiesMapper.map(soldCopiesResult);
+                                issue.setSoldCopies(soldCopiesList);
+                            }
+
+                            /*
+                            The Issue object is now fully built and ready to go.
+                             */
+                            listener.onIssueReady(issue);
+
+                        } // if( issuesResult != null )
+                    }  // onComplete() (all tasks complete)
+                }  // new OnCompleteListener()
+                ).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                        public void onFailure(@NonNull Exception e) {
+                            listener.onIssueLoadFailed();
+                        }
+                 });  // addOnFailureListener()
     }
 
     @Override

@@ -37,10 +37,17 @@ public class IssuesAdapter extends RecyclerView.Adapter {
     private SelectionTracker<Long> selectionTracker = null;
 
     /*
+    OnClickListener which will take action (launch a new Activity) based on the current
+    issue title and number.
+     */
+    private final IssuesAdapter.OnClickListener listener;
+
+    /*
     Construct and initialize the adapter with a given list of issues.
      */
-    public IssuesAdapter() {
+    public IssuesAdapter(IssuesAdapter.OnClickListener listener) {
         issueList = new ArrayList<Issue>();
+        this.listener = listener;
     }
 
     public void setSelectionTracker(SelectionTracker<Long> selectionTracker) {
@@ -64,12 +71,18 @@ public class IssuesAdapter extends RecyclerView.Adapter {
         return issueList.get(position);
     }
 
+    public interface OnClickListener {
+        void onClick(String issueTitle, String issueNumber);
+    }
+
     @NonNull
     @Override
     public IssuesViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.issue_item_layout, parent, false);
+
+        IssuesViewHolder issuesViewHolder = new IssuesViewHolder(view);
 
         return new IssuesViewHolder(view);
     }
@@ -108,6 +121,19 @@ public class IssuesAdapter extends RecyclerView.Adapter {
         currently selected.
          */
         issuesViewHolder.getItemView().setActivated(selectionTracker.isSelected((long) position));
+
+        /*
+        Set a click listener on the issue item view.  This will take the user through to the
+        copies screen.
+         */
+        issuesViewHolder.getItemView().setOnClickListener( v -> {
+            /*
+            Call the IssuesAdapter.OnClickListener with the details of the Issue at this
+            ViewHolder's current position.
+             */
+            Log.d(TAG, "Clicked on " + issue.getTitle() + " " + issue.getIssueNumber());
+            listener.onClick(issue.getTitle(), issue.getIssueNumber());
+        });
 
         Log.d(TAG, "OnBindViewHolder: done");
     }

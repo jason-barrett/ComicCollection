@@ -20,6 +20,7 @@ public class IssuesViewModelFactory implements ViewModelProvider.Factory {
         this.issuesViewModelProvider = issuesViewModelProvider;
     }
 
+    @SuppressWarnings("unchecked")
     @NonNull
     @Override
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {

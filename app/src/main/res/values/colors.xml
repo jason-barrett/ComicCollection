@@ -15,4 +15,6 @@
     <color name="colorHighlightedItemBackground">#99FF99</color>
 
     <color name="colorUpgrade">#008000</color>
+
+    <color name="copiesBannerBackground">#ADD8E6</color>
 </resources>

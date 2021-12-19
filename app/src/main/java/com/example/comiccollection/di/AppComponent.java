@@ -1,5 +1,6 @@
 package com.example.comiccollection.di;
 
+import com.example.comiccollection.ui.CopiesActivity;
 import com.example.comiccollection.ui.IssuesActivity;
 import com.example.comiccollection.ui.TitlesActivity;
 
@@ -15,4 +16,5 @@ There is one component graph, scoped to the application.
 public interface AppComponent {
     void inject(TitlesActivity titlesActivity);
     void inject(IssuesActivity issuesActivity);
+    void inject(CopiesActivity copiesActivity);
 }
