@@ -443,6 +443,8 @@ public class IssuesActivity extends AppCompatActivity
                     mIssuesViewModel.modifyIssue(issue);
                 }
 
+                break;
+
             case R.id.mark_wanted:
                 /*
                 Everything in the selection should be marked as 'wanted'.  If an issue is
@@ -460,7 +462,7 @@ public class IssuesActivity extends AppCompatActivity
                     mIssuesViewModel.modifyIssue(issue);
                 }
 
-                return true;
+                break;
 
             case R.id.dont_want:
                 /*
@@ -476,12 +478,15 @@ public class IssuesActivity extends AppCompatActivity
                     issue.setWanted(false);
                     mIssuesViewModel.modifyIssue(issue);
                 }
+
+                break;
         }
 
         /*
         Destroy the ActionMode.  I've made a selection, so I'll get my normal screen
         mode back.
          */
+        Log.d(TAG, "Destroying action mode");
         mode.finish();
 
         return true;
@@ -492,6 +497,7 @@ public class IssuesActivity extends AppCompatActivity
         /*
         Clear the selection when the ActionMode goes away.
          */
+        Log.d(TAG, "Clearing selection");
         selectionTracker.clearSelection();
         actionMode = null;
     }
