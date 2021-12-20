@@ -2,6 +2,8 @@ package com.example.comiccollection.data.firestore.map;
 
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+
 import com.example.comiccollection.data.ComicDbHelper;
 import com.example.comiccollection.data.entities.OwnedCopy;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -68,9 +70,10 @@ public class OwnedCopiesMapper {
                 ownedCopy.setDealer(document.getString(ComicDbHelper.CC_COPY_DEALER));
             }
             if( document.contains(ComicDbHelper.CC_COPY_COST) ) {
-                String costAsString = document.getString(ComicDbHelper.CC_COPY_COST);
-                ownedCopy.setCost(FirestoreTypeUtils.handleDoubleAsString(costAsString, ownedCopy,
-                        ComicDbHelper.CC_COPY_COST));
+                Double costAsDouble = document.getDouble(ComicDbHelper.CC_COPY_COST);
+                if( costAsDouble != null ) {
+                    ownedCopy.setCost(costAsDouble);
+                }
             }
             if( document.contains(ComicDbHelper.CC_COPY_DATE_PURCHASED) ) {
                 ownedCopy.setDatePurchased(document.getDate(ComicDbHelper.CC_COPY_DATE_PURCHASED));
