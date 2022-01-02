@@ -25,8 +25,20 @@
         <item name="android:paddingLeft">8dp</item>
         <item name="android:paddingTop">10dp</item>
         <item name="android:paddingBottom">10dp</item>
-        <item name="android:background">@drawable/item_background</item>
+        <item name="android:background">@drawable/issue_item_background</item>
     </style>
+
+    <style name="TitleItemStyle" parent="ListItemStyle">
+    </style>
+
+    <style name="IssueItemStyle" parent="ListItemStyle">
+    </style>
+
+    <style name="CopyItemStyle" parent="ListItemStyle">
+        <item name="android:background">@drawable/copy_item_background</item>
+    </style>
+
+
 
     <!-- A style for the banner on top of the lists of copies. -->
     <style name="CopyBannerStyle">

@@ -483,9 +483,6 @@ public class FirestoreComicRepository implements ComicRepository {
                                     new HashMap<String, List<OwnedCopy>>();
 
                             for( OwnedCopy ownedCopy : ownedCopiesList ) {
-                                Log.d(TAG, "Found an owned copy of " +
-                                        ownedCopy.getTitle() + " " + ownedCopy.getIssue());
-
                                 String issueOfCopy = ownedCopy.getIssue();
 
                                 List<OwnedCopy> subList;

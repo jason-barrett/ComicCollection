@@ -49,6 +49,7 @@
 
     <!-- Format string for showing a title and issue together -->
     <string name="title_and_issue">%1$s %2$s</string>
+    <string name="no_grade">NG</string>
 
 
 </resources>

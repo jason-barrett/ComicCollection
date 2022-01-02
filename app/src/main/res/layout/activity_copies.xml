@@ -23,6 +23,7 @@
         android:id="@+id/owned_copies_fragment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:name="com.example.comiccollection.ui.OwnedCopiesFragment"
         />
 
 </androidx.appcompat.widget.LinearLayoutCompat>

@@ -17,4 +17,6 @@
     <color name="colorUpgrade">#008000</color>
 
     <color name="copiesBannerBackground">#ADD8E6</color>
+    <color name="copiesSubBannerBackground">#1E90FF</color>
+    <color name="copiesItemBackground">#ADD8E6</color>
 </resources>

@@ -65,6 +65,8 @@ public class CopiesActivity extends AppCompatActivity {
          */
         copiesViewModel = new ViewModelProvider(this, copiesViewModelFactory)
                 .get(CopiesViewModel.class);
+        copiesViewModel.setIssueDetails(thisTitle, thisIssue);
+
 
         copiesViewModel.getIssue().observe(this, new Observer<Issue>() {
             @Override
@@ -83,6 +85,5 @@ public class CopiesActivity extends AppCompatActivity {
         mTitleAndIssueTextView
                 .setText(String.format(getResources().getString(R.string.title_and_issue),
                         thisTitle, thisIssue));
-
     }
 }

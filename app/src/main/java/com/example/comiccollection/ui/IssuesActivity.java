@@ -208,11 +208,6 @@ public class IssuesActivity extends AppCompatActivity
             @Override
             public void onChanged(ArrayList<Issue> issueList) {
                 Log.d(TAG, "Issue list changed");
-                for( Issue issue : issueList ) {
-                    if( issue.getOwnedCopies() != null ) {
-                        Log.d(TAG, issue.getOwnedCopies().size() + " copies owned of " + issue.getTitleAndIssueNumber());
-                    }
-                }
 
                 /*
                 Apply the toggle settings to filter the new data set for display.

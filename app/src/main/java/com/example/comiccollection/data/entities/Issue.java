@@ -56,6 +56,14 @@ public class Issue {
     }
 
     public ArrayList<OwnedCopy> getOwnedCopies() {
+
+        /*
+        Return an empty list rather than null.
+         */
+        if( mOwnedCopies == null ) {
+            return new ArrayList<>();
+        }
+
         return mOwnedCopies;
     }
 
@@ -64,6 +72,14 @@ public class Issue {
     }
 
     public ArrayList<UnownedCopy> getUnownedCopies() {
+
+        /*
+        Return an empty list rather than null.
+         */
+        if( mUnownedCopies == null ) {
+            return new ArrayList<>();
+        }
+
         return mUnownedCopies;
     }
 
@@ -72,6 +88,16 @@ public class Issue {
     }
 
     public ArrayList<SoldCopy> getSoldCopies() {
+
+        /*
+        Return an empty list rather than null.
+         */
+        if( mSoldCopies == null ) {
+            return new ArrayList<>();
+        }
+
+
+
         return mSoldCopies;
     }
 

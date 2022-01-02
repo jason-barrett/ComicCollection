@@ -2,22 +2,22 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    style="@style/ListItemStyle"
+    style="@style/CopyItemStyle"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
     <TextView
-        android:id="@+id/copy_grade"
+        android:id="@+id/owned_copy_grade"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="@string/no_grade"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:layout_marginStart="@dimen/copy_list_start_end_padding"
-        tools:text="VG+"
         />
 
     <TextView
-        android:id="@+id/copy_value"
+        android:id="@+id/owned_copy_value"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintRight_toRightOf="parent"
