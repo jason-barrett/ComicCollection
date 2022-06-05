@@ -32,6 +32,7 @@ import androidx.recyclerview.selection.Selection;
 import androidx.recyclerview.selection.SelectionPredicates;
 import androidx.recyclerview.selection.SelectionTracker;
 import androidx.recyclerview.selection.StorageStrategy;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -127,6 +128,12 @@ public class IssuesActivity extends AppCompatActivity
         mIssuesRecyclerView.setAdapter(mIssuesAdapter);
         mIssuesRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mIssuesRecyclerView.setHasFixedSize(true);
+
+        /*
+        Add a divider between each issue.
+         */
+        mIssuesRecyclerView.addItemDecoration(new DividerItemDecoration(mIssuesRecyclerView.getContext(),
+                DividerItemDecoration.VERTICAL));
 
         /*
         Create a selection tracker to allow for multiple item selection.  This will be used,

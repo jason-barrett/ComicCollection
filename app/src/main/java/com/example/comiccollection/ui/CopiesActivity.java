@@ -54,15 +54,14 @@ public class CopiesActivity extends AppCompatActivity {
 
         /*
         Get a CopiesViewModel from Dagger.  Observe its LiveData for this Issue.
-         */
-        ((ComicCollectionApplication)getApplicationContext()).getAppComponent().inject(this);
 
-        /*
         Under the hood, this is calling create() on the CopiesViewModelFactory instance injected
         above.  In turn, the factory is calling to Dagger's Provider class for CopiesViewModel
         to create the ViewModel with the repository dependency, which it knows to do based on the
         @Inject annotation to the CopiesViewModel constructor.
          */
+        ((ComicCollectionApplication)getApplicationContext()).getAppComponent().inject(this);
+
         copiesViewModel = new ViewModelProvider(this, copiesViewModelFactory)
                 .get(CopiesViewModel.class);
         copiesViewModel.setIssueDetails(thisTitle, thisIssue);

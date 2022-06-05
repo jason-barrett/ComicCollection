@@ -104,7 +104,7 @@ public class TitlesActivity extends AppCompatActivity
         Add a divider between each titie.
          */
         mTitlesListView.addItemDecoration(new DividerItemDecoration(mTitlesListView.getContext(),
-                DividerItemDecoration.HORIZONTAL));
+                DividerItemDecoration.VERTICAL));
 
         /*
         Kick off the initial titles load.

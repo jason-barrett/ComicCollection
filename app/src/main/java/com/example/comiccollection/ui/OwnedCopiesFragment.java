@@ -52,7 +52,7 @@ public class OwnedCopiesFragment extends Fragment {
      */
     private OwnedCopiesAdapter ownedCopiesAdapter;
 
-    private String TAG = OwnedCopiesFragment.class.getSimpleName();
+    private final String TAG = OwnedCopiesFragment.class.getSimpleName();
 
     @Nullable
     @Override
@@ -99,7 +99,12 @@ public class OwnedCopiesFragment extends Fragment {
         mOwnedCopiesListView
                 .setAdapter(ownedCopiesAdapter);
 
-
+        /*
+        Add a divider between each copy.
+         */
+        mOwnedCopiesListView.addItemDecoration(new DividerItemDecoration(mOwnedCopiesListView.getContext(),
+                DividerItemDecoration.VERTICAL));
+        
         //ownedCopies = Objects.requireNonNull(copiesViewModel.getIssue().getValue()).getOwnedCopies();
 
     }
