@@ -6,7 +6,7 @@
 
     <color name="colorAlphaSelect">#5B39C6</color>
 
-    <color name="colorItemText">@android:color/black</color>
+    <color name="colorItemText">@color/colorPrimaryDark</color>
     <color name="colorErrorText">#FF0000</color>
     <color name="colorToggleButtonOnText">@android:color/black</color>
     <color name="colorToggleButtonOffText">@android:color/white</color>

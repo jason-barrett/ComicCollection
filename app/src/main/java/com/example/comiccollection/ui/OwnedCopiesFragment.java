@@ -104,7 +104,7 @@ public class OwnedCopiesFragment extends Fragment {
          */
         mOwnedCopiesListView.addItemDecoration(new DividerItemDecoration(mOwnedCopiesListView.getContext(),
                 DividerItemDecoration.VERTICAL));
-        
+
         //ownedCopies = Objects.requireNonNull(copiesViewModel.getIssue().getValue()).getOwnedCopies();
 
     }
