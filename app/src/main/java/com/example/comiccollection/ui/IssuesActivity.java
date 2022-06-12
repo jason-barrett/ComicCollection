@@ -23,7 +23,10 @@ import com.example.comiccollection.viewmodel.IssuesViewModelFactory;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Objects;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.view.ActionMode;
 import androidx.lifecycle.Observer;
@@ -101,6 +104,10 @@ public class IssuesActivity extends AppCompatActivity
 
 
     private final String TAG = IssuesActivity.class.getSimpleName();
+
+    /*************************************************************************************
+     * Activity lifecycle methods.
+     *************************************************************************************/
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -181,19 +188,10 @@ public class IssuesActivity extends AppCompatActivity
         mIssuesAdapter.setSelectionTracker(selectionTracker);
 
         /*
-        Initialize the navigation buttons.
+        Initialize the navigation buttons that allow skipping forward and back through the
+        list.
          */
-        mRewindFarButton = (Button)findViewById(R.id.btnRewindFar);
-        mRewindFarButton.setOnClickListener((v) -> scrollBackward(FAR_SCROLL_ITEMS));
-
-        mRewindNearButton = (Button)findViewById(R.id.btnRewindNear);
-        mRewindNearButton.setOnClickListener((v) -> scrollBackward(NEAR_SCROLL_ITEMS));
-
-        mForwardFarButton = (Button)findViewById(R.id.btnForwardFar);
-        mForwardFarButton.setOnClickListener((v) -> scrollForward(FAR_SCROLL_ITEMS));
-
-        mForwardNearButton = (Button)findViewById(R.id.btnForwardNear);
-        mForwardNearButton.setOnClickListener((v) -> scrollForward(NEAR_SCROLL_ITEMS));
+        initializeNavigationButtons();
 
         /*
         Initialize the toggle state which will be managed by the toggle buttons.
@@ -226,6 +224,12 @@ public class IssuesActivity extends AppCompatActivity
         mIssuesViewModel.getIssuesList().observe(this, issueObserver);
 
         /*
+        Enable the home (back) button in the ActionBar.  My code will take me back to the
+        TitlesActivity (by closing this one).
+         */
+        enableHomeButtonInActionBar();
+
+        /*
         Which title is this Activity for?
          */
         Intent intent = getIntent();
@@ -248,7 +252,12 @@ public class IssuesActivity extends AppCompatActivity
         super.onDestroy();
     }
 
-    /*
+    /*************************************************************************************
+     * Methods to control the filtering of the issues in the display.  What are we
+     * showing here?  The collection?  The want list?  Etc.
+     *************************************************************************************/
+
+   /*
     Present the user with a choice of preferences:
      - Show collection
      - Show want list
@@ -310,6 +319,14 @@ public class IssuesActivity extends AppCompatActivity
                 mBanner.setText(R.string.showing_all_issues);
                 return true;
 
+            case android.R.id.home:
+                /*
+                This item handles back navigation.  It is not associated with the
+                filtering selections above.  But both functions use the ActionBar menu.
+                 */
+                finish();
+                return true;
+
             default:
                 Log.w(TAG, "User somehow selected an item not on the menu");
                 return super.onOptionsItemSelected(item);
@@ -333,6 +350,31 @@ public class IssuesActivity extends AppCompatActivity
         mIssuesAdapter.notifyDataSetChanged();
     }
 
+    /*************************************************************************************
+     * Methods for management of the row of navigation buttons that allow quick
+     * movement through the issues list.
+     *************************************************************************************/
+
+    /*
+    This screen contains navigation buttons in a row at the bottom, which allows the user to
+    skip forward and back through long lists of issues.
+     */
+    private void initializeNavigationButtons() {
+        /*
+        Initialize the navigation buttons.
+         */
+        mRewindFarButton = (Button)findViewById(R.id.btnRewindFar);
+        mRewindFarButton.setOnClickListener((v) -> scrollBackward(FAR_SCROLL_ITEMS));
+
+        mRewindNearButton = (Button)findViewById(R.id.btnRewindNear);
+        mRewindNearButton.setOnClickListener((v) -> scrollBackward(NEAR_SCROLL_ITEMS));
+
+        mForwardFarButton = (Button)findViewById(R.id.btnForwardFar);
+        mForwardFarButton.setOnClickListener((v) -> scrollForward(FAR_SCROLL_ITEMS));
+
+        mForwardNearButton = (Button)findViewById(R.id.btnForwardNear);
+        mForwardNearButton.setOnClickListener((v) -> scrollForward(NEAR_SCROLL_ITEMS));
+    }
 
     /*
     Scroll forward in the list visible on screen by the specified number of items.
@@ -388,6 +430,13 @@ public class IssuesActivity extends AppCompatActivity
         }
         layoutManager.scrollToPositionWithOffset(positionToScrollTo, 0);
     }
+
+    /*************************************************************************************
+     * Methods to manage the selection of multiple items in the list.  For example, the
+     * user may want to mark a set of items as 'owned' or as 'wanted'.
+     *
+     * We use an ActionMode menu for this.
+     *************************************************************************************/
 
     @Override
     public boolean onCreateActionMode(ActionMode mode, Menu menu) {
@@ -504,6 +553,10 @@ public class IssuesActivity extends AppCompatActivity
         actionMode = null;
     }
 
+    /*************************************************************************************
+     * General navigation methods.
+     *************************************************************************************/
+
     /*
     A click handler for items (issues) in the RecyclerView.  This will take the user to the
     copies view for that issue.
@@ -516,4 +569,14 @@ public class IssuesActivity extends AppCompatActivity
 
         startActivity(intent);
     }
+
+    /*
+    The back button in the ActionBar will take us back to the previous activity (the
+    TitlesActivity).  Enable the back ("home") button in the ActionBar.
+     */
+    private void enableHomeButtonInActionBar() {
+        ActionBar actionBar = getSupportActionBar();
+        Objects.requireNonNull(actionBar).setDisplayHomeAsUpEnabled(true);
+    }
+
 }

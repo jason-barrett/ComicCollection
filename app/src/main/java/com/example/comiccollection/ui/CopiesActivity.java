@@ -3,9 +3,12 @@ package com.example.comiccollection.ui;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -15,6 +18,8 @@ import com.example.comiccollection.application.ComicCollectionApplication;
 import com.example.comiccollection.data.entities.Issue;
 import com.example.comiccollection.viewmodel.CopiesViewModel;
 import com.example.comiccollection.viewmodel.CopiesViewModelFactory;
+
+import java.util.Objects;
 
 import javax.inject.Inject;
 
@@ -84,5 +89,41 @@ public class CopiesActivity extends AppCompatActivity {
         mTitleAndIssueTextView
                 .setText(String.format(getResources().getString(R.string.title_and_issue),
                         thisTitle, thisIssue));
+
+        /*
+        Enable the home (back) button in the ActionBar, which will allow the user to return
+        to the previous activity (the issues screen).
+         */
+        enableHomeButtonInActionBar();
+
+    }  /* onCreate() */
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+
+        switch( item.getItemId() ) {
+
+            /*
+            The user pressed the home (back) button.  Pop this activity off the stack and
+            go back to the last one.
+             */
+            case android.R.id.home:
+                finish();
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
+
+    /*
+        The back button in the ActionBar will take us back to the previous activity (the
+        TitlesActivity).  Enable the back ("home") button in the ActionBar.
+        */
+    private void enableHomeButtonInActionBar() {
+        ActionBar actionBar = getSupportActionBar();
+        Objects.requireNonNull(actionBar).setDisplayHomeAsUpEnabled(true);
+    }
+
+
 }
