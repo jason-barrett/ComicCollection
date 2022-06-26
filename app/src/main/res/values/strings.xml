@@ -15,6 +15,7 @@
 
     <string name="title_error_last_issue_before_first_issue">The first issue must come before the last issue.</string>
     <string name="title_error_duplicate_title">Duplicate title names are not allowed.</string>
+    <string name="title_warning_will_delete">This may delete issues from your collection.  Press again to confirm.</string>
 
     <!-- For view and entry of issues -->
     <string name="toggle_button_owned">Owned</string>

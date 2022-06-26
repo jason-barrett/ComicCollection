@@ -22,6 +22,8 @@ public interface ComicRepository {
     public void modifyIssue(Issue issue, IssuesListener issuesListener);
     public void deleteIssue(Issue issue, IssuesDeletionListener listener);
     public void deleteIssuesByTitle(Title title, IssuesDeletionListener listener);
+    public void deleteIssuesByRange(Title title, int firstIssue, int lastIssue,
+                                    IssuesDeletionListener listener);
 
     public void addOwnedCopyOfIssue(OwnedCopy ownedCopy, Issue issue, IssuesListener issuesListener);
 }

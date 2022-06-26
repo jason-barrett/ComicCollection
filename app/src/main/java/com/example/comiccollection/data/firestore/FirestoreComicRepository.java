@@ -40,7 +40,6 @@ import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.ListenerRegistration;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.WriteBatch;
 
@@ -253,7 +252,7 @@ public class FirestoreComicRepository implements ComicRepository {
         The second argument is a little syntactic sugar that replaces the IssueDeletionListener
         argument with a method reference.
          */
-        deleteIssuesByTitle(title, listener::onDeleteFailed);
+        deleteIssuesByTitle(title, listener::onTitlesDeleteFailed);
     }
 
     @Override
@@ -757,7 +756,7 @@ public class FirestoreComicRepository implements ComicRepository {
                         .collection(ComicDbHelper.CC_ISSUE_OWNED)
                         .document(ownedCopy.getDocumentId())
                         .delete()
-                        .addOnFailureListener(e -> listener.onDeleteFailed(e.getMessage())
+                        .addOnFailureListener(e -> listener.onIssuesDeleteFailed(e.getMessage())
                         );
             }
         }
@@ -770,7 +769,7 @@ public class FirestoreComicRepository implements ComicRepository {
                         .collection(ComicDbHelper.CC_ISSUE_UNOWNED)
                         .document(unownedCopy.getDocumentId())
                         .delete()
-                        .addOnFailureListener(e -> listener.onDeleteFailed(e.getMessage()));
+                        .addOnFailureListener(e -> listener.onIssuesDeleteFailed(e.getMessage()));
             }
         }
 
@@ -782,7 +781,7 @@ public class FirestoreComicRepository implements ComicRepository {
                         .collection(ComicDbHelper.CC_ISSUE_SOLD)
                         .document(soldCopy.getDocumentId())
                         .delete()
-                        .addOnFailureListener(e -> listener.onDeleteFailed(e.getMessage()));
+                        .addOnFailureListener(e -> listener.onIssuesDeleteFailed(e.getMessage()));
             }
         }
 
@@ -793,22 +792,27 @@ public class FirestoreComicRepository implements ComicRepository {
         db.collection(ComicDbHelper.CC_COLLECTION_ISSUES)
                 .document(issue.getDocumentId())
                 .delete()
-                .addOnFailureListener(e -> listener.onDeleteFailed(e.getMessage()));
+                .addOnFailureListener(e -> listener.onIssuesDeleteFailed(e.getMessage()));
     }
 
     /*
-    This method deletes all issues for a given title.  It propagates an error message from
-    Firestore through the IssuesDeletionListener.
+    This method deletes all issues for a given title and a given (first, last) range, inclusive.
+
+    It propagates an error message from Firestore through the IssuesDeletionListener.
      */
-    public void deleteIssuesByTitle(Title title, IssuesDeletionListener listener) {
+    public void deleteIssuesByRange(Title title, int firstIssue, int lastIssue,
+                                    IssuesDeletionListener listener) {
+        /*
+        There is an opportunity for better efficiency here now, because we don't technically
+        have to get all issues, which could be nice if the range is small.
+         */
         getIssuesByTitleOnce(title.getName(), new IssuesListener() {
             @Override
             public void onIssuesReady(List<Issue> issues) {
-                for( Issue issue : issues ) {
-                    deleteIssue(issue, message -> {
-                        listener.onDeleteFailed(message);
-                    });
-                }
+
+                issues.stream()
+                        .filter(i -> i.isInRange(firstIssue, lastIssue))
+                        .forEach(i -> deleteIssue(i, listener));
             }
 
             @Override
@@ -818,9 +822,20 @@ public class FirestoreComicRepository implements ComicRepository {
 
             @Override
             public void onIssueLoadFailed() {
-                listener.onDeleteFailed("Could not load issues for deletion for title " + title.getName());
+                listener.onIssuesDeleteFailed("Could not load issues for deletion for title " + title.getName());
             }
         });
+    }
+
+    /*
+    This method deletes all issues for a given title.  It propagates an error message from
+    Firestore through the IssuesDeletionListener.
+     */
+    public void deleteIssuesByTitle(Title title, IssuesDeletionListener listener) {
+        deleteIssuesByRange(title,
+                Integer.parseInt(title.getFirstIssue()),
+                Integer.parseInt(title.getLastIssue()),
+                listener);
     }
 
     @Override

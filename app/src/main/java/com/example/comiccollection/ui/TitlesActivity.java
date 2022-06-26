@@ -196,7 +196,6 @@ public class TitlesActivity extends AppCompatActivity
     /*
     This is the handler for when the user chooses to add a title in the popup dialog.
      */
-
     @Override
     public void onDialogClickAdd(AddTitleDialogFragment fragment) {
         Title title = fragment.getNewTitle();
@@ -236,85 +235,85 @@ public class TitlesActivity extends AppCompatActivity
                     Log.i(TAG, "Adding title " + title.toString());
                     mTitlesViewModel.addTitle(title);
 
-                    /*
-                    Add issues to the database for the first-last issue range specified.  Default
-                    everything to the want list.
-                     */
-                    ArrayList<Issue> newIssues = new ArrayList<Issue>();
-                    for( int issueNumber = firstIssue; issueNumber <= lastIssue; issueNumber++) {
-                        Issue issue = new Issue();
-                        issue.setTitle(title.getName());
-                        issue.setIssueNumber(Integer.toString(issueNumber));
-                        issue.setWanted(true);
-
-                        newIssues.add(issue);
-                    }
-                    mTitlesViewModel.addIssuesToTitle(newIssues);
-
+                    mTitlesViewModel.addIssuesToTitle(title,
+                            Integer.parseInt(title.getFirstIssue()),
+                            Integer.parseInt(title.getLastIssue()));
                 }
             } catch( NumberFormatException e ) {
                 Log.i(TAG, "User entered a non-numeric issue number.");
             }
-
         }
     }
 
     /*
     This is the handler for when the user chooses to edit a title in the popup dialog.
      */
-
     @Override
     public void onDialogClickEdit(EditTitleDialogFragment fragment) {
-        Title title = fragment.getTitle();
-        if( title != null && title.getName().length() > 0 ) {
+        Title newTitle = fragment.getNewTitle();
+        Title currentTitle = fragment.getCurrentTitle();
+        if( newTitle != null && newTitle.getName().length() > 0 ) {
             try {
                 /*
                 Just double check that the user did not enter a character in one of the issue
-                numbers.  Technically that is not illegal (e.g., the annuals), but the first and
-                last issues are used for comparison purposes.
+                numbers.  The first and last issues are used for comparison purposes.
 
                 A non-numeric issue number will throw a NumberFormatException and fall into the
                 catch block.
                  */
-                int firstIssue = Integer.parseInt(title.getFirstIssue());
-                int lastIssue = Integer.parseInt(title.getLastIssue());
+                int firstIssue = Integer.parseInt(newTitle.getFirstIssue());
+                int lastIssue = Integer.parseInt(newTitle.getLastIssue());
 
                 /*
                 Some more error checking.
 
                 Disallow last issue < first issue.
-
-                Disallow duplicate title names.
                  */
                 if( lastIssue < firstIssue ) {
                     fragment.dismiss();
                     fragment.setErrorText(getResources().getString(R.string.title_error_last_issue_before_first_issue));
                     fragment.show(getSupportFragmentManager(), null);
-                } else if ( mTitlesViewModel.titleNameExists(title) ) {
-                    fragment.dismiss();
-                    fragment.setErrorText(getResources().getString(R.string.title_error_duplicate_title));
-                    fragment.show(getSupportFragmentManager(), null);
-                }
-                else {
+                } else {
                     /*
                     Data entered looks clean.
                      */
-                    Log.i(TAG, "Modifying title " + title.toString());
-                    mTitlesViewModel.modifyTitle(title);
+                    Log.i(TAG, "Modifying title " + newTitle.toString());
+                    mTitlesViewModel.modifyTitle(newTitle);
 
                     /*
                     If the user has expanded the issues on the want list, add the new ones to
                     the database.
                      */
+                    int currentFirstIssue = Integer.parseInt(currentTitle.getFirstIssue());
+                    int currentLastIssue = Integer.parseInt(currentTitle.getLastIssue());
 
-                    /* If the user has removed issues from the want list, make sure he wants to
-                    remove them from the database.
+                    if( firstIssue < currentFirstIssue ) {
+                        mTitlesViewModel.addIssuesToTitle(newTitle,
+                                firstIssue, currentFirstIssue - 1);
+                    }
+
+                    if( lastIssue > currentLastIssue ) {
+                        mTitlesViewModel.addIssuesToTitle(newTitle,
+                                currentLastIssue + 1, lastIssue);
+                    }
+
+                    /*
+                    If the user has removed issues from the want list, remove them from
+                    the database.
                      */
+                    if( firstIssue > currentFirstIssue ) {
+                        mTitlesViewModel.deleteIssuesFromTitle(newTitle, currentFirstIssue,
+                                firstIssue - 1);
+                    }
+
+                    if( lastIssue < currentLastIssue ) {
+                        mTitlesViewModel.deleteIssuesFromTitle(newTitle, lastIssue + 1,
+                                currentLastIssue);
+                    }
                 }
             } catch( NumberFormatException e ) {
                 Log.i(TAG, "User entered a non-numeric issue number.");
             }
-
         }
     }
 

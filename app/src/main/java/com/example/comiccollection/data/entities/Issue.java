@@ -136,4 +136,16 @@ public class Issue {
     public String getTitleAndIssueNumber() {
         return getTitle() + " " + getIssueNumber();
     }
+
+    /*
+    A convenience method to determine whether the issue number falls within a given range.
+     */
+    public boolean isInRange(int firstIssue, int lastIssue) {
+        int thisIssue = Integer.parseInt(getIssueNumber());
+
+        if( thisIssue >= firstIssue && thisIssue <= lastIssue) {
+            return true;
+        }
+        return false;
+    }
 }

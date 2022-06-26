@@ -3,6 +3,7 @@ package com.example.comiccollection.viewmodel;
 import android.util.Log;
 
 import com.example.comiccollection.data.ComicRepository;
+import com.example.comiccollection.data.IssuesDeletionListener;
 import com.example.comiccollection.data.firestore.FirestoreComicRepository;
 import com.example.comiccollection.data.TitlesDeletionListener;
 import com.example.comiccollection.data.TitlesListener;
@@ -19,7 +20,8 @@ import androidx.lifecycle.ViewModel;
 
 import javax.inject.Inject;
 
-public class TitlesViewModel extends ViewModel implements TitlesListener, TitlesDeletionListener {
+public class TitlesViewModel extends ViewModel implements TitlesListener, TitlesDeletionListener,
+        IssuesDeletionListener {
 
     private MutableLiveData< ArrayList<Title> > mLiveTitles = new MutableLiveData<ArrayList<Title>>();
 
@@ -80,8 +82,30 @@ public class TitlesViewModel extends ViewModel implements TitlesListener, Titles
     the *Titles* ViewModel.  The TitlesActivity needs to add issues to the repository directly
     in the case where a new title is created or new issues added in bulk.
      */
-    public void addIssuesToTitle(ArrayList<Issue> issues) {
-        repository.addIssuesBatch(issues);
+    public void addIssuesToTitle(Title title, int firstIssue, int lastIssue) {
+        /*
+         Add issues to the database for the first-last issue range specified.  Default
+         everything to the want list.
+         */
+
+        ArrayList<Issue> newIssues = new ArrayList<Issue>();
+        for( int issueNumber = firstIssue; issueNumber <= lastIssue; issueNumber++) {
+            Issue issue = new Issue();
+            issue.setTitle(title.getName());
+            issue.setIssueNumber(Integer.toString(issueNumber));
+            issue.setWanted(true);
+
+            newIssues.add(issue);
+        }
+
+        repository.addIssuesBatch(newIssues);
+    }
+
+    /*
+    This method deletes issues in bulk from the given Title.
+     */
+    public void deleteIssuesFromTitle(Title title, int firstIssue, int lastIssue) {
+        repository.deleteIssuesByRange(title, firstIssue, lastIssue, this);
     }
 
     /****************************************************************************************
@@ -135,7 +159,15 @@ public class TitlesViewModel extends ViewModel implements TitlesListener, Titles
     }
 
     @Override
-    public void onDeleteFailed(String message) {
+    public void onTitlesDeleteFailed(String message) {
+        /*
+        TODO: Propagate this message back to the Activity to show in a snackbar.  (Or just have
+        the activity implement this interface.)
+         */
+    }
+
+    @Override
+    public void onIssuesDeleteFailed(String message) {
         /*
         TODO: Propagate this message back to the Activity to show in a snackbar.  (Or just have
         the activity implement this interface.)
