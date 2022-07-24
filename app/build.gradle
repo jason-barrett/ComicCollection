@@ -21,7 +21,13 @@ android {
         versionCode 1
         versionName "1.0"
 
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        /*
+        Use a custom InstrumentationRunner, which can create a custom application to own the
+        activities under test.  The custom application will have a separate DI graph, allowing
+        for substitution of fake dependencies.
+         */
+        //testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "com.example.comiccollection.ComicCollectionTestRunner"
 
         vectorDrawables.useSupportLibrary = true
     }
@@ -73,6 +79,11 @@ dependencies {
     testImplementation 'org.powermock:powermock-module-junit4:2.0.9'
     testImplementation 'org.powermock:powermock-api-mockito2:2.0.9'
     testImplementation 'android.arch.core:core-testing:1.1.0'
+    testImplementation project(path: ':app')
+
+    /* Instrumented testing */
+    androidTestImplementation "androidx.test:runner:1.4.0"
+    androidTestImplementation "androidx.test:rules:1.4.0"
 
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
@@ -81,6 +92,7 @@ dependencies {
     implementation 'com.google.dagger:dagger:2.38.1'
     implementation 'com.google.dagger:dagger-android:2.38.1'
     implementation 'com.google.dagger:dagger-android-support:2.38.1'
+    androidTestImplementation project(path: ':app')
     annotationProcessor 'com.google.dagger:dagger-compiler:2.38.1'
     annotationProcessor 'com.google.dagger:dagger-android-processor:2.38.1'
 }
