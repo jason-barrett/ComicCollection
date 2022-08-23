@@ -115,6 +115,27 @@ public class EditTitleDialogFragment extends DialogFragment {
 
         alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener( (v) -> {
             /*
+            Error checking.  Make sure that no fields were blanked out.
+             */
+            if( nameField.getText() == null || nameField.getText().toString().isEmpty() )
+            {
+                setErrorText(getString(R.string.title_name_is_required));
+                return;
+            }
+
+            if( firstIssueField.getText() == null || firstIssueField.getText().toString().isEmpty() )
+            {
+                setErrorText(getString(R.string.title_first_issue_is_required));
+                return;
+            }
+
+            if( lastIssueField.getText() == null || lastIssueField.getText().toString().isEmpty() )
+            {
+                setErrorText(getString(R.string.title_last_issue_is_required));
+                return;
+            }
+
+            /*
              The user has chosen to perform the edit.  Show a warning before actually
              doing it.
              */
