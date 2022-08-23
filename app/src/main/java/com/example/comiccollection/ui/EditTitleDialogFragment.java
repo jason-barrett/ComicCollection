@@ -102,51 +102,55 @@ public class EditTitleDialogFragment extends DialogFragment {
 
         errorTextView.setText(errorText);
 
-        builder.setView(view)
+        AlertDialog alertDialog = builder.setView(view)
                 .setTitle(R.string.edit_title)
-                .setPositiveButton(R.string.positive_edit_title, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        /*
-                        The user has chosen to perform the edit.  Show a warning before actually
-                        doing it.
-                         */
-                        if( !warned ) {
-                            setErrorText(getString(R.string.title_warning_will_delete));
-                            warned = true;
-                        } else {
-                            /*
-                            Create a new Title object.  The repository will recognize the
-                            object by its document ID, so copy it to the new object.
-                             */
-                            newTitle = new Title();
-                            newTitle.setDocumentId(currentTitle.getDocumentId());
+                .setPositiveButton(R.string.positive_edit_title, null)
+                .setNegativeButton(R.string.negative_add_title, null)
+                .show();
 
-                            newTitle.setName(nameField.getText().toString());
-                            newTitle.setFirstIssue(firstIssueField.getText().toString());
-                            newTitle.setLastIssue(lastIssueField.getText().toString());
+        /*
+        Add listeners to both buttons.  We don't use the AlertDialog's 'built-in' listeners
+        because we want a little more control of when the dialog goes away.
+         */
 
-                            Log.i(TAG, "Clicked to edit title " + currentTitle.toString());
-                            listener.onDialogClickEdit(EditTitleDialogFragment.this);
+        alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener( (v) -> {
+            /*
+             The user has chosen to perform the edit.  Show a warning before actually
+             doing it.
+             */
+            if( !warned ) {
+                setErrorText(getString(R.string.title_warning_will_delete));
+                warned = true;
+            } else {
+                /*
+                 Create a new Title object.  The repository will recognize the
+                 object by its document ID, so copy it to the new object.
+                 */
+                newTitle = new Title();
+                newTitle.setDocumentId(currentTitle.getDocumentId());
 
-                            warned = false;
-                        }
-                    }  //onClick()
-                })
-                .setNegativeButton(R.string.negative_add_title, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        /*
-                        Clear any warning that may be present, if the user responds to the warning
-                        by canceling the dialog.
-                         */
-                        warned = false;
+                newTitle.setName(nameField.getText().toString());
+                newTitle.setFirstIssue(firstIssueField.getText().toString());
+                newTitle.setLastIssue(lastIssueField.getText().toString());
 
-                        EditTitleDialogFragment.this.getDialog().cancel();
-                    }
-                });
+                Log.i(TAG, "Clicked to edit title " + currentTitle.toString());
+                listener.onDialogClickEdit(EditTitleDialogFragment.this);
 
-        return builder.create();
+                warned = false;
+            }
+        });
+
+        alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setOnClickListener( (v) -> {
+            /*
+             Clear any warning that may be present, if the user responds to the warning
+             by canceling the dialog.
+             */
+            warned = false;
+
+            EditTitleDialogFragment.this.getDialog().cancel();
+        });
+
+        return alertDialog;
     }
 
     public Title getCurrentTitle() {

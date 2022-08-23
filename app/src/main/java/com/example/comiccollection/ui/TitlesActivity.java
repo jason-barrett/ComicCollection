@@ -101,7 +101,7 @@ public class TitlesActivity extends AppCompatActivity
         mTitlesListView.setHasFixedSize(true);
 
         /*
-        Add a divider between each titie.
+        Add a divider between each title.
          */
         mTitlesListView.addItemDecoration(new DividerItemDecoration(mTitlesListView.getContext(),
                 DividerItemDecoration.VERTICAL));
@@ -310,6 +310,8 @@ public class TitlesActivity extends AppCompatActivity
                         mTitlesViewModel.deleteIssuesFromTitle(newTitle, lastIssue + 1,
                                 currentLastIssue);
                     }
+
+                    fragment.dismiss();
                 }
             } catch( NumberFormatException e ) {
                 Log.i(TAG, "User entered a non-numeric issue number.");

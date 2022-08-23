@@ -19,7 +19,12 @@ public class UnownedCopy extends Copy {
      */
     private List<Offer> mOffers;
 
-    public UnownedCopy() { super(); }
+    public UnownedCopy() {
+        super();
+
+        mOffers = new ArrayList<Offer>();
+    }
+
     public UnownedCopy(String title, String issue) {
         super(title, issue);
 

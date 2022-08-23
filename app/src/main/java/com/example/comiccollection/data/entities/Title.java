@@ -19,6 +19,20 @@ public class Title {
      */
     private String mDocumentId;
 
+    public Title() {
+    }
+
+    /*
+    Provide a copy constructor for testing and convenience.
+     */
+    public Title(Title title) {
+
+        this.setDocumentId(title.getDocumentId());
+        this.setName(title.getName());
+        this.setFirstIssue(title.getFirstIssue());
+        this.setLastIssue(title.getLastIssue());
+    }
+
     public String getName() {
         return mName;
     }

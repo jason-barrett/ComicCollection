@@ -40,23 +40,25 @@ public class TitlesListManager {
     public Map<String, Integer> mapListPositionByStartLetter(List<Title> titles) {
         Map<String, Integer> listPositionByStartLetter = new TreeMap<String, Integer>();
 
-        Character currentLetter = new Character(titles.get(0).getName().toUpperCase().charAt(0));
-        listPositionByStartLetter.put(currentLetter.toString(), 0);
+        if( !titles.isEmpty() ) {
+            Character currentLetter = new Character(titles.get(0).getName().toUpperCase().charAt(0));
+            listPositionByStartLetter.put(currentLetter.toString(), 0);
 
-        /*
-        The repository will return the list sorted alphabetically.
-         */
-        int position = 0;
-        for( Title title : titles ) {
+           /*
+            The repository will return the list sorted alphabetically.
+             */
+            int position = 0;
+            for (Title title : titles) {
             /*
             Load up the map with list position by starting letter.
              */
-            if( title.getName().toUpperCase().charAt(0) != currentLetter.charValue() ) {
-                currentLetter = title.getName().toUpperCase().charAt(0);
-                listPositionByStartLetter.put(currentLetter.toString(), position);
-            }
+                if (title.getName().toUpperCase().charAt(0) != currentLetter) {
+                    currentLetter = title.getName().toUpperCase().charAt(0);
+                    listPositionByStartLetter.put(currentLetter.toString(), position);
+                }
 
-            position++;
+                position++;
+            }
         }
 
         return listPositionByStartLetter;
