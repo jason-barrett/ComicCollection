@@ -26,7 +26,6 @@ android {
         activities under test.  The custom application will have a separate DI graph, allowing
         for substitution of fake dependencies.
          */
-        //testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         testInstrumentationRunner "com.example.comiccollection.ComicCollectionTestRunner"
 
         vectorDrawables.useSupportLibrary = true
@@ -39,8 +38,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
     }
 }
 
