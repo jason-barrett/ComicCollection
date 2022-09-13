@@ -2,6 +2,8 @@ package com.example.comiccollection.data.test;
 
 import android.util.Log;
 
+import com.example.comiccollection.data.CollectionStats;
+import com.example.comiccollection.data.CollectionStatsListener;
 import com.example.comiccollection.data.ComicRepository;
 import com.example.comiccollection.data.IssuesDeletionListener;
 import com.example.comiccollection.data.IssuesListener;
@@ -191,5 +193,19 @@ public class FakeComicRepository implements ComicRepository {
         ArrayList<OwnedCopy> ownedCopies = issue.getOwnedCopies();
         ownedCopies.add(ownedCopy);
         issue.setOwnedCopies(ownedCopies);
+    }
+
+    @Override
+    public void getCollectionStats(CollectionStatsListener collectionStatsListener) {
+        int totalIssues = (int) fakeIssues.stream()
+                .flatMap((i) -> i.getOwnedCopies().stream())
+                .count();
+
+        double totalValue = fakeIssues.stream()
+                .flatMap((i) -> i.getOwnedCopies().stream())
+                .map(OwnedCopy::getValue)
+                .reduce(0.0, Double::sum);
+
+        collectionStatsListener.onCollectionStatsReady(new CollectionStats(totalIssues, totalValue));
     }
 }

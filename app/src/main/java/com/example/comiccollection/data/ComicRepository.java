@@ -26,4 +26,5 @@ public interface ComicRepository {
                                     IssuesDeletionListener listener);
 
     public void addOwnedCopyOfIssue(OwnedCopy ownedCopy, Issue issue, IssuesListener issuesListener);
+    public void getCollectionStats(CollectionStatsListener collectionStatsListener);
 }

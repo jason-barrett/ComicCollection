@@ -55,5 +55,15 @@
     <string name="title_and_issue">%1$s %2$s</string>
     <string name="no_grade">NG</string>
 
+    <!-- For Collection Stats screen -->
+    <string name="collection_stats_title">Collection Stats</string>
+    <plurals name="stats_total_issues">
+        <item quantity="zero">You don\'t own any comics yet.</item>
+        <item quantity="one"><![CDATA[You have <b>%d</b> comic.]]></item>
+        <item quantity="other"><![CDATA[You have <b>%d</b> comics total.]]></item>
+    </plurals>
+    <string name="stats_total_value"><![CDATA[The estimated value of your collection is <b>\$%.2f</b>.]]></string>
+    <string name="dismiss_stats_dialog">OK</string>
+    <string name="stats_error">Can\'t get collection stats right now.  Please try again.</string>
 
 </resources>

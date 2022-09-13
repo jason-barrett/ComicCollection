@@ -1,6 +1,7 @@
 package com.example.comiccollection.ui;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -8,23 +9,28 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebView;
 import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.comiccollection.R;
 import com.example.comiccollection.application.ComicCollectionApplication;
-import com.example.comiccollection.data.entities.Issue;
+import com.example.comiccollection.data.CollectionStats;
 import com.example.comiccollection.data.entities.Title;
 import com.example.comiccollection.viewmodel.TitlesViewModel;
 import com.example.comiccollection.viewmodel.TitlesViewModelFactory;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -45,6 +51,13 @@ public class TitlesActivity extends AppCompatActivity
     private TitlesAdapter mTitlesAdapter;
 
     ArrayList<Title> mTitlesList;
+
+    /*
+    Keep a CollectionStats object.  I will set an observable on the LiveData in the
+    ViewModel and keep this object up to date in case the user asks to see the stats in
+    the menu.
+     */
+    CollectionStats collectionStats;
 
     private final String TAG = TitlesActivity.class.getSimpleName();
 
@@ -112,7 +125,14 @@ public class TitlesActivity extends AppCompatActivity
         mTitlesViewModel.loadTitles();
 
         /*
-        Add the floating action button to add a title
+        Make the initial request for CollectionStats and set an observable to keep track of
+        the object.
+         */
+        mTitlesViewModel.getCollectionStats()
+                .observe(this, (cs) -> collectionStats = cs);
+
+        /*
+        Add the floating action button to add a title.
         */
         FloatingActionButton titleFab = (FloatingActionButton) findViewById(R.id.titles_fab);
         titleFab.setOnClickListener(new View.OnClickListener() {
@@ -141,6 +161,78 @@ public class TitlesActivity extends AppCompatActivity
     protected void onDestroy() {
         super.onDestroy();
     }
+
+    /*************************************************************************************
+     * Options Menu handling
+     *************************************************************************************/
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.titles_activity_menu, menu);
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if( item.getItemId() == R.id.collection_stats_item ) {
+            showCollectionStats();
+            return true;
+        }
+
+        return false;
+    }
+
+    private void showCollectionStats() {
+    /*
+    The user wants to see collection statistics.
+
+    In the unlikely case that the initial load of the stats from the data store (in onCreate())
+    hasn't completed before the user chooses the menu option, the Activity's CollectionStats
+    object will still be null.  In that case, throw an error cleanly.
+     */
+        if( collectionStats == null ) {
+            Snackbar.make(mTitlesListView, R.string.stats_error, Snackbar.LENGTH_LONG).show();
+            return;
+        }
+        try {
+             /*
+             Pop up a dialog to show the current statistics.
+             */
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            AlertDialog collectionStatsDialog = builder
+                    .setView(R.layout.collection_stats_layout)
+                    .setTitle(R.string.collection_stats_title)
+                    .setNegativeButton(R.string.dismiss_stats_dialog, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.cancel();
+                        }
+                    })
+                    .show();
+
+            WebView totalIssuesView = collectionStatsDialog.findViewById(R.id.wvTotalIssues);
+            WebView totalValueView = collectionStatsDialog.findViewById(R.id.wvTotalValue);
+
+            String totalIssuesHtml = getResources()
+                    .getQuantityString(R.plurals.stats_total_issues,
+                            collectionStats.getTotalIssues(),
+                            collectionStats.getTotalIssues());
+
+            String totalValueHtml = getResources().getString(R.string.stats_total_value,
+                    collectionStats.getTotalValue());
+
+            totalIssuesView.loadData(totalIssuesHtml, "text/html", "utf-8");
+
+            totalValueView.loadData(totalValueHtml, "text/html", "utf-8");
+
+        } catch (Exception e) {
+            Snackbar.make(mTitlesListView, R.string.stats_error, Snackbar.LENGTH_LONG).show();
+
+            e.printStackTrace();
+        }
+    }  /* showCollectionStats() */
 
     /*************************************************************************************
      * TitlesAdapter listener interface method implementations.

@@ -2,14 +2,14 @@ package com.example.comiccollection.viewmodel;
 
 import android.util.Log;
 
+import com.example.comiccollection.data.CollectionStats;
+import com.example.comiccollection.data.CollectionStatsListener;
 import com.example.comiccollection.data.ComicRepository;
 import com.example.comiccollection.data.IssuesDeletionListener;
-import com.example.comiccollection.data.firestore.FirestoreComicRepository;
 import com.example.comiccollection.data.TitlesDeletionListener;
 import com.example.comiccollection.data.TitlesListener;
 import com.example.comiccollection.data.entities.Issue;
 import com.example.comiccollection.data.entities.Title;
-import com.google.firebase.firestore.ListenerRegistration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,13 +21,13 @@ import androidx.lifecycle.ViewModel;
 import javax.inject.Inject;
 
 public class TitlesViewModel extends ViewModel implements TitlesListener, TitlesDeletionListener,
-        IssuesDeletionListener {
+        IssuesDeletionListener, CollectionStatsListener {
 
-    private MutableLiveData< ArrayList<Title> > mLiveTitles = new MutableLiveData<ArrayList<Title>>();
+    private final MutableLiveData< ArrayList<Title> > mLiveTitles = new MutableLiveData<ArrayList<Title>>();
 
-    private ComicRepository repository;
+    private final ComicRepository repository;
 
-    private TitlesListManager mTitlesListManager = new TitlesListManager();
+    private final TitlesListManager mTitlesListManager = new TitlesListManager();
 
     private boolean mTryLoadAgain = true;
 
@@ -39,7 +39,14 @@ public class TitlesViewModel extends ViewModel implements TitlesListener, Titles
      */
     private Map<String, Integer> mListPositionByStartLetter;
 
-    private String TAG = TitlesListener.class.getSimpleName();
+    /*
+    To provide collection statistics back to the Activity so that the Activity can show
+    them in a UI, we use a LiveData wrapper for the CollectionStats object.
+     */
+    private final MutableLiveData<CollectionStats> liveCollectionStats =
+        new MutableLiveData<CollectionStats>();
+
+    private final String TAG = TitlesListener.class.getSimpleName();
 
 
     /*
@@ -108,6 +115,14 @@ public class TitlesViewModel extends ViewModel implements TitlesListener, Titles
         repository.deleteIssuesByRange(title, firstIssue, lastIssue, this);
     }
 
+    /*
+    Ask the data store for collection statistics asynchronously.
+     */
+    public MutableLiveData<CollectionStats> getCollectionStats() {
+         repository.getCollectionStats(this);
+         return liveCollectionStats;
+   }
+
     /****************************************************************************************
      * Listeners to the data (model) layer.
      ****************************************************************************************/
@@ -174,6 +189,18 @@ public class TitlesViewModel extends ViewModel implements TitlesListener, Titles
          */
     }
 
+    @Override
+    public void onCollectionStatsReady(CollectionStats collectionStats) {
+        Log.i(TAG, "Got collection stats, collection size = "
+                + collectionStats.getTotalIssues());
+        this.liveCollectionStats.setValue(collectionStats);
+    }
+
+    @Override
+    public void onCollectionStatsFailure(String message) {
+        Log.e(TAG, "Could not get collection stats: " + message);
+    }
+
     /****************************************************************************************
      * Helper methods for the UI display.
      ****************************************************************************************/
@@ -191,5 +218,6 @@ public class TitlesViewModel extends ViewModel implements TitlesListener, Titles
 
         return mTitlesListManager.titleNameExists(titles, newTitle);
     }
+
 
 }

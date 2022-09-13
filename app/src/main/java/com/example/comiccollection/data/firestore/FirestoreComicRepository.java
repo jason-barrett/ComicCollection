@@ -4,9 +4,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.Executors;
 
 import android.util.Log;
 
+import com.example.comiccollection.data.CollectionStats;
+import com.example.comiccollection.data.CollectionStatsListener;
 import com.example.comiccollection.data.ComicDbHelper;
 import com.example.comiccollection.data.ComicRepository;
 import com.example.comiccollection.data.IssuesDeletionListener;
@@ -866,5 +870,46 @@ public class FirestoreComicRepository implements ComicRepository {
                 .addOnFailureListener((e) -> Log.e(TAG, "Failed to add owned copy of "
                         + issue.getTitleAndIssueNumber() + "; " + e.getMessage()));
 
-    }
+    }  /* addOwnedCopyOfIssue() */
+
+    @Override
+    public void getCollectionStats(CollectionStatsListener collectionStatsListener) {
+        /*
+        Query Firestore for the collection group 'owned'.  These are sub-collections under the
+        'issues' collection.
+         */
+        db.collectionGroup(ComicDbHelper.CC_ISSUE_OWNED)
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                        /*
+                        Check the error cases first.
+                         */
+                        if( error != null ) {
+                            collectionStatsListener.onCollectionStatsFailure(error.getMessage());
+                            return;
+                        }
+                        assert value != null;
+                        if( value.isEmpty() ) {
+                            collectionStatsListener
+                                    .onCollectionStatsReady(new CollectionStats(0, 0.0));
+                        }
+
+                        int totalIssues = value.size();
+                        double totalValue = 0.0;
+
+                        for (DocumentSnapshot d : value.getDocuments()) {
+                            double thisValue =
+                                    Optional.ofNullable(d.getDouble(ComicDbHelper.CC_COPY_VALUE))
+                                            .orElse(0.0);
+                            totalValue += thisValue;
+                        }
+
+                        collectionStatsListener
+                                .onCollectionStatsReady(new CollectionStats(totalIssues, totalValue));
+
+                    }
+                });
+    } /* getCollectionStats() */
+
 }
