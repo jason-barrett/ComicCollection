@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -29,9 +30,9 @@ import javax.inject.Inject;
 public class OwnedCopiesFragment extends Fragment {
 
     /*
-    This Fragment contains only a banner (which I don't need to access programmatically)
-    and a recycler view showing all owned copies.
+    This Fragment contains only a banner and a recycler view showing all owned copies.
      */
+    private TextView ownedCopiesBanner;
     private RecyclerView mOwnedCopiesListView;
 
     @Inject
@@ -88,6 +89,19 @@ public class OwnedCopiesFragment extends Fragment {
                 ownedCopiesAdapter.notifyDataSetChanged();
             }
         });
+
+        /*
+        Set up the banner so that clicking on it will show or hide the list of copies.
+         */
+        ownedCopiesBanner = view.findViewById(R.id.owned_copy_banner_text);
+        ownedCopiesBanner.setOnClickListener((v) -> {
+                    if (mOwnedCopiesListView.getVisibility() == View.GONE) {
+                        mOwnedCopiesListView.setVisibility(View.VISIBLE);
+                    } else {
+                        mOwnedCopiesListView.setVisibility(View.GONE);
+                    }
+                }
+        );
 
         /*
         Set up the RecyclerView to show the copies.

@@ -2,5 +2,11 @@
 <resources>
     <dimen name="alpha_menu_padding">10dp</dimen>
     <dimen name="copy_list_start_end_padding">10dp</dimen>
+
+    <!-- Slight indentation for copies in a list. -->
     <dimen name="list_text_view_start_margin">15dp</dimen>
+
+    <!-- Pad the banner for each type of copy (e.g., OWNED).  The banner will be
+     tappable to show or hide the list of copies. -->
+    <dimen name="copy_banner_top_bottom_padding">15dp</dimen>
 </resources>
