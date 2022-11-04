@@ -64,19 +64,19 @@ public class UnownedCopy extends Copy {
 
 
     public static class Offer {
-        double mOfferPrice;
-        Date mOfferDate;
+        private double mOfferPrice;
+        private Date mOfferDate;
 
         public Offer(double offerPrice, Date offerDate) {
             this.mOfferPrice = offerPrice;
             this.mOfferDate = offerDate;
         }
 
-        double getOfferPrice() {
+        public double getOfferPrice() {
             return mOfferPrice;
         }
 
-        Date getOfferDate() {
+        public Date getOfferDate() {
             return mOfferDate;
         }
     }

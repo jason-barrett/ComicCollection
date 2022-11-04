@@ -9,7 +9,7 @@
         android:id="@+id/owned_copy_banner_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/owned_banner"
+        android:text="@string/owned_copy_category"
         android:textStyle="bold"
         android:gravity="center"
         android:paddingTop="@dimen/copy_banner_top_bottom_padding"

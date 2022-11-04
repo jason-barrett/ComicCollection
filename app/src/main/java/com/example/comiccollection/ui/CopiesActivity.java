@@ -1,9 +1,8 @@
 package com.example.comiccollection.ui;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
+import android.widget.ExpandableListView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -15,10 +14,15 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.comiccollection.R;
 import com.example.comiccollection.application.ComicCollectionApplication;
+import com.example.comiccollection.data.entities.Copy;
 import com.example.comiccollection.data.entities.Issue;
 import com.example.comiccollection.viewmodel.CopiesViewModel;
 import com.example.comiccollection.viewmodel.CopiesViewModelFactory;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Objects;
 
 import javax.inject.Inject;
@@ -35,9 +39,42 @@ public class CopiesActivity extends AppCompatActivity {
      */
     private TextView mTitleAndIssueTextView;
 
+    /*
+    ExpandableListView to show the individual copies, grouped by category.
+     */
+    private ExpandableListView copiesListView;
+
+    /*
+    Adapter for the ExpandableListView to provide it with data.
+     */
+    private CopiesAdapter copiesAdapter;
+
+    /*
+    We need a list of names for each group in the ExpandableList.  We're grouping the copies by
+    whether they are owned, for sale, or sold.
+     */
+    private List<String> copyCategoryNamesList;
+
+    /*
+    For each group / category, we also need to store copies of the Copy objects for this Issue
+    in each group.
+
+    This data will be acquired from the ViewModel via the repository and refreshed from the
+    ViewModel should this Activity be re-created.
+
+    We don't have the data here at Activity creation time, but let's set up the structure.
+     */
+    private HashMap<String, List<? extends Copy>> copiesMap = new HashMap<>();
+
+    /*
+    This factory will be injected by Dagger and used to create the CopiesViewModel I need.
+     */
     @Inject
     public CopiesViewModelFactory copiesViewModelFactory;
 
+    /*
+    CopiesViewModel to preserve state across configuration changes.
+     */
     private CopiesViewModel copiesViewModel;
 
     private String TAG = CopiesActivity.class.getSimpleName();
@@ -79,6 +116,17 @@ public class CopiesActivity extends AppCompatActivity {
                 I get back information on whether this issue is on the want list, and on all
                 known copies.
                  */
+                copiesMap.merge(getString(R.string.owned_copy_category), issue.getOwnedCopies(),
+                        (oldList, newList) -> {return newList;});
+                copiesMap.merge(getString(R.string.forsale_copy_category), issue.getUnownedCopies(),
+                        (oldList, newList) -> {return newList;});
+                copiesMap.merge(getString(R.string.sold_copy_category), issue.getSoldCopies(),
+                        (oldList, newList) -> {return newList;});
+
+                /*
+                Update the list adapter with new or changed information.
+                 */
+                copiesAdapter.notifyDataSetChanged();
             }
         });
 
@@ -89,6 +137,19 @@ public class CopiesActivity extends AppCompatActivity {
         mTitleAndIssueTextView
                 .setText(String.format(getResources().getString(R.string.title_and_issue),
                         thisTitle, thisIssue));
+
+        /*
+        Set up the ExpandableListView with all of the copy information.
+         */
+        copyCategoryNamesList = new ArrayList<String>(Arrays.asList(
+                getResources().getString(R.string.owned_copy_category),
+                getResources().getString(R.string.forsale_copy_category),
+                getResources().getString(R.string.sold_copy_category)
+        ));
+
+        copiesListView = (ExpandableListView)findViewById(R.id.copies_expandable_view);
+        copiesAdapter = new CopiesAdapter(getApplicationContext(), copyCategoryNamesList, copiesMap);
+        copiesListView.setAdapter(copiesAdapter);
 
         /*
         Enable the home (back) button in the ActionBar, which will allow the user to return

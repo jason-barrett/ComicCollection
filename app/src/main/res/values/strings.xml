@@ -42,10 +42,10 @@
     <string name="mark_wanted">Mark Wanted</string>
     <string name="dont_want">Don\'t Want</string>
 
-    <!-- Banner values for fragments in the Copies activity -->
-    <string name="owned_banner">OWNED</string>
-    <string name="forsale_banner">FOR SALE</string>
-    <string name="sold_banner">SOLD</string>
+    <!-- Strings for group categories in the Copies activity -->
+    <string name="owned_copy_category">Copies I Own</string>
+    <string name="forsale_copy_category">Copies For Sale</string>
+    <string name="sold_copy_category">Sold Copies</string>
 
     <!-- Keys for extras passed into a new CopiesActivity -->
     <string name="title_extra">copy_title</string>

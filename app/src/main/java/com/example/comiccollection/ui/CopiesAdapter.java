@@ -1,0 +1,259 @@
+package com.example.comiccollection.ui;
+
+import android.content.Context;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseExpandableListAdapter;
+import android.widget.TextView;
+
+import android.util.Log;
+
+import com.example.comiccollection.data.entities.Copy;
+import com.example.comiccollection.R;
+import com.example.comiccollection.data.entities.OwnedCopy;
+import com.example.comiccollection.data.entities.UnownedCopy;
+
+import java.text.NumberFormat;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
+public class CopiesAdapter extends BaseExpandableListAdapter {
+
+    /*
+    We need a Context for the view layout inflater.
+     */
+    private final Context context;
+
+    /*
+    This is the set of names for each category (group).
+     */
+    private final List<String> copyCategoryNamesList;
+
+    /*
+    This is the set of Copy objects, for each group, that carry the data for each copy (child).
+     */
+    private final Map<String, List<? extends Copy>> copiesMap;
+
+    /*
+    A handy mapping of group list index positions to group descriptors.
+     */
+    private final int OWNED_COPIES = 0;
+    private final int FORSALE_COPIES = 1;
+    private final int SOLD_COPIES = 2;
+
+    private final String TAG = CopiesAdapter.class.getSimpleName();
+
+    public CopiesAdapter(Context context, List<String> copyCategoryNamesList,
+                         Map<String, List<? extends Copy>> copiesMap) {
+        this.context = context;
+        this.copyCategoryNamesList = copyCategoryNamesList;
+        this.copiesMap = copiesMap;
+    }
+
+    @Override
+    public int getGroupCount() {
+        return copyCategoryNamesList.size();
+    }
+
+    @Override
+    public int getChildrenCount(int i) {
+        try {
+            String copyCategory = copyCategoryNamesList.get(i);
+            return Objects.requireNonNull(copiesMap.get(copyCategory)).size();
+
+        } catch( IndexOutOfBoundsException e) {
+            return 0;
+        }
+    }
+
+    @Override
+    public Object getGroup(int i) {
+        return copyCategoryNamesList.get(i);
+    }
+
+    @Override
+    public Object getChild(int i, int i1) {
+        try {
+            String copyCategory = copyCategoryNamesList.get(i);
+            List<? extends Copy> copyList =  Objects.requireNonNull(copiesMap.get(copyCategory));
+
+            return copyList.get(i1);
+
+        } catch( IndexOutOfBoundsException e) {
+            return null;
+        }
+    }
+
+    @Override
+    public long getGroupId(int i) {
+        return i;
+    }
+
+    @Override
+    public long getChildId(int i, int i1) {
+        return i1;
+    }
+
+    @Override
+    public boolean hasStableIds() {
+        return false;
+    }
+
+    @Override
+    public View getGroupView(int listPosition, boolean isExpanded, View convertView, ViewGroup parent) {
+        /*
+        This view will always be the view we get from inflating copy_group_layout.
+         */
+        View groupView = convertView;
+
+        if( convertView == null) {
+            LayoutInflater inflater = LayoutInflater.from(context);
+            groupView = inflater.inflate(R.layout.copy_group_layout, null);
+        }
+
+        /*
+        Provide the data to the View, in this case it is just a string for the category.
+         */
+        TextView copyCategoryView = groupView.findViewById(R.id.tvCopyCategory);
+        copyCategoryView.setText((String)getGroup(listPosition));
+
+        return groupView;
+    }
+
+    @Override
+    public View getChildView(int groupListPosition, int childListPosition, boolean isExpanded, View convertView, ViewGroup parent) {
+
+        /*
+        The view here will depend on which group the child is in.  If this is rendering an owned
+        copy, the view will be different than for an unowned (for sale) or a sold copy.  The
+        latter categories show more information.
+         */
+        View childView = convertView;
+
+        /*
+        We'll want to show some fields as currency, so get a formatter up front.
+         */
+        NumberFormat currencyFormat = NumberFormat.getCurrencyInstance();
+
+        /*
+        The convertView parameter is a built View that Android may give me to recycle.  Do I
+        *have* to use it?  In a case like this where the views are heterogeneous, is it possible
+        Android may give me the wrong type of View?
+         */
+        if( convertView == null ) {
+            LayoutInflater inflater = LayoutInflater.from(context);
+            switch( groupListPosition ) {
+                case OWNED_COPIES:
+                    childView = inflater.inflate(R.layout.owned_copy_item_layout, null);
+                    break;
+
+                case FORSALE_COPIES:
+                case SOLD_COPIES:
+                    childView = inflater.inflate(R.layout.unowned_copy_item_layout, null);
+                    break;
+
+                default:
+                    Log.e(TAG, "Invalid group list position " + groupListPosition);
+                    return null;
+            }
+        }
+
+        /*
+        Provide the Copy data to the view.  The data will be different depending on whether the
+        copy is owned or not.
+         */
+        switch( groupListPosition ) {
+            case OWNED_COPIES:
+                /*
+                Get the copy object at the group and child list positions.
+                 */
+                List<OwnedCopy> ownedCopiesList =
+                        (List<OwnedCopy>) copiesMap.get(copyCategoryNamesList.get(OWNED_COPIES));
+                assert ownedCopiesList != null;
+                OwnedCopy ownedCopy = ownedCopiesList.get(childListPosition);
+
+                TextView gradeView = childView.findViewById(R.id.owned_copy_grade);
+                if( ownedCopy.getGrade() != null && !ownedCopy.getGrade().isEmpty()) {
+                    gradeView.setText(ownedCopy.getGrade());
+                }
+
+                TextView valueView = childView.findViewById(R.id.owned_copy_value);
+                valueView.setText(currencyFormat.format(ownedCopy.getValue()));
+
+                break;
+
+            case FORSALE_COPIES:
+                /*
+                Get the copy object at the group and child list positions.
+                 */
+                List<UnownedCopy> forSaleCopiesList =
+                        (List<UnownedCopy>) copiesMap.get(copyCategoryNamesList.get(FORSALE_COPIES));
+                assert forSaleCopiesList != null;
+                UnownedCopy forSaleCopy = forSaleCopiesList.get(childListPosition);
+
+                TextView forSaleGradeView = childView.findViewById(R.id.unowned_copy_grade);
+                forSaleGradeView.setText(forSaleCopy.getGrade());
+
+                TextView forSaleDealerView = childView.findViewById(R.id.unowned_copy_dealer);
+                forSaleDealerView.setText(forSaleCopy.getDealer());
+
+                TextView forSalePriceView = childView.findViewById(R.id.unowned_copy_price);
+
+                /*
+                A copy that's for sale somewhere may have had changes to the price, all of which
+                will be recorded in the data.  On this screen, show the latest (last added)
+                price and date.
+                 */
+                List<UnownedCopy.Offer> offerList = forSaleCopy.getOffers();
+                if( offerList == null || offerList.size() == 0 ) {
+                    Log.e(TAG, "Unowned copy record for " + forSaleCopy.getTitle()
+                            + " " + forSaleCopy.getIssue() + " has no offer price.");
+
+                    return null;
+                }
+                UnownedCopy.Offer thisOffer = offerList.get(offerList.size() - 1);
+                forSalePriceView.setText(currencyFormat.format(thisOffer.getOfferPrice()));
+
+                TextView forSaleDateView = childView.findViewById(R.id.unowned_copy_date);
+                forSaleDateView.setText(thisOffer.getOfferDate().toString());
+
+                break;
+
+            case SOLD_COPIES:
+                /*
+                Get the copy object at the group and child list positions.
+                 */
+                List<UnownedCopy> soldCopiesList =
+                        (List<UnownedCopy>) copiesMap.get(copyCategoryNamesList.get(SOLD_COPIES));
+                assert soldCopiesList != null;
+                UnownedCopy soldCopy = soldCopiesList.get(childListPosition);
+
+                TextView soldGradeView = childView.findViewById(R.id.unowned_copy_grade);
+                soldGradeView.setText(soldCopy.getGrade());
+
+                TextView soldDealerView = childView.findViewById(R.id.unowned_copy_dealer);
+                soldDealerView.setText(soldCopy.getDealer());
+
+                TextView soldPriceView = childView.findViewById(R.id.unowned_copy_price);
+                soldPriceView.setText(currencyFormat.format(soldCopy.getSalePrice()));
+
+                TextView soldDateView = childView.findViewById(R.id.unowned_copy_date);
+                soldDateView.setText(soldCopy.getDateSold().toString());
+
+                break;
+
+            default:
+                Log.e(TAG, "Invalid category: " + groupListPosition);
+                return null;
+        }
+
+        return childView;
+    }
+
+    @Override
+    public boolean isChildSelectable(int i, int i1) {
+        return true;
+    }
+}

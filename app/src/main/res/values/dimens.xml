@@ -9,4 +9,9 @@
     <!-- Pad the banner for each type of copy (e.g., OWNED).  The banner will be
      tappable to show or hide the list of copies. -->
     <dimen name="copy_banner_top_bottom_padding">15dp</dimen>
+    <dimen name="copy_group_top_padding">20dp</dimen>
+    <dimen name="copy_group_start_padding">40dp</dimen>
+
+    <!-- Set the text size for copy categories. -->
+    <dimen name="copy_category_text_size">16sp</dimen>
 </resources>

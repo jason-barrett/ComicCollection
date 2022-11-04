@@ -16,6 +16,10 @@ public class CopiesViewModel extends ViewModel implements SingleIssueListener {
     private String mIssueTitle;
     private String mIssueNumber;
 
+    /*
+    Information about all known copies of an issue, whether owned, unowned, or sold, are
+    stored as member data in the Issue object.
+     */
     private MutableLiveData<Issue> mIssue;
 
     private final ComicRepository mRepository;

@@ -19,11 +19,19 @@
         tools:text="Batman 232"
         />
 
+    <ExpandableListView
+        android:id="@+id/copies_expandable_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        />
+
+    <!--
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/owned_copies_fragment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:name="com.example.comiccollection.ui.OwnedCopiesFragment"
         />
+        -->
 
 </androidx.appcompat.widget.LinearLayoutCompat>
