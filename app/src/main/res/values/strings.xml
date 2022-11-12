@@ -66,4 +66,8 @@
     <string name="dismiss_stats_dialog">OK</string>
     <string name="stats_error">Can\'t get collection stats right now.  Please try again.</string>
 
+    <!-- Context menu options. -->
+    <string name="context_menu_edit">EDIT</string>
+    <string name="context_menu_delete">DELETE</string>
+
 </resources>
