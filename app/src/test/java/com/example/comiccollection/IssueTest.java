@@ -1,14 +1,13 @@
 package com.example.comiccollection;
 
+import com.example.comiccollection.data.entities.Copy;
 import com.example.comiccollection.data.entities.Issue;
-import com.example.comiccollection.data.entities.OwnedCopy;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -46,12 +45,12 @@ public class IssueTest {
         issue.setIssueNumber("200");
         issue.setWanted(false);
 
-        OwnedCopy ownedCopy = new OwnedCopy();
+        Copy ownedCopy = new Copy();
         ownedCopy.setDealer("Superworld Comics");
         ownedCopy.setDatePurchased(new Date());
-        ownedCopy.setCost(2.00);
+        ownedCopy.setPurchasePrice(2.00);
 
-        ArrayList<OwnedCopy> ownedCopyList = new ArrayList<OwnedCopy>();
+        ArrayList<Copy> ownedCopyList = new ArrayList<Copy>();
         ownedCopyList.add(ownedCopy);
 
         issue.setOwnedCopies(ownedCopyList);
@@ -66,12 +65,12 @@ public class IssueTest {
         issue.setIssueNumber("200");
         issue.setWanted(true);
 
-        OwnedCopy ownedCopy = new OwnedCopy();
+        Copy ownedCopy = new Copy();
         ownedCopy.setDealer("Superworld Comics");
         ownedCopy.setDatePurchased(new Date());
-        ownedCopy.setCost(2.00);
+        ownedCopy.setPurchasePrice(2.00);
 
-        ArrayList<OwnedCopy> ownedCopyList = new ArrayList<OwnedCopy>();
+        ArrayList<Copy> ownedCopyList = new ArrayList<Copy>();
         ownedCopyList.add(ownedCopy);
 
         issue.setOwnedCopies(ownedCopyList);

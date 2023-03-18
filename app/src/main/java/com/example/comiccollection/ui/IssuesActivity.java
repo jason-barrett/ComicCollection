@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import com.example.comiccollection.R;
 import com.example.comiccollection.application.ComicCollectionApplication;
+import com.example.comiccollection.data.entities.Copy;
 import com.example.comiccollection.data.entities.Issue;
 import com.example.comiccollection.data.entities.OwnedCopy;
 import com.example.comiccollection.ui.filters.IssuesFilter;
@@ -239,13 +240,17 @@ public class IssuesActivity extends AppCompatActivity
             finish();
             return;
         }
+    }  /* onCreate() */
+
+    @Override
+    protected void onResume() {
+        super.onResume();
 
         /*
         Perform the initial data load.
          */
         mIssuesViewModel.loadIssues(mTitle);
-
-    }  /* onCreate() */
+    }
 
     @Override
     protected void onDestroy() {
@@ -477,8 +482,8 @@ public class IssuesActivity extends AppCompatActivity
                     If there is an owned copy (or more) already, do nothing.
                      */
                     if( issue.numberOfCopiesOwned() == 0 ) {
-                        ArrayList<OwnedCopy> markCopy = new ArrayList<OwnedCopy>();
-                        markCopy.add(new OwnedCopy(issue.getTitle(), issue.getIssueNumber()));
+                        ArrayList<Copy> markCopy = new ArrayList<Copy>();
+                        markCopy.add(new Copy(issue.getTitle(), issue.getIssueNumber()));
                         issue.setOwnedCopies(markCopy);
 
                         /*

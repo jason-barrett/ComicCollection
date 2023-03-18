@@ -11,10 +11,10 @@ import android.util.Log;
 
 import com.example.comiccollection.data.entities.Copy;
 import com.example.comiccollection.R;
-import com.example.comiccollection.data.entities.OwnedCopy;
-import com.example.comiccollection.data.entities.UnownedCopy;
 
 import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -34,7 +34,7 @@ public class CopiesAdapter extends BaseExpandableListAdapter {
     /*
     This is the set of Copy objects, for each group, that carry the data for each copy (child).
      */
-    private final Map<String, List<? extends Copy>> copiesMap;
+    private final Map<String, List<Copy>> copiesMap;
 
     /*
     A handy mapping of group list index positions to group descriptors.
@@ -46,7 +46,7 @@ public class CopiesAdapter extends BaseExpandableListAdapter {
     private final String TAG = CopiesAdapter.class.getSimpleName();
 
     public CopiesAdapter(Context context, List<String> copyCategoryNamesList,
-                         Map<String, List<? extends Copy>> copiesMap) {
+                         Map<String, List<Copy>> copiesMap) {
         this.context = context;
         this.copyCategoryNamesList = copyCategoryNamesList;
         this.copiesMap = copiesMap;
@@ -73,11 +73,14 @@ public class CopiesAdapter extends BaseExpandableListAdapter {
         return copyCategoryNamesList.get(i);
     }
 
+    /*
+    'i' chooses a category, 'i1' chooses a Copy within that category.
+     */
     @Override
     public Object getChild(int i, int i1) {
         try {
             String copyCategory = copyCategoryNamesList.get(i);
-            List<? extends Copy> copyList =  Objects.requireNonNull(copiesMap.get(copyCategory));
+            List<Copy> copyList =  Objects.requireNonNull(copiesMap.get(copyCategory));
 
             return copyList.get(i1);
 
@@ -123,7 +126,8 @@ public class CopiesAdapter extends BaseExpandableListAdapter {
     }
 
     @Override
-    public View getChildView(int groupListPosition, int childListPosition, boolean isExpanded, View convertView, ViewGroup parent) {
+    public View getChildView(int groupListPosition, int childListPosition, boolean isExpanded,
+                             View convertView, ViewGroup parent) {
 
         /*
         The view here will depend on which group the child is in.  If this is rendering an owned
@@ -169,10 +173,10 @@ public class CopiesAdapter extends BaseExpandableListAdapter {
                 /*
                 Get the copy object at the group and child list positions.
                  */
-                List<OwnedCopy> ownedCopiesList =
-                        (List<OwnedCopy>) copiesMap.get(copyCategoryNamesList.get(OWNED_COPIES));
+                List<Copy> ownedCopiesList =
+                        (List<Copy>) copiesMap.get(copyCategoryNamesList.get(OWNED_COPIES));
                 assert ownedCopiesList != null;
-                OwnedCopy ownedCopy = ownedCopiesList.get(childListPosition);
+                Copy ownedCopy = ownedCopiesList.get(childListPosition);
 
                 TextView gradeView = childView.findViewById(R.id.owned_copy_grade);
                 if( ownedCopy.getGrade() != null && !ownedCopy.getGrade().isEmpty()) {
@@ -188,10 +192,10 @@ public class CopiesAdapter extends BaseExpandableListAdapter {
                 /*
                 Get the copy object at the group and child list positions.
                  */
-                List<UnownedCopy> forSaleCopiesList =
-                        (List<UnownedCopy>) copiesMap.get(copyCategoryNamesList.get(FORSALE_COPIES));
+                List<Copy> forSaleCopiesList =
+                        (List<Copy>) copiesMap.get(copyCategoryNamesList.get(FORSALE_COPIES));
                 assert forSaleCopiesList != null;
-                UnownedCopy forSaleCopy = forSaleCopiesList.get(childListPosition);
+                Copy forSaleCopy = forSaleCopiesList.get(childListPosition);
 
                 TextView forSaleGradeView = childView.findViewById(R.id.unowned_copy_grade);
                 forSaleGradeView.setText(forSaleCopy.getGrade());
@@ -206,18 +210,20 @@ public class CopiesAdapter extends BaseExpandableListAdapter {
                 will be recorded in the data.  On this screen, show the latest (last added)
                 price and date.
                  */
-                List<UnownedCopy.Offer> offerList = forSaleCopy.getOffers();
+                ArrayList<Copy.Offer> offerList = forSaleCopy.getOffers();
                 if( offerList == null || offerList.size() == 0 ) {
                     Log.e(TAG, "Unowned copy record for " + forSaleCopy.getTitle()
                             + " " + forSaleCopy.getIssue() + " has no offer price.");
 
                     return null;
                 }
-                UnownedCopy.Offer thisOffer = offerList.get(offerList.size() - 1);
+                Copy.Offer thisOffer = offerList.get(offerList.size() - 1);
                 forSalePriceView.setText(currencyFormat.format(thisOffer.getOfferPrice()));
 
                 TextView forSaleDateView = childView.findViewById(R.id.unowned_copy_date);
-                forSaleDateView.setText(thisOffer.getOfferDate().toString());
+                //forSaleDateView.setText(thisOffer.getOfferDate().toString());
+                forSaleDateView.setText(new SimpleDateFormat("MM/dd/yyyy")
+                        .format(thisOffer.getOfferDate()));
 
                 break;
 
@@ -225,10 +231,10 @@ public class CopiesAdapter extends BaseExpandableListAdapter {
                 /*
                 Get the copy object at the group and child list positions.
                  */
-                List<UnownedCopy> soldCopiesList =
-                        (List<UnownedCopy>) copiesMap.get(copyCategoryNamesList.get(SOLD_COPIES));
+                List<Copy> soldCopiesList =
+                        (List<Copy>) copiesMap.get(copyCategoryNamesList.get(SOLD_COPIES));
                 assert soldCopiesList != null;
-                UnownedCopy soldCopy = soldCopiesList.get(childListPosition);
+                Copy soldCopy = soldCopiesList.get(childListPosition);
 
                 TextView soldGradeView = childView.findViewById(R.id.unowned_copy_grade);
                 soldGradeView.setText(soldCopy.getGrade());
@@ -240,7 +246,9 @@ public class CopiesAdapter extends BaseExpandableListAdapter {
                 soldPriceView.setText(currencyFormat.format(soldCopy.getSalePrice()));
 
                 TextView soldDateView = childView.findViewById(R.id.unowned_copy_date);
-                soldDateView.setText(soldCopy.getDateSold().toString());
+                //soldDateView.setText(soldCopy.getDateSold().toString());
+                soldDateView.setText(new SimpleDateFormat("MM/dd/yyyy")
+                        .format(soldCopy.getDateSold()));
 
                 break;
 

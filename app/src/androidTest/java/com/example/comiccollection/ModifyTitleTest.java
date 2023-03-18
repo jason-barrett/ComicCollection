@@ -8,8 +8,8 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.example.comiccollection.data.IssuesListener;
 import com.example.comiccollection.data.TitlesListener;
+import com.example.comiccollection.data.entities.Copy;
 import com.example.comiccollection.data.entities.Issue;
-import com.example.comiccollection.data.entities.OwnedCopy;
 import com.example.comiccollection.data.entities.Title;
 import com.example.comiccollection.data.test.FakeComicRepository;
 import com.example.comiccollection.ui.EditTitleDialogFragment;
@@ -112,8 +112,8 @@ public class ModifyTitleTest {
         actionComics400.setTitle("Action Comics");
         actionComics400.setIssueNumber("400");
         actionComics400.setWanted(false);
-        ArrayList<OwnedCopy> actionComics400Copies = new ArrayList<>();
-        actionComics400Copies.add(new OwnedCopy("Action Comics", "400"));
+        ArrayList<Copy> actionComics400Copies = new ArrayList<>();
+        actionComics400Copies.add(new Copy("Action Comics", "400"));
         actionComics400.setOwnedCopies(actionComics400Copies);
         fakeComicRepository.addIssue(actionComics400);
 
@@ -127,9 +127,9 @@ public class ModifyTitleTest {
         actionComics600.setTitle("Action Comics");
         actionComics600.setIssueNumber("600");
         actionComics600.setWanted(false);
-        ArrayList<OwnedCopy> actionComics600Copies = new ArrayList<>();
-        actionComics600Copies.add(new OwnedCopy("Action Comics", "600"));
-        actionComics600Copies.add(new OwnedCopy("Action Comics", "600"));
+        ArrayList<Copy> actionComics600Copies = new ArrayList<>();
+        actionComics600Copies.add(new Copy("Action Comics", "600"));
+        actionComics600Copies.add(new Copy("Action Comics", "600"));
         actionComics600.setOwnedCopies(actionComics600Copies);
         fakeComicRepository.addIssue(actionComics600);
 
@@ -163,8 +163,8 @@ public class ModifyTitleTest {
         firestorm2.setTitle("Firestorm (1978)");
         firestorm2.setIssueNumber("2");
         firestorm2.setWanted(false);
-        ArrayList<OwnedCopy> firestorm2OwnedCopies = new ArrayList<>();
-        firestorm2OwnedCopies.add(new OwnedCopy("Firestorm (1978)", "2"));
+        ArrayList<Copy> firestorm2OwnedCopies = new ArrayList<>();
+        firestorm2OwnedCopies.add(new Copy("Firestorm (1978)", "2"));
         firestorm2.setOwnedCopies(firestorm2OwnedCopies);
         fakeComicRepository.addIssue(firestorm2);
 
@@ -178,8 +178,8 @@ public class ModifyTitleTest {
         firestorm4.setTitle("Firestorm (1978)");
         firestorm4.setIssueNumber("4");
         firestorm4.setWanted(false);
-        ArrayList<OwnedCopy> firestorm4OwnedCopies = new ArrayList<>();
-        firestorm4OwnedCopies.add(new OwnedCopy("Firestorm (1978)", "4"));
+        ArrayList<Copy> firestorm4OwnedCopies = new ArrayList<>();
+        firestorm4OwnedCopies.add(new Copy("Firestorm (1978)", "4"));
         firestorm4.setOwnedCopies(firestorm4OwnedCopies);
         fakeComicRepository.addIssue(firestorm4);
 
@@ -187,8 +187,8 @@ public class ModifyTitleTest {
         firestorm5.setTitle("Firestorm (1978)");
         firestorm5.setIssueNumber("5");
         firestorm5.setWanted(false);
-        ArrayList<OwnedCopy> firestorm5OwnedCopies = new ArrayList<>();
-        firestorm5OwnedCopies.add(new OwnedCopy("Firestorm (1978)", "5"));
+        ArrayList<Copy> firestorm5OwnedCopies = new ArrayList<>();
+        firestorm5OwnedCopies.add(new Copy("Firestorm (1978)", "5"));
         firestorm5.setOwnedCopies(firestorm5OwnedCopies);
         fakeComicRepository.addIssue(firestorm5);
 
@@ -419,6 +419,7 @@ public class ModifyTitleTest {
             modifiedFirestormTitle.setFirstIssue("1");
             modifiedFirestormTitle.setLastIssue("5");
             modifiedFirestormTitle.setDocumentId(firestormTitle.getDocumentId());
+            when(mockEditTitleDialogFragment.getNewTitle()).thenReturn(modifiedFirestormTitle);
 
             activityScenario.onActivity( activity -> {
                 activity.onDialogClickEdit(mockEditTitleDialogFragment);
@@ -449,8 +450,8 @@ public class ModifyTitleTest {
                                                 .reduce("", (s1, s2) -> s1.isEmpty() ? s2 : s1 + "-" + s2);
                                         assertEquals("1-2-3-4-5", ownedIssues);
 
-                                        ArrayList<OwnedCopy> myCopies =
-                                                (ArrayList<OwnedCopy>) issues.stream()
+                                        ArrayList<Copy> myCopies =
+                                                (ArrayList<Copy>) issues.stream()
                                                 .flatMap(i -> i.getOwnedCopies().stream())
                                                 .collect(Collectors.toList());
                                         assertEquals(3, myCopies.size());

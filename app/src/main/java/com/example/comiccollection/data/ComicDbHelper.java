@@ -23,6 +23,7 @@ public class ComicDbHelper {
     public static final String CC_COLLECTION_TITLE = "titles";
     public static final String CC_COLLECTION_ISSUES = "issues";
     public static final String CC_COLLECTION_COPIES = "copies";
+    public static final String CC_COLLECTION_OFFERS = "offers";
 
     /*
     The following names are the data elements in the 'titles' collection directly.
@@ -48,7 +49,7 @@ public class ComicDbHelper {
     public static final String CC_COPY_GRADE = "grade";
     public static final String CC_COPY_PAGE_QUALITY = "pageQuality";
     public static final String CC_COPY_NOTES = "notes";
-    public static final String CC_COPY_COST = "cost";
+    public static final String CC_COPY_PURCHASE_PRICE = "purchasePrice";
     public static final String CC_COPY_DEALER = "dealer";
     public static final String CC_COPY_PURCHASER = "purchaser";
 

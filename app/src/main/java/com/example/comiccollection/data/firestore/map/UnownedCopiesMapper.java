@@ -3,7 +3,7 @@ package com.example.comiccollection.data.firestore.map;
 import android.util.Log;
 
 import com.example.comiccollection.data.ComicDbHelper;
-import com.example.comiccollection.data.entities.UnownedCopy;
+import com.example.comiccollection.data.entities.Copy;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -19,12 +19,12 @@ of an Issue, to a List of UnownedCopy (extends Copy) objects.
 public class UnownedCopiesMapper {
     static String TAG = UnownedCopiesMapper.class.getSimpleName();
 
-    public static List<UnownedCopy> map(QuerySnapshot value) {
-        List<UnownedCopy> unownedCopyList = new ArrayList<UnownedCopy>();
+    public static List<Copy> map(QuerySnapshot value) {
+        List<Copy> unownedCopyList = new ArrayList<Copy>();
 
         for( QueryDocumentSnapshot document : value ) {
             if( document.exists() ) {
-                UnownedCopy unownedCopy = map(document);
+                Copy unownedCopy = map(document);
                 if (unownedCopy != null) {
                     unownedCopyList.add(unownedCopy);
                 }
@@ -33,7 +33,7 @@ public class UnownedCopiesMapper {
         return unownedCopyList;
     }
 
-    public static UnownedCopy map(QueryDocumentSnapshot document) {
+    public static Copy map(QueryDocumentSnapshot document) {
         if (document == null || !document.exists()) {
             return null;
         }
@@ -42,7 +42,7 @@ public class UnownedCopiesMapper {
             /*
              The happy path is in here.
              */
-            UnownedCopy unownedCopy = new UnownedCopy();
+            Copy unownedCopy = new Copy();
 
             unownedCopy.setTitle(document.getString(ComicDbHelper.CC_COPY_TITLE));
             unownedCopy.setIssue(document.getString(ComicDbHelper.CC_COPY_ISSUE));

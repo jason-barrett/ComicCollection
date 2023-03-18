@@ -2,15 +2,13 @@ package com.example.comiccollection;
 
 import android.util.Log;
 
+import com.example.comiccollection.data.entities.Copy;
 import com.example.comiccollection.data.entities.Issue;
-import com.example.comiccollection.data.entities.UnownedCopy;
 import com.example.comiccollection.viewmodel.IssuesListManager;
-import com.example.comiccollection.viewmodel.IssuesViewModelFactory;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -242,7 +240,7 @@ public class IssuesListManagerTest {
         issueList.add(batman244);
         issueList.add(batman254);
 
-        UnownedCopy batman234Copy = new UnownedCopy();
+        Copy batman234Copy = new Copy();
         batman234Copy.setDocumentId("12121");
         batman234Copy.setTitle("Batman");
         batman234Copy.setIssue("234");
@@ -250,7 +248,7 @@ public class IssuesListManagerTest {
         batman234Copy.setGrade("VG+");
         batman234Copy.setDealer("Metropolis Comics");
 
-        ArrayList<UnownedCopy> unownedCopies = new ArrayList<>();
+        ArrayList<Copy> unownedCopies = new ArrayList<>();
         unownedCopies.add(batman234Copy);
 
         Issue batman234_withCopy = new Issue();

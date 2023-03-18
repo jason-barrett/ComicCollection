@@ -2,6 +2,7 @@ package com.example.comiccollection.ui;
 
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ExpandableListView;
 import android.widget.TextView;
 
@@ -18,6 +19,7 @@ import com.example.comiccollection.data.entities.Copy;
 import com.example.comiccollection.data.entities.Issue;
 import com.example.comiccollection.viewmodel.CopiesViewModel;
 import com.example.comiccollection.viewmodel.CopiesViewModelFactory;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,11 +30,11 @@ import java.util.Objects;
 import javax.inject.Inject;
 
 /*
-This Activity will manage a screen containing Fragments for owned, unowned (for sale) and
+This Activity will manage a screen containing segments for owned, unowned (for sale) and
 unowned (sold) copies of a given issue.  The title and issue number will be passed in
 by intent.
  */
-public class CopiesActivity extends AppCompatActivity {
+public class CopiesActivity extends AppCompatActivity implements AddCopyDialogFragment.AddCopyDialogListener {
 
     /*
     TextView for display of title and issue.
@@ -43,6 +45,11 @@ public class CopiesActivity extends AppCompatActivity {
     ExpandableListView to show the individual copies, grouped by category.
      */
     private ExpandableListView copiesListView;
+
+    /*
+    Floating Action Button to pop up a dialog for adding a copy.
+     */
+    private FloatingActionButton floatingActionButton;
 
     /*
     Adapter for the ExpandableListView to provide it with data.
@@ -64,7 +71,7 @@ public class CopiesActivity extends AppCompatActivity {
 
     We don't have the data here at Activity creation time, but let's set up the structure.
      */
-    private HashMap<String, List<? extends Copy>> copiesMap = new HashMap<>();
+    private HashMap<String, List<Copy>> copiesMap = new HashMap<>();
 
     /*
     This factory will be injected by Dagger and used to create the CopiesViewModel I need.
@@ -77,7 +84,7 @@ public class CopiesActivity extends AppCompatActivity {
      */
     private CopiesViewModel copiesViewModel;
 
-    private String TAG = CopiesActivity.class.getSimpleName();
+    private final String TAG = CopiesActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -152,6 +159,20 @@ public class CopiesActivity extends AppCompatActivity {
         copiesListView.setAdapter(copiesAdapter);
 
         /*
+        Set the behavior of the Floating Action Button, to launch a dialog to add a copy.
+         */
+        floatingActionButton = (FloatingActionButton) findViewById(R.id.copies_fab);
+        floatingActionButton.setOnClickListener( (v) -> {
+            AddCopyDialogFragment fragment = new AddCopyDialogFragment();
+            Bundle arguments = new Bundle();
+            arguments.putString("title", thisTitle);
+            arguments.putString("issue", thisIssue);
+            fragment.setArguments(arguments);
+
+            fragment.show(getSupportFragmentManager(), null);
+        });
+
+        /*
         Enable the home (back) button in the ActionBar, which will allow the user to return
         to the previous activity (the issues screen).
          */
@@ -186,5 +207,21 @@ public class CopiesActivity extends AppCompatActivity {
         Objects.requireNonNull(actionBar).setDisplayHomeAsUpEnabled(true);
     }
 
+    /*
+    Overridden from AddCopyDialogFragment.AddCopyDialogListener.  This gets called when a
+    Copy has just been successfully added.
+     */
+    @Override
+    public void onDialogClickAdd(AddCopyDialogFragment fragment) {
+        /*
+        Provide the new Copy to the ViewModel to add to the repository.
 
+        Any validation we may want to do that can't be done using the controls on the
+        form would go here.
+         */
+        Copy newCopy = fragment.getNewCopy();
+        if( newCopy != null ) {
+            copiesViewModel.addCopyToIssue(newCopy);
+        }
+    }
 }

@@ -14,4 +14,10 @@
 
     <!-- Set the text size for copy categories. -->
     <dimen name="copy_category_text_size">16sp</dimen>
+
+    <!-- Standard placement for a floating action button in an activity. -->
+    <dimen name="floating_action_button_margin">24dp</dimen>
+
+    <!-- Default height of radio buttons, so they are properly touch-activated -->
+    <dimen name="default_radio_button_height">48dp</dimen>
 </resources>

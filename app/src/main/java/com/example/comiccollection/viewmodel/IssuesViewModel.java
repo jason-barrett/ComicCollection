@@ -3,8 +3,8 @@ package com.example.comiccollection.viewmodel;
 import android.util.Log;
 
 import com.example.comiccollection.data.ComicRepository;
-import com.example.comiccollection.data.entities.OwnedCopy;
-import com.example.comiccollection.data.firestore.FirestoreComicRepository;
+import com.example.comiccollection.data.CopiesListener;
+import com.example.comiccollection.data.entities.Copy;
 import com.example.comiccollection.data.IssuesListener;
 import com.example.comiccollection.data.entities.Issue;
 
@@ -16,7 +16,7 @@ import androidx.lifecycle.ViewModel;
 
 import javax.inject.Inject;
 
-public class IssuesViewModel extends ViewModel implements IssuesListener {
+public class IssuesViewModel extends ViewModel implements IssuesListener, CopiesListener {
 
     /*
     The main data repository that feeds information into the ViewModel for
@@ -73,9 +73,18 @@ public class IssuesViewModel extends ViewModel implements IssuesListener {
         repository.modifyIssue(issue, this);
     }
 
-    public void addOwnedCopyOfIssue(OwnedCopy ownedCopy, Issue issue) {
-        repository.addOwnedCopyOfIssue(ownedCopy, issue, this);
+    /*
+    Note that the new Copy has already been added to the Issue object passed in here.  This is
+    a precondition of this call.  This method will add that copy to the issue's representation
+    in the data store.
+     */
+    public void addOwnedCopyOfIssue(Copy ownedCopy, Issue issue) {
+        repository.addCopyOfIssue(ownedCopy, issue, this);
     }
+
+    /*************************************************************************
+     * Implemented methods from IssuesListener.
+     *************************************************************************/
 
     /*
     This method is called when the initial load of issues is complete, including the load
@@ -114,5 +123,22 @@ public class IssuesViewModel extends ViewModel implements IssuesListener {
     @Override
     public void onIssueLoadFailed() {
 
+    }
+
+    /*************************************************************************
+     * Implemented methods from CopiesListener.
+     *************************************************************************/
+
+    /*
+    This method is called when the repository has finished adding a new Copy to an Issue
+    in this list.
+     */
+    @Override
+    public void onCopyReady(Copy copy, Issue issue) {
+        List<Issue> issuesToAddOrReplace = new ArrayList<>();
+        List<Issue> issuesToRemove = new ArrayList<>();
+        issuesToAddOrReplace.add(issue);
+
+        onIssueChangesReady(issuesToAddOrReplace, issuesToRemove);
     }
 }

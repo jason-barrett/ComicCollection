@@ -1,5 +1,6 @@
 package com.example.comiccollection;
 
+import com.example.comiccollection.data.entities.Copy;
 import com.example.comiccollection.data.entities.Issue;
 import com.example.comiccollection.data.entities.OwnedCopy;
 import com.example.comiccollection.ui.IssuesToggleState;
@@ -37,11 +38,11 @@ public class IssuesFilterTest {
         ff200.setIssueNumber("200");
         ff200.setWanted(false);
 
-        OwnedCopy ownedFF200 = new OwnedCopy();
+        Copy ownedFF200 = new Copy();
         ownedFF200.setTitle("Fantastic Four");
         ownedFF200.setIssue("200");
 
-        ArrayList<OwnedCopy> ownedCopyList200 = new ArrayList<OwnedCopy>();
+        ArrayList<Copy> ownedCopyList200 = new ArrayList<Copy>();
         ownedCopyList200.add(ownedFF200);
         ff200.setOwnedCopies(ownedCopyList200);
 
@@ -50,17 +51,17 @@ public class IssuesFilterTest {
         ff201.setIssueNumber("201");
         ff201.setWanted(false);
 
-        OwnedCopy ownedFF201_1 = new OwnedCopy();
+        Copy ownedFF201_1 = new Copy();
         ownedFF201_1.setTitle("Fantastic Four");
         ownedFF201_1.setIssue("201");
         ownedFF201_1.setGrade("VF");
 
-        OwnedCopy ownedFF201_2 = new OwnedCopy();
+        Copy ownedFF201_2 = new Copy();
         ownedFF201_2.setTitle("Fantastic Four");
         ownedFF201_2.setIssue("201");
         ownedFF201_2.setGrade("VG/F");
 
-        ArrayList<OwnedCopy> ownedCopyList201 = new ArrayList<OwnedCopy>();
+        ArrayList<Copy> ownedCopyList201 = new ArrayList<Copy>();
         ownedCopyList201.add(ownedFF201_1);
         ownedCopyList201.add(ownedFF201_2);
 
@@ -71,11 +72,11 @@ public class IssuesFilterTest {
         ff202.setIssueNumber("202");
         ff202.setWanted(false);
 
-        OwnedCopy ownedFF202 = new OwnedCopy();
+        Copy ownedFF202 = new Copy();
         ownedFF202.setTitle("Fantastic Four");
         ownedFF202.setIssue("202");
 
-        ArrayList<OwnedCopy> ownedCopyList202 = new ArrayList<OwnedCopy>();
+        ArrayList<Copy> ownedCopyList202 = new ArrayList<Copy>();
         ownedCopyList202.add(ownedFF202);
         ff202.setOwnedCopies(ownedCopyList202);
 
@@ -87,11 +88,11 @@ public class IssuesFilterTest {
         ff203.setIssueNumber("203");
         ff203.setWanted(true);
 
-        OwnedCopy ownedFF203 = new OwnedCopy();
+        Copy ownedFF203 = new Copy();
         ownedFF203.setTitle("Fantastic Four");
         ownedFF203.setIssue("203");
 
-        ArrayList<OwnedCopy> ownedCopyList203 = new ArrayList<OwnedCopy>();
+        ArrayList<Copy> ownedCopyList203 = new ArrayList<Copy>();
         ownedCopyList203.add(ownedFF203);
         ff203.setOwnedCopies(ownedCopyList203);
 

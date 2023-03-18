@@ -258,7 +258,8 @@ public class TitlesActivity extends AppCompatActivity
     public boolean onContextItemSelected(@NonNull MenuItem item) {
         /*
         Following a trick I learned in this video, https://www.youtube.com/watch?v=fl5BB3I3MvQ,
-        we're hiding the adapter position in the group ID for the menu item.
+        we're hiding the adapter position of the title that was long-pressed and to which
+        the context menu applies in the group ID for the menu item.
          */
         Title title = mTitlesAdapter.getTitleAt(item.getGroupId());
 

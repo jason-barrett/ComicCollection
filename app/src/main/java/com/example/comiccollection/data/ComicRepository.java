@@ -1,12 +1,10 @@
 package com.example.comiccollection.data;
 
+import com.example.comiccollection.data.entities.Copy;
 import com.example.comiccollection.data.entities.Issue;
-import com.example.comiccollection.data.entities.OwnedCopy;
 import com.example.comiccollection.data.entities.Title;
-import com.google.firebase.firestore.ListenerRegistration;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public interface ComicRepository {
     public void loadAndListenForTitles(TitlesListener titlesListener);
@@ -25,6 +23,6 @@ public interface ComicRepository {
     public void deleteIssuesByRange(Title title, int firstIssue, int lastIssue,
                                     IssuesDeletionListener listener);
 
-    public void addOwnedCopyOfIssue(OwnedCopy ownedCopy, Issue issue, IssuesListener issuesListener);
+    public void addCopyOfIssue(Copy ownedCopy, Issue issue, CopiesListener copiesListener);
     public void getCollectionStats(CollectionStatsListener collectionStatsListener);
 }

@@ -5,24 +5,21 @@ import android.util.Log;
 import com.example.comiccollection.data.CollectionStats;
 import com.example.comiccollection.data.CollectionStatsListener;
 import com.example.comiccollection.data.ComicRepository;
+import com.example.comiccollection.data.CopiesListener;
 import com.example.comiccollection.data.IssuesDeletionListener;
 import com.example.comiccollection.data.IssuesListener;
 import com.example.comiccollection.data.SingleIssueListener;
 import com.example.comiccollection.data.TitlesDeletionListener;
 import com.example.comiccollection.data.TitlesListener;
+import com.example.comiccollection.data.entities.Copy;
 import com.example.comiccollection.data.entities.Issue;
-import com.example.comiccollection.data.entities.OwnedCopy;
-import com.example.comiccollection.data.entities.SoldCopy;
 import com.example.comiccollection.data.entities.Title;
-import com.example.comiccollection.data.entities.UnownedCopy;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
-
-import javax.inject.Inject;
 
 public class FakeComicRepository implements ComicRepository {
 
@@ -185,12 +182,12 @@ public class FakeComicRepository implements ComicRepository {
     }
 
     @Override
-    public void addOwnedCopyOfIssue(OwnedCopy ownedCopy, Issue issue, IssuesListener issuesListener) {
+    public void addCopyOfIssue(Copy ownedCopy, Issue issue, CopiesListener copiesListener) {
 
         /*
         This method will return an empty list (not null) if there are no owned copies.
          */
-        ArrayList<OwnedCopy> ownedCopies = issue.getOwnedCopies();
+        ArrayList<Copy> ownedCopies = issue.getOwnedCopies();
         ownedCopies.add(ownedCopy);
         issue.setOwnedCopies(ownedCopies);
     }
@@ -203,7 +200,7 @@ public class FakeComicRepository implements ComicRepository {
 
         double totalValue = fakeIssues.stream()
                 .flatMap((i) -> i.getOwnedCopies().stream())
-                .map(OwnedCopy::getValue)
+                .map(Copy::getValue)
                 .reduce(0.0, Double::sum);
 
         collectionStatsListener.onCollectionStatsReady(new CollectionStats(totalIssues, totalValue));

@@ -69,5 +69,35 @@
     <!-- Context menu options. -->
     <string name="context_menu_edit">EDIT</string>
     <string name="context_menu_delete">DELETE</string>
+    <string name="context_menu_record_sale">RECORD SALE</string>
+    <string name="context_menu_purchase">PURCHASE</string>
+    <string name="context_menu_price_change">PRICE CHANGE</string>
+    <string name="context_menu_undo_sale">UNDO SALE</string>
+
+    <!-- For adding copies.  -->
+    <string name="add_copy">Add a copy of %1$s that…</string>
+    <string name="add_copy_owned">…I own.</string>
+    <string name="add_copy_for_sale">…is for sale in the market.</string>
+    <string name="add_copy_sold">…has sold in the market.</string>
+
+    <!-- For adding or editing copies.  -->
+    <string name="copy_grade">Grade</string>
+    <string name="copy_value">Estimated Value</string>
+    <string name="copy_purchase_date">Purchase Date</string>
+    <string name="copy_purchase_price">Purchase Price</string>
+    <string name="copy_purchased_from">Purchased From</string>
+    <string name="copy_offer_date">Offer Date</string>
+    <string name="copy_offer_price">Offer Price</string>
+    <string name="copy_seller">Seller</string>
+    <string name="copy_sale_date">Sale Date</string>
+    <string name="copy_sale_price">Sale Price</string>
+
+    <string name="positive_add_copy">Add</string>
+    <string name="positive_edit_copy">Edit</string>
+    <string name="negative_add_copy">Cancel</string>
+    <string name="negative_edit_copy">Cancel</string>
+
+    <string name="copy_error_no_title_issue">No title or issue number was provided.  Please cancel.</string>
+
 
 </resources>

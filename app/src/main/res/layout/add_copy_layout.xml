@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This layout will be used to add copies.  We will set up the screen so that
+  the type of copy (owned, for sale, etc.) is selected in the top pane, and the bottom pane
+  with show the base copy layout based on the choice. The text hints in the base copy layout
+  may also change programmatically based on the copy type.  -->
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/add_copy_type"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="12dp"
+        android:layout_marginStart="4dp"
+        android:text="@string/add_copy"
+        />
+
+    <RadioGroup
+        android:id="@+id/add_copy_radio_group"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/add_copy_type"
+        android:layout_marginTop="12dp"
+        android:layout_marginStart="6dp">
+
+        <RadioButton
+            android:id="@+id/add_copy_radio_owned"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/default_radio_button_height"
+            android:text="@string/add_copy_owned"
+            android:checked="true"
+            />
+        <RadioButton
+            android:id="@+id/add_copy_radio_forsale"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/default_radio_button_height"
+            android:text="@string/add_copy_for_sale"
+            />
+        <RadioButton
+            android:id="@+id/add_copy_radio_sold"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/default_radio_button_height"
+            android:text="@string/add_copy_sold"
+            />
+    </RadioGroup>
+
+    <include
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/add_copy_radio_group"
+        layout="@layout/base_copy_layout" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

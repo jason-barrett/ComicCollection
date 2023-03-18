@@ -2,7 +2,6 @@ package com.example.comiccollection.di;
 
 import com.example.comiccollection.ui.CopiesActivity;
 import com.example.comiccollection.ui.IssuesActivity;
-import com.example.comiccollection.ui.OwnedCopiesFragment;
 import com.example.comiccollection.ui.TitlesActivity;
 
 import javax.inject.Singleton;
@@ -19,5 +18,5 @@ public interface AppComponent {
     void inject(IssuesActivity issuesActivity);
     void inject(CopiesActivity copiesActivity);
 
-    void inject(OwnedCopiesFragment ownedCopiesFragment);
+    //void inject(OwnedCopiesFragment ownedCopiesFragment);
 }

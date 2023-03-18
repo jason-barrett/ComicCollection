@@ -3,7 +3,7 @@ package com.example.comiccollection.data.firestore.map;
 import android.util.Log;
 
 import com.example.comiccollection.data.ComicDbHelper;
-import com.example.comiccollection.data.entities.SoldCopy;
+import com.example.comiccollection.data.entities.Copy;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -12,17 +12,17 @@ import java.util.List;
 
 /*
 This class is responsible for mapping a QuerySnapshot object containing a set of sold copies
-of an Issue, to a List of SoldCopy (extends Copy) objects.
+of an Issue, to a List of Copy objects.
  */
 public class SoldCopiesMapper {
     static String TAG = SoldCopiesMapper.class.getSimpleName();
 
-    public static List<SoldCopy> map(QuerySnapshot value) {
-        List<SoldCopy> soldCopyList = new ArrayList<SoldCopy>();
+    public static List<Copy> map(QuerySnapshot value) {
+        List<Copy> soldCopyList = new ArrayList<Copy>();
 
         for( QueryDocumentSnapshot document : value ) {
             if( document.exists() ) {
-                SoldCopy soldCopy = map(document);
+                Copy soldCopy = map(document);
                 if (soldCopy != null) {
                     soldCopyList.add(soldCopy);
                 }
@@ -31,7 +31,7 @@ public class SoldCopiesMapper {
         return soldCopyList;
     }
 
-    public static SoldCopy map(QueryDocumentSnapshot document) {
+    public static Copy map(QueryDocumentSnapshot document) {
         if (document == null || !document.exists()) {
             return null;
         }
@@ -40,7 +40,7 @@ public class SoldCopiesMapper {
             /*
              The happy path is in here.
              */
-            SoldCopy soldCopy = new SoldCopy();
+            Copy soldCopy = new Copy();
 
             soldCopy.setTitle(document.getString(ComicDbHelper.CC_COPY_TITLE));
             soldCopy.setIssue(document.getString(ComicDbHelper.CC_COPY_ISSUE));
@@ -65,10 +65,14 @@ public class SoldCopiesMapper {
                 soldCopy.setPurchaser(document.getString(ComicDbHelper.CC_COPY_PURCHASER));
             }
             if( document.contains(ComicDbHelper.CC_COPY_SALE_PRICE) ) {
+                /*
                 String salePriceAsString = document.getString(ComicDbHelper.CC_COPY_SALE_PRICE);
                 soldCopy.setSalePrice(FirestoreTypeUtils
                         .handleDoubleAsString(salePriceAsString, soldCopy,
                                 ComicDbHelper.CC_COPY_SALE_PRICE));
+
+                 */
+                soldCopy.setSalePrice(document.getDouble(ComicDbHelper.CC_COPY_SALE_PRICE));
             }
             if( document.contains(ComicDbHelper.CC_COPY_DATE_SOLD) ) {
                 soldCopy.setDateSold(document.getDate(ComicDbHelper.CC_COPY_DATE_SOLD));

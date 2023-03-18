@@ -7,12 +7,14 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.comiccollection.data.ComicRepository;
+import com.example.comiccollection.data.CopiesListener;
 import com.example.comiccollection.data.SingleIssueListener;
+import com.example.comiccollection.data.entities.Copy;
 import com.example.comiccollection.data.entities.Issue;
 
 import javax.inject.Inject;
 
-public class CopiesViewModel extends ViewModel implements SingleIssueListener {
+public class CopiesViewModel extends ViewModel implements SingleIssueListener, CopiesListener {
     private String mIssueTitle;
     private String mIssueNumber;
 
@@ -56,7 +58,7 @@ public class CopiesViewModel extends ViewModel implements SingleIssueListener {
 
         /*
         The loadIssue() call is asynchronous.  So this method will almost certainly initially
-        return an empty LiveData object.  The observer of the object (in this case the
+        return an empty LiveData object when first called.  The observer of the object (in this case the
         CopiesActivity) will be notified when the object is 'filled' with the returned
         issue data and can update the UI at that point.
          */
@@ -74,4 +76,35 @@ public class CopiesViewModel extends ViewModel implements SingleIssueListener {
         Log.e(TAG, "Failed to load issue " + mIssueTitle + " " + mIssueNumber);
     }
 
+    public void addCopyToIssue(Copy copy) {
+        mRepository.addCopyOfIssue(copy, mIssue.getValue(), this);
+    }
+
+    @Override
+    public void onCopyReady(Copy copy, Issue issue) {
+        /*
+        Replace the live Issue object owned by this ViewModel with another Issue object with
+        this copy added.
+         */
+        Issue thisIssue = mIssue.getValue();
+        if( thisIssue == null ) {
+            Log.e(TAG, "Attempt to add copy to a null Issue.");
+            return;
+        }
+
+        switch( copy.getCopyType() ) {
+            case OWNED:
+                thisIssue.getOwnedCopies().add(copy);
+                break;
+
+            case FORSALE:
+                thisIssue.getUnownedCopies().add(copy);
+                break;
+
+            case SOLD:
+                thisIssue.getSoldCopies().add(copy);
+                break;
+        }
+        mIssue.setValue(thisIssue);
+    }
 }

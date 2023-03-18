@@ -32,17 +32,17 @@ public class AddTitleDialogFragment extends DialogFragment {
         public void onDialogClickAdd(AddTitleDialogFragment fragment);
     }
 
-    AddTitleDialogListener listener;
-    Title newTitle;
+    private AddTitleDialogListener listener;
+    private Title newTitle;
 
-    EditText nameField;
-    EditText firstIssueField;
-    EditText lastIssueField;
+    private EditText nameField;
+    private EditText firstIssueField;
+    private EditText lastIssueField;
 
-    TextView errorTextView;
-    String errorText;
+    private TextView errorTextView;
+    private String errorText;
 
-    String TAG = AddTitleDialogFragment.class.getSimpleName();
+    private final String TAG = AddTitleDialogFragment.class.getSimpleName();
 
     public void setErrorText(String errorText) {
         this.errorText = errorText;
