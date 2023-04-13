@@ -22,7 +22,6 @@ public class ComicDbHelper {
      */
     public static final String CC_COLLECTION_TITLE = "titles";
     public static final String CC_COLLECTION_ISSUES = "issues";
-    public static final String CC_COLLECTION_COPIES = "copies";
     public static final String CC_COLLECTION_OFFERS = "offers";
 
     /*
@@ -40,7 +39,8 @@ public class ComicDbHelper {
     public static final String CC_ISSUE_WANTED = "iwantit";
     public static final String CC_ISSUE_OWNED = "owned";
     public static final String CC_ISSUE_SOLD = "sold";
-    public static final String CC_ISSUE_UNOWNED = "unowned";
+    public static final String CC_ISSUE_FORSALE = "forsale";
+    public static final String CC_ISSUE_SOLDBYME = "soldbyme";
 
     /*
     The following names are the data elements in the 'owned' or 'unowned' collections.  They

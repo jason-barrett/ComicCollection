@@ -27,14 +27,19 @@ public class Issue {
     private ArrayList<Copy> mOwnedCopies;
 
     /*
-    Information about copies I know about and don't own (i.e., in the marketplace).
+    Information about copies that are for sale in the marketplace.
      */
-    private ArrayList<Copy> mUnownedCopies;
+    private ArrayList<Copy> mForSaleCopies;
+
+    /*
+    Information about copies that have sold in the marketplace.
+    */
+    private ArrayList<Copy> mSoldCopies;
 
     /*
     Information about copies I have sold.
     */
-    private ArrayList<Copy> mSoldCopies;
+    private ArrayList<Copy> mSoldByMeCopies;
 
 
     private String mDocumentId;
@@ -71,20 +76,35 @@ public class Issue {
         this.mOwnedCopies = copies;
     }
 
-    public ArrayList<Copy> getUnownedCopies() {
+    public ArrayList<Copy> getForSaleCopies() {
 
         /*
         Return an empty list rather than null.
          */
-        if( mUnownedCopies == null ) {
+        if( mForSaleCopies == null ) {
             return new ArrayList<>();
         }
 
-        return mUnownedCopies;
+        return mForSaleCopies;
     }
 
-    public void setUnownedCopies(ArrayList<Copy> copies) {
-        this.mUnownedCopies = copies;
+    public void setForSaleCopies(ArrayList<Copy> copies) {
+        this.mForSaleCopies = copies;
+    }
+
+    public ArrayList<Copy> getSoldByMeCopies() {
+
+        /*
+        Return an empty list rather than null.
+         */
+        if( mSoldByMeCopies == null ) {
+            return new ArrayList<>();
+        }
+        return mSoldByMeCopies;
+    }
+
+    public void setSoldByMeCopies(ArrayList<Copy> copies) {
+        this.mSoldByMeCopies = copies;
     }
 
     public ArrayList<Copy> getSoldCopies() {
@@ -95,9 +115,6 @@ public class Issue {
         if( mSoldCopies == null ) {
             return new ArrayList<>();
         }
-
-
-
         return mSoldCopies;
     }
 

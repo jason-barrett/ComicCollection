@@ -14,7 +14,7 @@ import java.util.Map;
 
 /*
 This class is responsible for mapping a QuerySnapshot object containing a set of unowned copies
-of an Issue, to a List of UnownedCopy (extends Copy) objects.
+of an Issue, to a List of Copy objects.
  */
 public class UnownedCopiesMapper {
     static String TAG = UnownedCopiesMapper.class.getSimpleName();
@@ -42,10 +42,8 @@ public class UnownedCopiesMapper {
             /*
              The happy path is in here.
              */
-            Copy unownedCopy = new Copy();
-
-            unownedCopy.setTitle(document.getString(ComicDbHelper.CC_COPY_TITLE));
-            unownedCopy.setIssue(document.getString(ComicDbHelper.CC_COPY_ISSUE));
+            Copy unownedCopy = new Copy(document.getString(ComicDbHelper.CC_COPY_TITLE),
+                    document.getString(ComicDbHelper.CC_COPY_ISSUE));
 
             if (document.contains(ComicDbHelper.CC_COPY_PAGE_QUALITY)) {
                 unownedCopy.setPageQuality(document.getString(ComicDbHelper.CC_COPY_PAGE_QUALITY));
@@ -69,6 +67,9 @@ public class UnownedCopiesMapper {
 
             /*
             This copy may have multiple recorded offer prices (i.e., price changes).
+
+            I don't think this code is ever going to get called because of how Firestore
+            works.  Offers, like any subcollection, won't come back with the copy information.
              */
             if( document.contains(ComicDbHelper.CC_COPY_OFFERS) ) {
                 List<Map<String, Object>> offers =
@@ -95,10 +96,13 @@ public class UnownedCopiesMapper {
 
             if( document.contains(ComicDbHelper.CC_COPY_SALE_PRICE) ) {
                 unownedCopy.setSalePrice(document.getDouble(ComicDbHelper.CC_COPY_SALE_PRICE));
+/*
                 String priceAsString = document.getString(ComicDbHelper.CC_COPY_SALE_PRICE);
                 unownedCopy.setSalePrice(FirestoreTypeUtils
                         .handleDoubleAsString(priceAsString, unownedCopy,
                                 ComicDbHelper.CC_COPY_SALE_PRICE));
+*/
+
             }
             if( document.contains(ComicDbHelper.CC_COPY_DATE_SOLD) ) {
                 unownedCopy.setDateSold(document.getDate(ComicDbHelper.CC_COPY_DATE_SOLD));
@@ -109,7 +113,7 @@ public class UnownedCopiesMapper {
             return unownedCopy;
         } catch( RuntimeException e ) {
             Log.e(TAG, "Cannot map UnownedCopy document " + document.getId()
-                    + ", may be malformed.");
+                    + ", may be malformed.  " + e.getMessage());
         }
 
         return null;

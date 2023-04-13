@@ -50,6 +50,9 @@ public class CopiesViewModel extends ViewModel implements SingleIssueListener, C
         }
     }
 
+    /*
+    Get a LiveData for this issue to observe on.
+     */
     public LiveData<Issue> getIssue() {
         if( mIssue == null ) {
             mIssue = new MutableLiveData<>();
@@ -98,11 +101,19 @@ public class CopiesViewModel extends ViewModel implements SingleIssueListener, C
                 break;
 
             case FORSALE:
-                thisIssue.getUnownedCopies().add(copy);
+                thisIssue.getForSaleCopies().add(copy);
                 break;
 
+                /*
+                In this case a 'sold' copy is one that was sold in the market, and is
+                categorized as 'unowned'.
+                 */
             case SOLD:
                 thisIssue.getSoldCopies().add(copy);
+                break;
+
+            case SOLDBYME:
+                thisIssue.getSoldByMeCopies().add(copy);
                 break;
         }
         mIssue.setValue(thisIssue);

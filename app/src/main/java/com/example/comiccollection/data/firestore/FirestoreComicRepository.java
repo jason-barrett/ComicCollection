@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.Callable;
 
@@ -24,6 +25,7 @@ import com.example.comiccollection.data.entities.Copy;
 import com.example.comiccollection.data.entities.Issue;
 import com.example.comiccollection.data.entities.Title;
 import com.example.comiccollection.data.firestore.map.IssuesMapper;
+import com.example.comiccollection.data.firestore.map.OffersMapper;
 import com.example.comiccollection.data.firestore.map.OwnedCopiesMapper;
 import com.example.comiccollection.data.firestore.map.SoldCopiesMapper;
 import com.example.comiccollection.data.firestore.map.TitlesMapper;
@@ -38,6 +40,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -83,8 +86,8 @@ public class FirestoreComicRepository implements ComicRepository {
 
     For example, the titles may be sorted alphabetically or in some custom way.
      */
-    private List<TitlesModifier> titlesModifiers = new ArrayList<TitlesModifier>();
-    private List<IssuesModifier> issuesModifiers = new ArrayList<IssuesModifier>();
+    private final List<TitlesModifier> titlesModifiers = new ArrayList<TitlesModifier>();
+    private final List<IssuesModifier> issuesModifiers = new ArrayList<IssuesModifier>();
 
     /*
     Store the registration for the titles query that comes back from the FirebaseFirestore
@@ -223,7 +226,6 @@ public class FirestoreComicRepository implements ComicRepository {
         in Firestore, which at this point is practically probably unimportant, but as the
         product evolves, could matter.
          */
-
         Map<String, Object> newTitle = new HashMap();
         newTitle.put(ComicDbHelper.CC_TITLE_NAME, title.getName());
         newTitle.put(ComicDbHelper.CC_TITLE_FIRST_ISSUE, title.getFirstIssue());
@@ -268,6 +270,11 @@ public class FirestoreComicRepository implements ComicRepository {
         I also need to attach all of the copy information, which needs to be queried separately
         in Firestore.
          */
+        final Issue[] issue = new Issue[1];
+        final ArrayList<Copy>[] ownedCopiesList = new ArrayList[]{new ArrayList<>()};
+        final ArrayList<Copy>[] forsaleCopiesList = new ArrayList[]{new ArrayList<>()};
+        final ArrayList<Copy>[] soldCopiesList = new ArrayList[]{new ArrayList<>()};
+        final ArrayList<Copy>[] soldbymeCopiesList = new ArrayList[]{new ArrayList<>()};
 
         /*
         Set a Task to query for the issue.
@@ -286,9 +293,17 @@ public class FirestoreComicRepository implements ComicRepository {
                 .get();
 
         /*
-        Set a task to query for unowned copies.
+        Set a task to query for copies for sale in the market.
          */
-        Task<QuerySnapshot> unownedCopiesTask = db.collectionGroup(ComicDbHelper.CC_ISSUE_UNOWNED)
+        Task<QuerySnapshot> forsaleCopiesTask = db.collectionGroup(ComicDbHelper.CC_ISSUE_FORSALE)
+                .whereEqualTo(ComicDbHelper.CC_COPY_TITLE, issueTitle)
+                .whereEqualTo(ComicDbHelper.CC_ISSUE_NUMBER, issueNumber)
+                .get();
+
+        /*
+        Set a task to query for copies that have sold in the market.
+         */
+        Task<QuerySnapshot> soldbymeCopiesTask = db.collectionGroup(ComicDbHelper.CC_ISSUE_SOLDBYME)
                 .whereEqualTo(ComicDbHelper.CC_COPY_TITLE, issueTitle)
                 .whereEqualTo(ComicDbHelper.CC_ISSUE_NUMBER, issueNumber)
                 .get();
@@ -304,15 +319,16 @@ public class FirestoreComicRepository implements ComicRepository {
         /*
         Wait for all tasks/queries to complete.
          */
-        Tasks.whenAllComplete(issuesTask, ownedCopiesTask, unownedCopiesTask, soldCopiesTask)
-                .addOnCompleteListener(new OnCompleteListener<List<Task<?>>>() {
+        Tasks.whenAllComplete(issuesTask, ownedCopiesTask, forsaleCopiesTask, soldbymeCopiesTask,
+                        soldCopiesTask)
+                .continueWithTask(new Continuation<List<Task<?>>, Task<List<Task<?>>>>() {
                     @Override
-                    public void onComplete(@NonNull Task<List<Task<?>>> task) {
+                    public Task<List<Task<?>>> then(@NonNull Task<List<Task<?>>> task) throws Exception {
                         ArrayList<Task<?>> completedTasks = (ArrayList<Task<?>>) task.getResult();
                         /*
                          Completed tasks will be in the list in the same order as in the call to
-                         whenAllComplete().  That is, issue, owned copies, unowned copies,
-                         sold copies.
+                         whenAllComplete().  That is, issue, owned copies, forsale copies,
+                         sold copies, sold by me copies.
                          */
                         Task<QuerySnapshot> issuesTask = (Task<QuerySnapshot>) completedTasks.get(0);
                         QuerySnapshot issuesResult = issuesTask.getResult();
@@ -322,7 +338,7 @@ public class FirestoreComicRepository implements ComicRepository {
                             An issue record should be unique by title and issue number.
                              */
                             DocumentSnapshot issueDocument = issuesResult.getDocuments().get(0);
-                            Issue issue = IssuesMapper.map(issueDocument);
+                            issue[0] = IssuesMapper.map(issueDocument);
 
                             /*
                             Add owned copies, if any.
@@ -332,43 +348,105 @@ public class FirestoreComicRepository implements ComicRepository {
                             QuerySnapshot ownedCopiesResult = ownedCopiesTask.getResult();
 
                             if( ownedCopiesResult != null ) {
-                                ArrayList<Copy> ownedCopiesList =
+                                ownedCopiesList[0] =
                                         (ArrayList<Copy>)OwnedCopiesMapper.map(ownedCopiesResult);
-                                issue.setOwnedCopies(ownedCopiesList);
+                                issue[0].setOwnedCopies(ownedCopiesList[0]);
                             }
 
                             /*
-                            Add unowned copies, if any.
+                            Add for sale copies, if any.
                              */
-                            Task<QuerySnapshot> unownedCopiesTask =
+                            Task<QuerySnapshot> forsaleCopiesTask =
                                     (Task<QuerySnapshot>) completedTasks.get(2);
-                            QuerySnapshot unownedCopiesResult = unownedCopiesTask.getResult();
+                            QuerySnapshot forsaleCopiesResult = forsaleCopiesTask.getResult();
 
-                            if( unownedCopiesResult != null ) {
-                                ArrayList<Copy> unownedCopiesList =
-                                        (ArrayList<Copy>)UnownedCopiesMapper.map(unownedCopiesResult);
-                                issue.setUnownedCopies(unownedCopiesList);
+                            if( forsaleCopiesResult != null ) {
+                                forsaleCopiesList[0] =
+                                        (ArrayList<Copy>)UnownedCopiesMapper.map(forsaleCopiesResult);
+                                issue[0].setForSaleCopies(forsaleCopiesList[0]);
+                            }
+
+                           /*
+                            Add sold (by me) copies, if any.
+                             */
+                            Task<QuerySnapshot> soldbymeCopiesTask =
+                                    (Task<QuerySnapshot>) completedTasks.get(3);
+                            QuerySnapshot soldbymeCopiesResult = soldbymeCopiesTask.getResult();
+
+                            if( soldbymeCopiesResult != null ) {
+                                soldbymeCopiesList[0] =
+                                        (ArrayList<Copy>)SoldCopiesMapper.map(soldbymeCopiesResult);
+                                issue[0].setSoldByMeCopies(soldbymeCopiesList[0]);
                             }
 
                             /*
-                            Add sold copies, if any.
+                            Add sold in the market copies, if any.
                              */
                             Task<QuerySnapshot> soldCopiesTask =
-                                    (Task<QuerySnapshot>) completedTasks.get(3);
+                                    (Task<QuerySnapshot>) completedTasks.get(4);
                             QuerySnapshot soldCopiesResult = soldCopiesTask.getResult();
 
                             if( soldCopiesResult != null ) {
-                                ArrayList<Copy> soldCopiesList =
-                                        (ArrayList<Copy>)SoldCopiesMapper.map(soldCopiesResult);
-                                issue.setSoldCopies(soldCopiesList);
+                                soldCopiesList[0] =
+                                        (ArrayList<Copy>)UnownedCopiesMapper.map(soldCopiesResult);
+                                issue[0].setSoldCopies(soldCopiesList[0]);
                             }
+                        } // if( issuesResult != null )
+
+                        /*
+                        If all went well, issue[0] should have the issue information, including
+                        the attached arrays of copies.
+
+                        We have one more thing to do.  We need to add in offers on each of the 'for sale'
+                        copies in the list.
+                         */
+                        ArrayList<Task<QuerySnapshot>> offersTasks = new ArrayList<>();
+                        for( Copy forsaleCopy : issue[ 0 ].getForSaleCopies() ) {
+                            /*
+                            Get the list of offers on this copy and attach it to the Copy object.
+                            */
+                            Task<QuerySnapshot> offersTask = db.collection(ComicDbHelper.CC_COLLECTION_ISSUES)
+                                    .document(issue[ 0 ].getDocumentId())
+                                    .collection(ComicDbHelper.CC_ISSUE_FORSALE)
+                                    .document(forsaleCopy.getDocumentId())
+                                    .collection(ComicDbHelper.CC_COLLECTION_OFFERS).get()
+                                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                            /*
+                                            Map each returned document to an Offer object and attach it to this
+                                            Copy.
+                                            */
+                                            List<Copy.Offer> offerList =
+                                                    OffersMapper.map(Objects.requireNonNull(task.getResult()));
+
+                                            for( Copy.Offer offer : offerList ) {
+                                                forsaleCopy.addOffer(offer);
+                                            }
+                                        }
+                                    });
 
                             /*
-                            The Issue object is now fully built and ready to go.
-                             */
-                            listener.onIssueReady(issue);
+                            Add this task to a list of similar tasks for Copy objects because we need to
+                            wait on them all to finish before we report success getting this issue.
+                            */
+                            offersTasks.add(offersTask);
+                        }
 
-                        } // if( issuesResult != null )
+                        Task<List<Task<?>>> completedOffersTasks =
+                                Tasks.whenAllSuccess(offersTasks);
+
+                        return completedOffersTasks;
+                    }
+                })
+               .addOnCompleteListener(new OnCompleteListener<List<Task<?>>>() {
+                    @Override
+                    public void onComplete(@NonNull Task<List<Task<?>>> task) {
+                        /*
+                        The Issue object is now fully built and ready to go.
+                        */
+                        listener.onIssueReady(issue[0]);
+
                     }  // onComplete() (all tasks complete)
                 }  // new OnCompleteListener()
                 ).addOnFailureListener(new OnFailureListener() {
@@ -377,7 +455,9 @@ public class FirestoreComicRepository implements ComicRepository {
                             listener.onIssueLoadFailed();
                         }
                  });  // addOnFailureListener()
-    }
+
+
+    }  /* getIssue() */
 
     @Override
     public void getIssuesByTitleOnce(String titleName, final IssuesListener issuesListener) {
@@ -418,23 +498,31 @@ public class FirestoreComicRepository implements ComicRepository {
                 .get();
 
         /*
-        Set a task to query for unowned copies.
+        Set a task to query for for sale copies.
          */
-        Task<QuerySnapshot> unownedCopiesTask = db.collectionGroup(ComicDbHelper.CC_ISSUE_UNOWNED)
+        Task<QuerySnapshot> forsaleCopiesTask = db.collectionGroup(ComicDbHelper.CC_ISSUE_FORSALE)
                 .whereEqualTo(ComicDbHelper.CC_COPY_TITLE, titleName)
                 .get();
 
         /*
-        Set a task to query for sold copies.
+        Set a task to query for copies sold in the marketplace.
          */
         Task<QuerySnapshot> soldCopiesTask = db.collectionGroup(ComicDbHelper.CC_ISSUE_SOLD)
                 .whereEqualTo(ComicDbHelper.CC_COPY_TITLE, titleName)
                 .get();
 
         /*
+        Set a task to query for sold (by me) copies.
+         */
+        Task<QuerySnapshot> soldbymeCopiesTask = db.collectionGroup(ComicDbHelper.CC_ISSUE_SOLDBYME)
+                .whereEqualTo(ComicDbHelper.CC_COPY_TITLE, titleName)
+                .get();
+
+        /*
         Set up a listener to be called when all tasks have completed.
          */
-        Tasks.whenAllComplete(issuesTask, ownedCopiesTask, unownedCopiesTask, soldCopiesTask)
+        Tasks.whenAllComplete(issuesTask, ownedCopiesTask, forsaleCopiesTask, soldbymeCopiesTask,
+                        soldCopiesTask)
                 .addOnCompleteListener(new OnCompleteListener<List<Task<?>>>() {
                     @Override
                     public void onComplete(@NonNull Task<List<Task<?>>> task) {
@@ -458,11 +546,15 @@ public class FirestoreComicRepository implements ComicRepository {
                             QuerySnapshot ownedCopiesQueryResult =
                                     (QuerySnapshot) ownedCopiesTask.getResult();
 
-                            Task<?> unownedCopiesTask = taskList.get(2);
-                            QuerySnapshot unownedCopiesQueryResult =
-                                    (QuerySnapshot) unownedCopiesTask.getResult();
+                            Task<?> forsaleCopiesTask = taskList.get(2);
+                            QuerySnapshot forsaleCopiesQueryResult =
+                                    (QuerySnapshot) forsaleCopiesTask.getResult();
 
-                            Task<?> soldCopiesTask = taskList.get(3);
+                            Task<?> soldbymeCopiesTask = taskList.get(3);
+                            QuerySnapshot soldbymeCopiesQueryResult =
+                                    (QuerySnapshot) soldbymeCopiesTask.getResult();
+
+                            Task<?> soldCopiesTask = taskList.get(4);
                             QuerySnapshot soldCopiesQueryResult =
                                     (QuerySnapshot) soldCopiesTask.getResult();
 
@@ -500,34 +592,34 @@ public class FirestoreComicRepository implements ComicRepository {
                                 }
                             }
 
-                            // Unowned copies
-                            Map<String, List<Copy>> unownedCopiesByIssue =
+                            // For sale copies
+                            Map<String, List<Copy>> forsaleCopiesByIssue =
                                     new HashMap<String, List<Copy>>();
 
-                            if( unownedCopiesQueryResult != null ) {
-                                List<Copy> unownedCopiesList =
-                                        UnownedCopiesMapper.map(unownedCopiesQueryResult);
+                            if( forsaleCopiesQueryResult != null ) {
+                                List<Copy> forsaleCopiesList =
+                                        UnownedCopiesMapper.map(forsaleCopiesQueryResult);
 
-                                for (Copy unownedCopy : unownedCopiesList) {
-                                    String issueOfCopy = unownedCopy.getIssue();
+                                for (Copy forsaleCopy : forsaleCopiesList) {
+                                    String issueOfCopy = forsaleCopy.getIssue();
 
                                     List<Copy> subList;
-                                    if ((subList = unownedCopiesByIssue.get(issueOfCopy)) == null) {
+                                    if ((subList = forsaleCopiesByIssue.get(issueOfCopy)) == null) {
                                         subList = new ArrayList<Copy>();
-                                        unownedCopiesByIssue.put(issueOfCopy, subList);
+                                        forsaleCopiesByIssue.put(issueOfCopy, subList);
                                     }
 
-                                    subList.add(unownedCopy);
+                                    subList.add(forsaleCopy);
                                 }
                             }
 
-                            // Sold copies
+                            // Sold in the market copies
                             Map<String, List<Copy>> soldCopiesByIssue =
                                     new HashMap<String, List<Copy>>();
 
                             if( soldCopiesQueryResult != null ) {
                                 List<Copy> soldCopiesList =
-                                        SoldCopiesMapper.map(soldCopiesQueryResult);
+                                        UnownedCopiesMapper.map(soldCopiesQueryResult);
 
                                 for (Copy soldCopy : soldCopiesList) {
                                     String issueOfCopy = soldCopy.getIssue();
@@ -542,9 +634,31 @@ public class FirestoreComicRepository implements ComicRepository {
                                 }
                             }
 
+                            // Sold copies (by me)
+                            Map<String, List<Copy>> soldbymeCopiesByIssue =
+                                    new HashMap<String, List<Copy>>();
+
+                            if( soldbymeCopiesQueryResult != null ) {
+                                List<Copy> soldbymeCopiesList =
+                                        SoldCopiesMapper.map(soldbymeCopiesQueryResult);
+
+                                for (Copy soldCopy : soldbymeCopiesList) {
+                                    String issueOfCopy = soldCopy.getIssue();
+
+                                    List<Copy> subList;
+                                    if ((subList = soldbymeCopiesByIssue.get(issueOfCopy)) == null) {
+                                        subList = new ArrayList<Copy>();
+                                        soldbymeCopiesByIssue.put(issueOfCopy, subList);
+                                    }
+
+                                    subList.add(soldCopy);
+                                }
+                            }
+
                             for( Issue issue : issuesList ) {
                                 issue.setOwnedCopies((ArrayList<Copy>)ownedCopiesByIssue.get(issue.getIssueNumber()));
-                                issue.setUnownedCopies((ArrayList<Copy>)unownedCopiesByIssue.get(issue.getIssueNumber()));
+                                issue.setForSaleCopies((ArrayList<Copy>)forsaleCopiesByIssue.get(issue.getIssueNumber()));
+                                issue.setSoldByMeCopies((ArrayList<Copy>)soldbymeCopiesByIssue.get(issue.getIssueNumber()));
                                 issue.setSoldCopies((ArrayList<Copy>)soldCopiesByIssue.get(issue.getIssueNumber()));
                             }
 
@@ -772,14 +886,30 @@ public class FirestoreComicRepository implements ComicRepository {
             }
         }
 
-        List<Copy> unownedCopies;
-        if( (unownedCopies = issue.getUnownedCopies()) != null ) {
-            for( Copy unownedCopy : unownedCopies ) {
-                db.collection(ComicDbHelper.CC_COLLECTION_ISSUES)
+        List<Copy> forsaleCopies;
+        if( (forsaleCopies = issue.getForSaleCopies()) != null ) {
+            for( Copy forsaleCopy : forsaleCopies ) {
+                /*
+                A 'for sale' copy may have offers attached to it.  I have to delete
+                those first.
+                 */
+                DocumentReference copyRef =
+                        db.collection(ComicDbHelper.CC_COLLECTION_ISSUES)
                         .document(issue.getDocumentId())
-                        .collection(ComicDbHelper.CC_ISSUE_UNOWNED)
-                        .document(unownedCopy.getDocumentId())
-                        .delete()
+                        .collection(ComicDbHelper.CC_ISSUE_FORSALE)
+                        .document(forsaleCopy.getDocumentId());
+
+                for(Copy.Offer offer : forsaleCopy.getOffers() ) {
+                    copyRef.collection(ComicDbHelper.CC_COLLECTION_OFFERS)
+                            .document(offer.getDocumentId())
+                            .delete()
+                            .addOnFailureListener(e -> listener.onIssuesDeleteFailed(e.getMessage()));
+                }
+
+                /*
+                Now I can delete the copy itself.
+                 */
+                copyRef.delete()
                         .addOnFailureListener(e -> listener.onIssuesDeleteFailed(e.getMessage()));
             }
         }
@@ -790,6 +920,18 @@ public class FirestoreComicRepository implements ComicRepository {
                 db.collection(ComicDbHelper.CC_COLLECTION_ISSUES)
                         .document(issue.getDocumentId())
                         .collection(ComicDbHelper.CC_ISSUE_SOLD)
+                        .document(soldCopy.getDocumentId())
+                        .delete()
+                        .addOnFailureListener(e -> listener.onIssuesDeleteFailed(e.getMessage()));
+            }
+        }
+
+        List<Copy> soldbymeCopies;
+        if( (soldbymeCopies = issue.getSoldByMeCopies()) != null ) {
+            for( Copy soldCopy : soldbymeCopies ) {
+                db.collection(ComicDbHelper.CC_COLLECTION_ISSUES)
+                        .document(issue.getDocumentId())
+                        .collection(ComicDbHelper.CC_ISSUE_SOLDBYME)
                         .document(soldCopy.getDocumentId())
                         .delete()
                         .addOnFailureListener(e -> listener.onIssuesDeleteFailed(e.getMessage()));
@@ -887,12 +1029,13 @@ public class FirestoreComicRepository implements ComicRepository {
                          */
                         DocumentReference copyReference = task.getResult();
                         if( copyReference != null && copy.getOffers() != null ) {
-                            copyReference.collection(ComicDbHelper.CC_COLLECTION_OFFERS);
+                            CollectionReference offersRef =
+                                    copyReference.collection(ComicDbHelper.CC_COLLECTION_OFFERS);
 
                             WriteBatch batch = db.batch();
                             for (Copy.Offer offer : copy.getOffers()) {
-                                DocumentReference docRef =
-                                        db.collection(ComicDbHelper.CC_COLLECTION_OFFERS).document();
+                                DocumentReference docRef = offersRef.document();
+                                offer.setDocumentId(docRef.getId());
 
                                 HashMap<String, Object> newOffer = new HashMap<>();
                                 newOffer.put(ComicDbHelper.CC_COPY_OFFER_PRICE, offer.getOfferPrice());

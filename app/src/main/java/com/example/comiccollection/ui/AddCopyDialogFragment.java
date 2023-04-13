@@ -36,13 +36,15 @@ to the datastore.
 
 It may be a copy the user owns, or one he knows of in the market.
  */
-
 public class AddCopyDialogFragment extends DialogFragment {
 
     public interface AddCopyDialogListener {
         public void onDialogClickAdd(AddCopyDialogFragment fragment);
     }
-    
+
+    /*
+    By default, we're adding an owned copy.
+     */
     private CopyType copyType = CopyType.OWNED;
 
     private AddCopyDialogListener listener;
@@ -189,7 +191,7 @@ public class AddCopyDialogFragment extends DialogFragment {
                                 }
                             } else if( copyType == CopyType.FORSALE ) {
                                 if( dateField.getText().length() > 0 && priceField.getText().length() > 0 ) {
-                                newCopy.addOffer(Double.parseDouble(priceField.getText().toString()),
+                                    newCopy.addOffer(Double.parseDouble(priceField.getText().toString()),
                                         dateFromDateField(dateField.getText().toString()));
                                 }
                                 if( otherPartyField.getText().length() > 0 ) {

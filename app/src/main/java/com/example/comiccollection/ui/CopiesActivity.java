@@ -26,6 +26,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -115,7 +116,6 @@ public class CopiesActivity extends AppCompatActivity implements AddCopyDialogFr
                 .get(CopiesViewModel.class);
         copiesViewModel.setIssueDetails(thisTitle, thisIssue);
 
-
         copiesViewModel.getIssue().observe(this, new Observer<Issue>() {
             @Override
             public void onChanged(Issue issue) {
@@ -125,8 +125,13 @@ public class CopiesActivity extends AppCompatActivity implements AddCopyDialogFr
                  */
                 copiesMap.merge(getString(R.string.owned_copy_category), issue.getOwnedCopies(),
                         (oldList, newList) -> {return newList;});
-                copiesMap.merge(getString(R.string.forsale_copy_category), issue.getUnownedCopies(),
+
+                copiesMap.merge(getString(R.string.forsale_copy_category), issue.getForSaleCopies(),
                         (oldList, newList) -> {return newList;});
+
+                /*
+                These are copies sold in the market, not copies sold by me.
+                 */
                 copiesMap.merge(getString(R.string.sold_copy_category), issue.getSoldCopies(),
                         (oldList, newList) -> {return newList;});
 
@@ -153,6 +158,13 @@ public class CopiesActivity extends AppCompatActivity implements AddCopyDialogFr
                 getResources().getString(R.string.forsale_copy_category),
                 getResources().getString(R.string.sold_copy_category)
         ));
+
+        /*
+        Initialize the CopiesMap to a map of empty lists.
+         */
+        for( String name : copyCategoryNamesList ) {
+            copiesMap.put(name, new ArrayList<Copy>());
+        }
 
         copiesListView = (ExpandableListView)findViewById(R.id.copies_expandable_view);
         copiesAdapter = new CopiesAdapter(getApplicationContext(), copyCategoryNamesList, copiesMap);
@@ -199,9 +211,9 @@ public class CopiesActivity extends AppCompatActivity implements AddCopyDialogFr
     }
 
     /*
-        The back button in the ActionBar will take us back to the previous activity (the
-        TitlesActivity).  Enable the back ("home") button in the ActionBar.
-        */
+    The back button in the ActionBar will take us back to the previous activity (the
+    IssuesActivity).  Enable the back ("home") button in the ActionBar.
+    */
     private void enableHomeButtonInActionBar() {
         ActionBar actionBar = getSupportActionBar();
         Objects.requireNonNull(actionBar).setDisplayHomeAsUpEnabled(true);

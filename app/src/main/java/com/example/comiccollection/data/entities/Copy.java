@@ -171,8 +171,12 @@ public class Copy {
         return mOffers;
     }
 
-    public void addOffer(double offerPrice, Date offerDate) {
+    public synchronized void addOffer(double offerPrice, Date offerDate) {
         mOffers.add(new Offer(offerPrice, offerDate));
+    }
+
+    public synchronized void addOffer(Offer offer) {
+        mOffers.add(offer);
     }
 
     public double getValue() {
@@ -199,6 +203,8 @@ public class Copy {
         private final double mOfferPrice;
         private final Date mOfferDate;
 
+        private String mDocumentId;
+
         public Offer(double offerPrice, Date offerDate) {
             this.mOfferPrice = offerPrice;
             this.mOfferDate = offerDate;
@@ -210,6 +216,14 @@ public class Copy {
 
         public Date getOfferDate() {
             return mOfferDate;
+        }
+
+        public String getDocumentId() {
+            return mDocumentId;
+        }
+
+        public void setDocumentId( String documentId ) {
+            mDocumentId = documentId;
         }
     }
 

@@ -214,16 +214,14 @@ public class CopiesAdapter extends BaseExpandableListAdapter {
                 if( offerList == null || offerList.size() == 0 ) {
                     Log.e(TAG, "Unowned copy record for " + forSaleCopy.getTitle()
                             + " " + forSaleCopy.getIssue() + " has no offer price.");
+                } else {
+                    Copy.Offer thisOffer = offerList.get(offerList.size() - 1);
+                    forSalePriceView.setText(currencyFormat.format(thisOffer.getOfferPrice()));
 
-                    return null;
+                    TextView forSaleDateView = childView.findViewById(R.id.unowned_copy_date);
+                    forSaleDateView.setText(new SimpleDateFormat("MM/dd/yyyy")
+                            .format(thisOffer.getOfferDate()));
                 }
-                Copy.Offer thisOffer = offerList.get(offerList.size() - 1);
-                forSalePriceView.setText(currencyFormat.format(thisOffer.getOfferPrice()));
-
-                TextView forSaleDateView = childView.findViewById(R.id.unowned_copy_date);
-                //forSaleDateView.setText(thisOffer.getOfferDate().toString());
-                forSaleDateView.setText(new SimpleDateFormat("MM/dd/yyyy")
-                        .format(thisOffer.getOfferDate()));
 
                 break;
 
@@ -254,7 +252,7 @@ public class CopiesAdapter extends BaseExpandableListAdapter {
 
             default:
                 Log.e(TAG, "Invalid category: " + groupListPosition);
-                return null;
+                //return null;
         }
 
         return childView;
