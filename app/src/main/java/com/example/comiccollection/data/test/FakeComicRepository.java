@@ -114,21 +114,12 @@ public class FakeComicRepository implements ComicRepository {
     }
 
     @Override
-    public void getIssuesByTitleOnce(String titleName, IssuesListener issuesListener) {
+    public void getIssuesByTitle(String titleName, IssuesListener issuesListener) {
         List<Issue> theseIssues = fakeIssues.stream()
                 .filter((i) -> i.getTitle().equals(titleName))
                 .collect(Collectors.toList());
 
         issuesListener.onIssuesReady(theseIssues);
-    }
-
-    @Override
-    public void getIssuesByTitleAndListen(String titleName, IssuesListener issuesListener) {
-        /*
-        This is a fake for testing purposes.  We are not going to do any asynchronous
-        pushing of new or changed issues from here.
-         */
-        getIssuesByTitleOnce(titleName, issuesListener);
     }
 
     @Override

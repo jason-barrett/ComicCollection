@@ -60,13 +60,8 @@ public class IssuesViewModel extends ViewModel implements IssuesListener, Copies
         This is going to perform all of the collection group queries to fetch all the copy
         information one time.
          */
-        repository.getIssuesByTitleOnce(title, this);
-
-        /*
-        This is going to listen for changes to the issue itself.
-         */
-
-        repository.getIssuesByTitleAndListen(title, this);
+        Log.i(TAG, "Initiating issue load for title " + title);
+        repository.getIssuesByTitle(title, this);
     }
 
     public void modifyIssue(Issue issue) {

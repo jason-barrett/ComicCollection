@@ -72,7 +72,6 @@ public class IssuesListManager {
         Second step, add everything new or being replaced to the local copy of the master list.
          */
         for( Issue addIssue : issuesToAddOrReplace ) {
-            Log.i(TAG, "Adding issue " + addIssue.getTitle() + " " + addIssue.getIssueNumber());
             localIssues.add(addIssue);
         }
 

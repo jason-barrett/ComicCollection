@@ -401,36 +401,39 @@ public class FirestoreComicRepository implements ComicRepository {
                         copies in the list.
                          */
                         ArrayList<Task<QuerySnapshot>> offersTasks = new ArrayList<>();
-                        for( Copy forsaleCopy : issue[ 0 ].getForSaleCopies() ) {
+
+                        if( issue[ 0 ] != null ) {
+                            for (Copy forsaleCopy : issue[0].getForSaleCopies()) {
                             /*
                             Get the list of offers on this copy and attach it to the Copy object.
                             */
-                            Task<QuerySnapshot> offersTask = db.collection(ComicDbHelper.CC_COLLECTION_ISSUES)
-                                    .document(issue[ 0 ].getDocumentId())
-                                    .collection(ComicDbHelper.CC_ISSUE_FORSALE)
-                                    .document(forsaleCopy.getDocumentId())
-                                    .collection(ComicDbHelper.CC_COLLECTION_OFFERS).get()
-                                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                Task<QuerySnapshot> offersTask = db.collection(ComicDbHelper.CC_COLLECTION_ISSUES)
+                                        .document(issue[0].getDocumentId())
+                                        .collection(ComicDbHelper.CC_ISSUE_FORSALE)
+                                        .document(forsaleCopy.getDocumentId())
+                                        .collection(ComicDbHelper.CC_COLLECTION_OFFERS).get()
+                                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
                                             /*
                                             Map each returned document to an Offer object and attach it to this
                                             Copy.
                                             */
-                                            List<Copy.Offer> offerList =
-                                                    OffersMapper.map(Objects.requireNonNull(task.getResult()));
+                                                List<Copy.Offer> offerList =
+                                                        OffersMapper.map(Objects.requireNonNull(task.getResult()));
 
-                                            for( Copy.Offer offer : offerList ) {
-                                                forsaleCopy.addOffer(offer);
+                                                for (Copy.Offer offer : offerList) {
+                                                    forsaleCopy.addOffer(offer);
+                                                }
                                             }
-                                        }
-                                    });
+                                        });
 
                             /*
                             Add this task to a list of similar tasks for Copy objects because we need to
                             wait on them all to finish before we report success getting this issue.
                             */
-                            offersTasks.add(offersTask);
+                                offersTasks.add(offersTask);
+                            }
                         }
 
                         Task<List<Task<?>>> completedOffersTasks =
@@ -460,7 +463,7 @@ public class FirestoreComicRepository implements ComicRepository {
     }  /* getIssue() */
 
     @Override
-    public void getIssuesByTitleOnce(String titleName, final IssuesListener issuesListener) {
+    public void getIssuesByTitle(String titleName, final IssuesListener issuesListener) {
         /*
         This is used for an initial load of all issues, including all associated copies.
 
@@ -481,8 +484,7 @@ public class FirestoreComicRepository implements ComicRepository {
          - Sort the titles alphabetically.
          */
         issuesModifiers.add(new IssuesSorter());
-
-
+        
         /*
         Set a Task to query for the issues.
          */
@@ -672,18 +674,24 @@ public class FirestoreComicRepository implements ComicRepository {
                                 }
                             }
 
+                            /*
+                            Set a snapshot listener to notify us of any changes to this data
+                            set.
+                             */
+                            setIssuesByTitleSnapshotListener(titleName, issuesListener);
+
                             issuesListener.onIssuesReady(issuesList);
 
                         } else {
                             Log.e(TAG, "Failed to gather issues information");
+                            issuesListener.onIssueLoadFailed();
                         }
                     }
                 });
 
     }
 
-    @Override
-    public void getIssuesByTitleAndListen(String titleName, final IssuesListener issuesListener) {
+    public void setIssuesByTitleSnapshotListener(String titleName, final IssuesListener issuesListener) {
 
         /*
         Un-register any previously registered listener (e.g., for issues of a different title).
@@ -959,7 +967,7 @@ public class FirestoreComicRepository implements ComicRepository {
         There is an opportunity for better efficiency here now, because we don't technically
         have to get all issues, which could be nice if the range is small.
          */
-        getIssuesByTitleOnce(title.getName(), new IssuesListener() {
+        getIssuesByTitle(title.getName(), new IssuesListener() {
             @Override
             public void onIssuesReady(List<Issue> issues) {
 

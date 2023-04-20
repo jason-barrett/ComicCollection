@@ -267,7 +267,7 @@ public class ModifyTitleTest {
                         assertEquals("400", newActionTitle.getFirstIssue());
                         assertEquals("500", newActionTitle.getLastIssue());
 
-                        fakeComicRepository.getIssuesByTitleOnce("Action Comics",
+                        fakeComicRepository.getIssuesByTitle("Action Comics",
                                 new IssuesListener() {
                                     @Override
                                     public void onIssuesReady(List<Issue> issues) {
@@ -353,7 +353,7 @@ public class ModifyTitleTest {
                         assertEquals("171", newBatmanTitle.getFirstIssue());
                         assertEquals("400", newBatmanTitle.getLastIssue());
 
-                        fakeComicRepository.getIssuesByTitleOnce("Batman",
+                        fakeComicRepository.getIssuesByTitle("Batman",
                                 new IssuesListener() {
                                     @Override
                                     public void onIssuesReady(List<Issue> issues) {
@@ -435,7 +435,7 @@ public class ModifyTitleTest {
                         assertNotNull(titles);
                         assertEquals(4, titles.size());
 
-                        fakeComicRepository.getIssuesByTitleOnce("Firestorm (1978)",
+                        fakeComicRepository.getIssuesByTitle("Firestorm (1978)",
                                 new IssuesListener() {
                                     @Override
                                     public void onIssuesReady(List<Issue> issues) {

@@ -13,8 +13,7 @@ public interface ComicRepository {
     public void deleteTitle(Title title, TitlesDeletionListener listener);
 
     public void getIssue(String issueTitle, String issueNumber, SingleIssueListener listener);
-    public void getIssuesByTitleOnce(String titleName, IssuesListener issuesListener);
-    public void getIssuesByTitleAndListen(String titleName, IssuesListener issuesListener);
+    public void getIssuesByTitle(String titleName, IssuesListener issuesListener);
     public void addIssue(Issue issue);
     public void addIssuesBatch(ArrayList<Issue> issues);
     public void modifyIssue(Issue issue, IssuesListener issuesListener);
