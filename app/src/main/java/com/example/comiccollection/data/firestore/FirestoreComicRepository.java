@@ -484,7 +484,7 @@ public class FirestoreComicRepository implements ComicRepository {
          - Sort the titles alphabetically.
          */
         issuesModifiers.add(new IssuesSorter());
-        
+
         /*
         Set a Task to query for the issues.
          */

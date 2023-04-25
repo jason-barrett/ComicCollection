@@ -42,7 +42,7 @@
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/edit_copy_grade"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="8dp"
         android:layout_marginStart="4dp"
         android:hint="@string/copy_purchase_price"/>
 
@@ -53,7 +53,7 @@
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="@id/copy_layout_guideline"
         app:layout_constraintTop_toTopOf="@id/edit_copy_price"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="4dp"
         android:focusable="false"
         android:hint="@string/copy_purchase_date"/>
@@ -65,9 +65,22 @@
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/edit_copy_price"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="8dp"
         android:layout_marginStart="4dp"
+        android:maxLength="20"
         android:hint="@string/copy_seller"/>
+
+    <EditText
+        android:id="@+id/edit_copy_notes"
+        android:inputType="text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/edit_copy_dealer"
+        android:layout_marginTop="8dp"
+        android:layout_marginStart="4dp"
+        android:maxLength="40"
+        android:hint="@string/copy_notes"/>
 
     <TextView
         android:id="@+id/copy_box_error_text"

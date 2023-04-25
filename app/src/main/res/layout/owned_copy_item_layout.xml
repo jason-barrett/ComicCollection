@@ -26,5 +26,14 @@
         tools:text="$15.00"
         />
 
+    <TextView
+        android:id="@+id/owned_copy_notes"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/owned_copy_grade"
+        android:layout_marginStart="@dimen/copy_list_start_end_padding"
+        tools:text="I got some notes on this issue."
+        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

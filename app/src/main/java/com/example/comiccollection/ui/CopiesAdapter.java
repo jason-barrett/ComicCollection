@@ -186,6 +186,17 @@ public class CopiesAdapter extends BaseExpandableListAdapter {
                 TextView valueView = childView.findViewById(R.id.owned_copy_value);
                 valueView.setText(currencyFormat.format(ownedCopy.getValue()));
 
+                /*
+                If there happen to be any notes on the copy, show the field, otherwise save the
+                space.
+                 */
+                TextView ownedNotesView = childView.findViewById(R.id.owned_copy_notes);
+                if( ownedCopy.getNotes() == null || ownedCopy.getNotes().isEmpty() ) {
+                    ownedNotesView.setVisibility(View.INVISIBLE);
+                } else {
+                    ownedNotesView.setText(ownedCopy.getNotes());
+                }
+
                 break;
 
             case FORSALE_COPIES:
@@ -223,6 +234,17 @@ public class CopiesAdapter extends BaseExpandableListAdapter {
                             .format(thisOffer.getOfferDate()));
                 }
 
+                /*
+                If there happen to be any notes on the copy, show the field, otherwise save the
+                space.
+                 */
+                TextView forSaleNotesView = childView.findViewById(R.id.unowned_copy_notes);
+                if( forSaleCopy.getNotes() == null || forSaleCopy.getNotes().isEmpty() ) {
+                    forSaleNotesView.setVisibility(View.GONE);
+                } else {
+                    forSaleNotesView.setText(forSaleCopy.getNotes());
+                }
+
                 break;
 
             case SOLD_COPIES:
@@ -247,6 +269,17 @@ public class CopiesAdapter extends BaseExpandableListAdapter {
                 //soldDateView.setText(soldCopy.getDateSold().toString());
                 soldDateView.setText(new SimpleDateFormat("MM/dd/yyyy")
                         .format(soldCopy.getDateSold()));
+
+                /*
+                If there happen to be any notes on the copy, show the field, otherwise save the
+                space.
+                 */
+                TextView soldNotesView = childView.findViewById(R.id.unowned_copy_notes);
+                if( soldCopy.getNotes() == null || soldCopy.getNotes().isEmpty() ) {
+                    soldNotesView.setVisibility(View.INVISIBLE);
+                } else {
+                    soldNotesView.setText(soldCopy.getNotes());
+                }
 
                 break;
 

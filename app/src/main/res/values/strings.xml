@@ -91,6 +91,7 @@
     <string name="copy_seller">Seller</string>
     <string name="copy_sale_date">Sale Date</string>
     <string name="copy_sale_price">Sale Price</string>
+    <string name="copy_notes">Notes</string>
 
     <string name="positive_add_copy">Add</string>
     <string name="positive_edit_copy">Edit</string>

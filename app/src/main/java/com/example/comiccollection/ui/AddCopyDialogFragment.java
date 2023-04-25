@@ -68,6 +68,7 @@ public class AddCopyDialogFragment extends DialogFragment {
     private EditText dateField;
     private EditText priceField;
     private EditText otherPartyField;  // e.g., dealer
+    private EditText notesField;
 
     private TextView errorTextView;
     private String errorText;
@@ -127,6 +128,7 @@ public class AddCopyDialogFragment extends DialogFragment {
         priceField = view.findViewById(R.id.edit_copy_price);
         dateField = view.findViewById(R.id.edit_copy_date);
         otherPartyField = view.findViewById(R.id.edit_copy_dealer);
+        notesField = view.findViewById(R.id.edit_copy_notes);
 
         errorTextView = view.findViewById(R.id.copy_box_error_text);
         if( errorText != null ) {
@@ -178,6 +180,8 @@ public class AddCopyDialogFragment extends DialogFragment {
                             if( valueField.getText().length() > 0 ) {
                                 newCopy.setValue(Double.parseDouble(valueField.getText().toString()));
                             }
+
+                            newCopy.setNotes(notesField.getText().toString());
 
                             if( copyType == CopyType.OWNED ) {
                                 if( priceField.getText().length() > 0 ) {
