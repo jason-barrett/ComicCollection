@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.example.comiccollection.data.ComicDbHelper;
 import com.example.comiccollection.data.entities.Copy;
+import com.example.comiccollection.data.entities.CopyType;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -104,8 +105,12 @@ public class UnownedCopiesMapper {
 */
 
             }
-            if( document.contains(ComicDbHelper.CC_COPY_DATE_SOLD) ) {
+            if( document.contains(ComicDbHelper.CC_COPY_DATE_SOLD)
+                    && document.get(ComicDbHelper.CC_COPY_DATE_SOLD) != null) {
                 unownedCopy.setDateSold(document.getDate(ComicDbHelper.CC_COPY_DATE_SOLD));
+                unownedCopy.setCopyType(CopyType.SOLD);
+            } else {
+                unownedCopy.setCopyType(CopyType.FORSALE);
             }
 
             unownedCopy.setDocumentId(document.getId());

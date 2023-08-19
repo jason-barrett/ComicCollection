@@ -15,6 +15,7 @@ import com.example.comiccollection.data.CollectionStats;
 import com.example.comiccollection.data.CollectionStatsListener;
 import com.example.comiccollection.data.ComicDbHelper;
 import com.example.comiccollection.data.ComicRepository;
+import com.example.comiccollection.data.CopiesDeletionListener;
 import com.example.comiccollection.data.CopiesListener;
 import com.example.comiccollection.data.IssuesDeletionListener;
 import com.example.comiccollection.data.IssuesListener;
@@ -49,6 +50,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.SetOptions;
+import com.google.firebase.firestore.Transaction;
 import com.google.firebase.firestore.WriteBatch;
 
 import androidx.annotation.NonNull;
@@ -210,7 +213,8 @@ public class FirestoreComicRepository implements ComicRepository {
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-                Log.e(TAG, "Failed to load title " + title.getName() + e.toString());
+                Log.e(TAG, "Failed to load title " + title.getName()
+                        + e.getMessage());
 
                 //TODO: Refactor to propagate this error back to the screen / user.
             }
@@ -1078,6 +1082,147 @@ public class FirestoreComicRepository implements ComicRepository {
                         + issue.getTitleAndIssueNumber() + "; " + e.getMessage()));
 
     }  /* addOwnedCopyOfIssue() */
+
+    @Override
+    public void deleteCopy(Copy copy, Issue issue, CopiesDeletionListener copiesListener) {
+        Log.i(TAG, "Deleting " + issue.getTitleAndIssueNumber()
+                + ", document " + copy.getDocumentId() + " attached to issue document "
+                + issue.getDocumentId());
+
+        db.collection(ComicDbHelper.CC_COLLECTION_ISSUES)
+                .document(issue.getDocumentId())
+                .collection(copy.getCopyType().toString().toLowerCase(Locale.ROOT))
+                .document(copy.getDocumentId())
+                .delete()
+                .addOnFailureListener(e -> copiesListener.onCopiesDeleteFailed(e.getMessage()));
+    }
+
+    @Override
+    public void modifyCopy(Copy copy, Issue issue, CopiesListener copiesListener) {
+        Log.i(TAG, "Modifying " + issue.getTitleAndIssueNumber()
+                + ", document " + copy.getDocumentId() + " attached to issue document "
+                + issue.getDocumentId());
+        /*
+        Any of several fields may be changed in the new Copy object, but the document ID will
+        serve as a reference.
+         */
+        Map<String, Object> changedCopy = new HashMap<>();
+        changedCopy.put(ComicDbHelper.CC_COPY_GRADE, copy.getGrade());
+        changedCopy.put(ComicDbHelper.CC_COPY_VALUE, copy.getValue());
+        changedCopy.put(ComicDbHelper.CC_COPY_SALE_PRICE, copy.getSalePrice());
+        changedCopy.put(ComicDbHelper.CC_COPY_DATE_SOLD, copy.getDateSold());
+        changedCopy.put(ComicDbHelper.CC_COPY_PURCHASER, copy.getPurchaser());
+        changedCopy.put(ComicDbHelper.CC_COPY_DATE_PURCHASED, copy.getDatePurchased());
+        changedCopy.put(ComicDbHelper.CC_COPY_DEALER, copy.getDealer());
+        changedCopy.put(ComicDbHelper.CC_COPY_NOTES, copy.getNotes());
+        changedCopy.put(ComicDbHelper.CC_COPY_PAGE_QUALITY, copy.getPageQuality());
+        changedCopy.put(ComicDbHelper.CC_COPY_PURCHASE_PRICE, copy.getPurchasePrice());
+
+        Log.i(TAG, "Modifying copy of "
+                + issue.getTitleAndIssueNumber() + ", notes: " + copy.getNotes());
+
+        Log.i(TAG, "Copy type is " + copy.getCopyType().toString().toLowerCase(Locale.ROOT));
+
+        db.collection(ComicDbHelper.CC_COLLECTION_ISSUES)
+                .document(issue.getDocumentId())
+                .collection(copy.getCopyType().toString().toLowerCase(Locale.ROOT))
+                .document(copy.getDocumentId())
+                .set(changedCopy, SetOptions.merge())
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        copiesListener.onCopyChange(copy);
+                    }
+                })
+                .addOnFailureListener((e) -> copiesListener.onCopyChangeFailed(e.getMessage()));
+    }
+
+    @Override
+    public void purchaseCopy(Copy copy, Issue issue, CopiesListener copiesListener) {
+        /*
+        Purchasing a copy involves moving the copy from 'forsale' to 'owned'.
+         */
+
+        /*
+        I need a reference for the new document, even though it doesn't exist yet.  Ask
+        Firestore for a unique identifier.
+         */
+        DocumentReference ownedCopyRef =
+                db.collection(ComicDbHelper.CC_COLLECTION_ISSUES)
+                        .document(issue.getDocumentId())
+                        .collection(ComicDbHelper.CC_ISSUE_OWNED).document();
+
+        DocumentReference forsaleCopyRef =
+                db.collection(ComicDbHelper.CC_COLLECTION_ISSUES)
+                        .document(issue.getDocumentId())
+                        .collection(ComicDbHelper.CC_ISSUE_FORSALE).document(copy.getDocumentId());
+
+        db.runTransaction(new Transaction.Function<Void>() {
+            @Override
+            public Void apply(Transaction transaction) {
+                /*
+                First create the owned copy.
+                 */
+                Map<String, Object> ownedCopyData = new HashMap<>();
+                ownedCopyData.put(ComicDbHelper.CC_COPY_TITLE, copy.getTitle());
+                ownedCopyData.put(ComicDbHelper.CC_COPY_ISSUE, copy.getIssue());
+                ownedCopyData.put(ComicDbHelper.CC_COPY_GRADE, copy.getGrade());
+                ownedCopyData.put(ComicDbHelper.CC_COPY_PAGE_QUALITY, copy.getPageQuality());
+                ownedCopyData.put(ComicDbHelper.CC_COPY_NOTES, copy.getNotes());
+                ownedCopyData.put(ComicDbHelper.CC_COPY_PURCHASE_PRICE, copy.getPurchasePrice());
+                ownedCopyData.put(ComicDbHelper.CC_COPY_DATE_PURCHASED, copy.getDatePurchased());
+                ownedCopyData.put(ComicDbHelper.CC_COPY_DEALER, copy.getDealer());
+                ownedCopyData.put(ComicDbHelper.CC_COPY_VALUE, copy.getValue());
+
+                transaction.set(ownedCopyRef, ownedCopyData);
+
+                /*
+                Then delete the for sale copy.
+                 */
+                transaction.delete(forsaleCopyRef);
+
+                return null;
+            }
+        }).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void unused) {
+                copiesListener.onCopyChange(copy);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                copiesListener.onCopyChangeFailed("Purchase failed, " + e.getMessage().toString());
+            }
+        });
+    }
+
+    @Override
+    public void addOfferToCopy(Copy copy, Copy.Offer newOffer, Issue issue, CopiesListener copiesListener) {
+        /*
+        A price change is registered as a new Offer.
+         */
+        Map<String, Object> offerToAdd = new HashMap<>();
+        offerToAdd.put(ComicDbHelper.CC_COPY_OFFER_PRICE, newOffer.getOfferPrice());
+        offerToAdd.put(ComicDbHelper.CC_COPY_DATE_OFFERED, newOffer.getOfferDate());
+
+        db.collection(ComicDbHelper.CC_COLLECTION_ISSUES)
+                .document(issue.getDocumentId())
+                .collection(ComicDbHelper.CC_ISSUE_FORSALE)
+                .document(copy.getDocumentId())
+                .collection(ComicDbHelper.CC_COLLECTION_OFFERS)
+                .add(offerToAdd)
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        copiesListener.onCopyChangeFailed("Failed to add offer, " + e.getMessage());
+                    }
+                }).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                    @Override
+                    public void onSuccess(DocumentReference documentReference) {
+                        copiesListener.onCopyChange(copy);
+                    }
+                });
+    }
 
     @Override
     public void getCollectionStats(CollectionStatsListener collectionStatsListener) {

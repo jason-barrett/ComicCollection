@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.example.comiccollection.data.ComicDbHelper;
 import com.example.comiccollection.data.entities.Copy;
+import com.example.comiccollection.data.entities.CopyType;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -79,6 +80,7 @@ public class SoldCopiesMapper {
             }
 
             soldCopy.setDocumentId(document.getId());
+            soldCopy.setCopyType(CopyType.SOLDBYME);
 
             return soldCopy;
         } catch( RuntimeException e ) {

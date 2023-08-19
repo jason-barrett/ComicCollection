@@ -1,6 +1,11 @@
 package com.example.comiccollection.ui;
 
+import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.ContextMenu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ExpandableListView;
@@ -35,7 +40,8 @@ This Activity will manage a screen containing segments for owned, unowned (for s
 unowned (sold) copies of a given issue.  The title and issue number will be passed in
 by intent.
  */
-public class CopiesActivity extends AppCompatActivity implements AddCopyDialogFragment.AddCopyDialogListener {
+public class CopiesActivity extends AppCompatActivity implements AddCopyDialogFragment.AddCopyDialogListener,
+        EditCopyDialogFragment.EditCopyDialogListener {
 
     /*
     TextView for display of title and issue.
@@ -86,6 +92,10 @@ public class CopiesActivity extends AppCompatActivity implements AddCopyDialogFr
     private CopiesViewModel copiesViewModel;
 
     private final String TAG = CopiesActivity.class.getSimpleName();
+
+    /***************************************************************************************
+      Lifecycle methods.
+     ***************************************************************************************/
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -166,9 +176,14 @@ public class CopiesActivity extends AppCompatActivity implements AddCopyDialogFr
             copiesMap.put(name, new ArrayList<Copy>());
         }
 
+        /*
+        Initialize the ExpandableListView and provide it to the CopiesAdapter.  Register the view
+        to implement a context menu for edits.
+         */
         copiesListView = (ExpandableListView)findViewById(R.id.copies_expandable_view);
         copiesAdapter = new CopiesAdapter(getApplicationContext(), copyCategoryNamesList, copiesMap);
         copiesListView.setAdapter(copiesAdapter);
+        registerForContextMenu(copiesListView);
 
         /*
         Set the behavior of the Floating Action Button, to launch a dialog to add a copy.
@@ -192,6 +207,9 @@ public class CopiesActivity extends AppCompatActivity implements AddCopyDialogFr
 
     }  /* onCreate() */
 
+    /*
+    Options menu handling.
+     */
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
 
@@ -208,6 +226,69 @@ public class CopiesActivity extends AppCompatActivity implements AddCopyDialogFr
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    /*
+    Context menu handling.
+     */
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View view,
+                                    ContextMenu.ContextMenuInfo menuInfo) {
+
+        /*
+        The context menu should only display on a child view that represents an actual copy,
+        not in a group view that represents a category of copies.
+         */
+        ExpandableListView.ExpandableListContextMenuInfo expandableMenuInfo =
+                (ExpandableListView.ExpandableListContextMenuInfo)menuInfo;
+        int type = ExpandableListView.getPackedPositionType(expandableMenuInfo.packedPosition);
+
+        if( type == ExpandableListView.PACKED_POSITION_TYPE_CHILD) {
+            super.onCreateContextMenu(menu, view, menuInfo);
+            MenuInflater inflater = getMenuInflater();
+            inflater.inflate(R.menu.copy_context_menu, menu);
+
+        }
+    }
+
+    @SuppressLint("NonConstantResourceId")
+    @Override
+    public boolean onContextItemSelected(MenuItem menuItem) {
+        /*
+         I need a reference to the Copy that the menu this item belongs to was attached to.
+
+         I can get the group / child position coordinates from the MenuInfo object attached
+         to the item.
+         */
+        ExpandableListView.ExpandableListContextMenuInfo menuInfo =
+                (ExpandableListView.ExpandableListContextMenuInfo)menuItem.getMenuInfo();
+
+        int groupPosition = ExpandableListView.getPackedPositionGroup(menuInfo.packedPosition);
+        int childPosition = ExpandableListView.getPackedPositionChild(menuInfo.packedPosition);
+
+        Copy copy = (Copy)copiesAdapter.getChild(groupPosition, childPosition);
+
+        switch (menuItem.getItemId()) {
+            case R.id.copy_menu_option_edit:
+                EditCopyDialogFragment fragment = new EditCopyDialogFragment(copy, this);
+                fragment.show(getSupportFragmentManager(), null);
+
+                break;
+
+            case R.id.copy_menu_option_delete:
+                copiesViewModel.deleteCopy(copy);
+                break;
+
+            case R.id.copy_menu_option_purchase:
+            case R.id.copy_menu_option_price_change:
+            case R.id.copy_menu_option_record_sale:
+            case R.id.copy_menu_option_undo_sale:
+
+            default:
+                return super.onContextItemSelected(menuItem);
+        }
+
+        return super.onContextItemSelected(menuItem);
     }
 
     /*
@@ -235,5 +316,22 @@ public class CopiesActivity extends AppCompatActivity implements AddCopyDialogFr
         if( newCopy != null ) {
             copiesViewModel.addCopyToIssue(newCopy);
         }
+    }
+
+    @Override
+    public void onDialogClickEdit(EditCopyDialogFragment fragment) {
+        /*
+        Propagate the changes in the edited Copy object through the ViewModel.
+
+        Any validation we may want to do that can't be done using the controls on the
+        form would go here.
+         */
+        Copy editCopy = fragment.getEditCopy();
+
+        if( editCopy != null ) {
+            copiesViewModel.modifyCopy(editCopy);
+        }
+
+        fragment.dismiss();
     }
 }

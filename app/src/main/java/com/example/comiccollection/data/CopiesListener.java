@@ -10,4 +10,6 @@ public interface CopiesListener {
      */
     public void onCopyReady(Copy copy, Issue issue);
 
+    public void onCopyChange(Copy copy);
+    public void onCopyChangeFailed(String message);
 }

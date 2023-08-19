@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.comiccollection.data.ComicRepository;
+import com.example.comiccollection.data.CopiesDeletionListener;
 import com.example.comiccollection.data.CopiesListener;
 import com.example.comiccollection.data.SingleIssueListener;
 import com.example.comiccollection.data.entities.Copy;
@@ -14,7 +15,8 @@ import com.example.comiccollection.data.entities.Issue;
 
 import javax.inject.Inject;
 
-public class CopiesViewModel extends ViewModel implements SingleIssueListener, CopiesListener {
+public class CopiesViewModel extends ViewModel implements SingleIssueListener, CopiesListener,
+        CopiesDeletionListener {
     private String mIssueTitle;
     private String mIssueNumber;
 
@@ -68,6 +70,45 @@ public class CopiesViewModel extends ViewModel implements SingleIssueListener, C
         return mIssue;
     }
 
+    /*
+    Add the provided Copy to the Issue being tracked here.
+     */
+    public void addCopyToIssue(Copy copy) {
+        mRepository.addCopyOfIssue(copy, mIssue.getValue(), this);
+
+        /*
+        Propagate the change to the display.
+         */
+        loadIssue();
+    }
+
+    /*
+    Add the modified copy to the data store, replacing the copy already attached to the issue.
+     */
+    public void modifyCopy(Copy copy) {
+        mRepository.modifyCopy(copy, mIssue.getValue(), this);
+    }
+
+    /*
+    Delete a copy from the data store.
+     */
+    public void deleteCopy(Copy copy) {
+        mRepository.deleteCopy(copy, mIssue.getValue(),this);
+
+        /*
+        Propagate the change to the display.
+         */
+        loadIssue();
+    }
+
+    public void purchaseCopy(Copy copy) {
+        mRepository.purchaseCopy(copy, mIssue.getValue(), this);
+    }
+
+    public void addOfferToCopy(Copy copy, Copy.Offer offer) {
+        mRepository.addOfferToCopy(copy, offer, mIssue.getValue(), this);
+    }
+
     @Override
     public void onIssueReady(Issue issue) {
         Log.d(TAG, "Got copies information for " + mIssueTitle + " " + mIssueNumber);
@@ -79,8 +120,18 @@ public class CopiesViewModel extends ViewModel implements SingleIssueListener, C
         Log.e(TAG, "Failed to load issue " + mIssueTitle + " " + mIssueNumber);
     }
 
-    public void addCopyToIssue(Copy copy) {
-        mRepository.addCopyOfIssue(copy, mIssue.getValue(), this);
+    @Override
+    public void onCopyChange(Copy copy) {
+        /*
+        Reload the issue to propagate the change to the display.
+         */
+        Log.d(TAG, "Copy of " + copy.getTitle() + " " + copy.getIssue() + " changed successfully");
+        loadIssue();
+    }
+
+    @Override
+    public void onCopyChangeFailed(String message) {
+        Log.e(TAG, "Failed to change copy: " + message);
     }
 
     @Override
@@ -117,5 +168,10 @@ public class CopiesViewModel extends ViewModel implements SingleIssueListener, C
                 break;
         }
         mIssue.setValue(thisIssue);
+    }
+
+    @Override
+    public void onCopiesDeleteFailed(String message) {
+        Log.e(TAG, "Deletion of " + mIssueTitle + " " + mIssueNumber + " failed: " + message);
     }
 }

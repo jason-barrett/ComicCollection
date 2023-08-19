@@ -5,6 +5,7 @@ import android.util.Log;
 import com.example.comiccollection.data.CollectionStats;
 import com.example.comiccollection.data.CollectionStatsListener;
 import com.example.comiccollection.data.ComicRepository;
+import com.example.comiccollection.data.CopiesDeletionListener;
 import com.example.comiccollection.data.CopiesListener;
 import com.example.comiccollection.data.IssuesDeletionListener;
 import com.example.comiccollection.data.IssuesListener;
@@ -181,6 +182,26 @@ public class FakeComicRepository implements ComicRepository {
         ArrayList<Copy> ownedCopies = issue.getOwnedCopies();
         ownedCopies.add(ownedCopy);
         issue.setOwnedCopies(ownedCopies);
+    }
+
+    @Override
+    public void deleteCopy(Copy copy, Issue issue, CopiesDeletionListener copiesListener) {
+
+    }
+
+    @Override
+    public void modifyCopy(Copy copy, Issue issue, CopiesListener copiesListener) {
+
+    }
+
+    @Override
+    public void purchaseCopy(Copy copy, Issue issue, CopiesListener copiesListener) {
+
+    }
+
+    @Override
+    public void addOfferToCopy(Copy copy, Copy.Offer newOffer, Issue issue, CopiesListener copiesListener) {
+
     }
 
     @Override

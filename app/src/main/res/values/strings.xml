@@ -93,10 +93,14 @@
     <string name="copy_sale_price">Sale Price</string>
     <string name="copy_notes">Notes</string>
 
+    <!-- Button labels when adding or editing individual copies. -->
     <string name="positive_add_copy">Add</string>
     <string name="positive_edit_copy">Edit</string>
     <string name="negative_add_copy">Cancel</string>
     <string name="negative_edit_copy">Cancel</string>
+
+    <!-- Key used to access Copy object in a Bundle.  -->
+    <string name="copy_bundle_key">copy</string>
 
     <string name="copy_error_no_title_issue">No title or issue number was provided.  Please cancel.</string>
 

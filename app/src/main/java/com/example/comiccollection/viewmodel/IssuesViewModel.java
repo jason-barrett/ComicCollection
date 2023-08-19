@@ -136,4 +136,14 @@ public class IssuesViewModel extends ViewModel implements IssuesListener, Copies
 
         onIssueChangesReady(issuesToAddOrReplace, issuesToRemove);
     }
+
+    @Override
+    public void onCopyChange(Copy copy) {
+
+    }
+
+    @Override
+    public void onCopyChangeFailed(String message) {
+
+    }
 }

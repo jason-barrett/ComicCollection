@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.example.comiccollection.data.ComicDbHelper;
 import com.example.comiccollection.data.entities.Copy;
+import com.example.comiccollection.data.entities.CopyType;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -76,6 +77,7 @@ public class OwnedCopiesMapper {
             }
 
             ownedCopy.setDocumentId(document.getId());
+            ownedCopy.setCopyType(CopyType.OWNED);
 
             return ownedCopy;
         } catch( RuntimeException e ) {
