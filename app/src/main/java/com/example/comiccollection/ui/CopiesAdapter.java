@@ -57,6 +57,9 @@ public class CopiesAdapter extends BaseExpandableListAdapter {
         return copyCategoryNamesList.size();
     }
 
+    /*
+    Returns the count of children (copies) given a group (category) descriptor.
+     */
     @Override
     public int getChildrenCount(int i) {
         try {

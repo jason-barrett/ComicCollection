@@ -279,10 +279,13 @@ public class CopiesActivity extends AppCompatActivity implements AddCopyDialogFr
                 copiesViewModel.deleteCopy(copy);
                 break;
 
+                /*
+                TODO: These options are to be added.
             case R.id.copy_menu_option_purchase:
             case R.id.copy_menu_option_price_change:
             case R.id.copy_menu_option_record_sale:
             case R.id.copy_menu_option_undo_sale:
+                 */
 
             default:
                 return super.onContextItemSelected(menuItem);

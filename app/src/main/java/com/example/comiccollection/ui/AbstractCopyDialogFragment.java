@@ -33,7 +33,7 @@ public abstract class AbstractCopyDialogFragment extends DialogFragment {
     protected TextView errorTextView;
     protected String errorText;
 
-    private String TAG = AbstractCopyDialogFragment.class.getSimpleName();
+    private final String TAG = AbstractCopyDialogFragment.class.getSimpleName();
 
     public void setCopyFromTextFields(Copy newCopy) {
 

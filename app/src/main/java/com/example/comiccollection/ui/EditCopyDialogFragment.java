@@ -21,6 +21,7 @@ import com.example.comiccollection.data.entities.CopyType;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Objects;
 
 public class EditCopyDialogFragment extends AbstractCopyDialogFragment {
 
@@ -83,7 +84,7 @@ public class EditCopyDialogFragment extends AbstractCopyDialogFragment {
             int day = c.get(Calendar.DAY_OF_MONTH);
 
             @SuppressLint("SetTextI18n") DatePickerDialog datePickerDialog = new DatePickerDialog(
-                    getActivity(),
+                    Objects.requireNonNull(getActivity()),
                     (dpview, yy, mm, dd) -> {
                         /*
                         Add 1 to the month because the picker uses 0-11.
