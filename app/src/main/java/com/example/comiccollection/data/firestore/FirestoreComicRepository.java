@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.Callable;
+import java.util.stream.Collectors;
 
 import android.util.Log;
 
@@ -1135,6 +1136,76 @@ public class FirestoreComicRepository implements ComicRepository {
                     }
                 })
                 .addOnFailureListener((e) -> copiesListener.onCopyChangeFailed(e.getMessage()));
+    }
+
+    @Override
+    public void recordSaleOfCopy(Copy copy, Issue issue, CopiesListener copiesListener) {
+        /*
+        Purchasing a copy involves moving the copy from 'forsale' to 'sold'.
+
+        This method records a sale that happened in the market, not a sale that I made.
+         */
+
+        /*
+        I need a reference for the new document, even though it doesn't exist yet.  Ask
+        Firestore for a unique identifier.
+         */
+        DocumentReference soldCopyRef =
+                db.collection(ComicDbHelper.CC_COLLECTION_ISSUES)
+                        .document(issue.getDocumentId())
+                        .collection(ComicDbHelper.CC_ISSUE_SOLD).document();
+
+        DocumentReference forsaleCopyRef =
+                db.collection(ComicDbHelper.CC_COLLECTION_ISSUES)
+                        .document(issue.getDocumentId())
+                        .collection(ComicDbHelper.CC_ISSUE_FORSALE).document(copy.getDocumentId());
+
+        CollectionReference offersRef = forsaleCopyRef.collection(ComicDbHelper.CC_COLLECTION_OFFERS);
+
+        List<DocumentReference> offerRefs = copy.getOffers().stream()
+                .map(Copy.Offer::getDocumentId)
+                .map(offersRef::document)
+                .collect(Collectors.toList());
+
+        db.runTransaction(new Transaction.Function<Void>() {
+            @Override
+            public Void apply(@NonNull Transaction transaction) {
+                /*
+                First create the sold copy.
+                 */
+                Map<String, Object> soldCopyData = new HashMap<>();
+                soldCopyData.put(ComicDbHelper.CC_COPY_TITLE, copy.getTitle());
+                soldCopyData.put(ComicDbHelper.CC_COPY_ISSUE, copy.getIssue());
+                soldCopyData.put(ComicDbHelper.CC_COPY_GRADE, copy.getGrade());
+                soldCopyData.put(ComicDbHelper.CC_COPY_PAGE_QUALITY, copy.getPageQuality());
+                soldCopyData.put(ComicDbHelper.CC_COPY_NOTES, copy.getNotes());
+                soldCopyData.put(ComicDbHelper.CC_COPY_SALE_PRICE, copy.getSalePrice());
+                soldCopyData.put(ComicDbHelper.CC_COPY_DATE_SOLD, copy.getDateSold());
+                soldCopyData.put(ComicDbHelper.CC_COPY_DEALER, copy.getDealer());
+                soldCopyData.put(ComicDbHelper.CC_COPY_VALUE, copy.getValue());
+
+                transaction.set(soldCopyRef, soldCopyData);
+
+                /*
+                Then delete the for sale copy.  Delete all of its offers first.
+                 */
+                offerRefs.forEach(transaction::delete);
+                transaction.delete(forsaleCopyRef);
+
+                return null;
+            }
+        }).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void unused) {
+                copiesListener.onCopyChange(copy);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                copiesListener.onCopyChangeFailed("Record sale failed, " + e.getMessage().toString());
+            }
+        });
+
     }
 
     @Override

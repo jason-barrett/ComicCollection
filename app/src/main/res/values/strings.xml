@@ -98,6 +98,8 @@
     <string name="positive_edit_copy">Edit</string>
     <string name="negative_add_copy">Cancel</string>
     <string name="negative_edit_copy">Cancel</string>
+    <string name="positive_record_sale">Confirm</string>
+    <string name="negative_record_sale">Cancel</string>
 
     <!-- Key used to access Copy object in a Bundle.  -->
     <string name="copy_bundle_key">copy</string>

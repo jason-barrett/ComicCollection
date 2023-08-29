@@ -195,6 +195,11 @@ public class FakeComicRepository implements ComicRepository {
     }
 
     @Override
+    public void recordSaleOfCopy(Copy copy, Issue issue, CopiesListener copiesListener) {
+
+    }
+
+    @Override
     public void purchaseCopy(Copy copy, Issue issue, CopiesListener copiesListener) {
 
     }

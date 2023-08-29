@@ -25,6 +25,7 @@ public interface ComicRepository {
     public void addCopyOfIssue(Copy copy, Issue issue, CopiesListener copiesListener);
     public void deleteCopy(Copy copy, Issue issue, CopiesDeletionListener copiesListener);
     public void modifyCopy(Copy copy, Issue issue, CopiesListener copiesListener);
+    public void recordSaleOfCopy(Copy copy, Issue issue, CopiesListener copiesListener);
     public void purchaseCopy(Copy copy, Issue issue, CopiesListener copiesListener);
     public void addOfferToCopy(Copy copy, Copy.Offer newOffer, Issue issue, CopiesListener copiesListener);
 

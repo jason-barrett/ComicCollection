@@ -84,6 +84,8 @@ public class CopiesViewModel extends ViewModel implements SingleIssueListener, C
 
     /*
     Add the modified copy to the data store, replacing the copy already attached to the issue.
+
+    This does not change the copy type and move the copy from one list to another.
      */
     public void modifyCopy(Copy copy) {
         mRepository.modifyCopy(copy, mIssue.getValue(), this);
@@ -99,6 +101,10 @@ public class CopiesViewModel extends ViewModel implements SingleIssueListener, C
         Propagate the change to the display.
          */
         loadIssue();
+    }
+
+    public void recordSaleOfCopy(Copy copy) {
+        mRepository.recordSaleOfCopy(copy, mIssue.getValue(), this);
     }
 
     public void purchaseCopy(Copy copy) {

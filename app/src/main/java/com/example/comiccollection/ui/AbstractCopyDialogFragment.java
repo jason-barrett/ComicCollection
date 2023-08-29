@@ -11,6 +11,7 @@ import androidx.fragment.app.DialogFragment;
 
 import com.example.comiccollection.data.entities.Copy;
 import com.example.comiccollection.data.entities.CopyType;
+import com.example.comiccollection.ui.utilities.UiUtils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -63,7 +64,7 @@ public abstract class AbstractCopyDialogFragment extends DialogFragment {
                         .replaceAll("\\$", "")));
             }
             if (dateField.getText().length() > 0) {
-                newCopy.setDatePurchased(dateFromDateField(dateField.getText().toString()));
+                newCopy.setDatePurchased(UiUtils.dateFromDateField(dateField.getText().toString()));
             }
             if (otherPartyField.getText().length() > 0) {
                 newCopy.setDealer(otherPartyField.getText().toString());
@@ -75,7 +76,7 @@ public abstract class AbstractCopyDialogFragment extends DialogFragment {
             if (dateField.getText().length() > 0 && priceField.getText().length() > 0) {
                 newCopy.addOffer(Double.parseDouble(priceField.getText().toString()
                                 .replaceAll("\\$", "")),
-                        dateFromDateField(dateField.getText().toString()));
+                        UiUtils.dateFromDateField(dateField.getText().toString()));
             }
             if (otherPartyField.getText().length() > 0) {
                 newCopy.setDealer(otherPartyField.getText().toString());
@@ -89,32 +90,11 @@ public abstract class AbstractCopyDialogFragment extends DialogFragment {
                         .replaceAll("\\$", "")));
             }
             if (dateField.getText().length() > 0) {
-                newCopy.setDateSold(dateFromDateField(dateField.getText().toString()));
+                newCopy.setDateSold(UiUtils.dateFromDateField(dateField.getText().toString()));
             }
             if (otherPartyField.getText().length() > 0) {
                 newCopy.setDealer(otherPartyField.getText().toString());
             }
         }
-    }
-
-    /*
-    Translate a string from the date field in the format mm-dd-yyyy, into a Date object for
-    the datastore.  I realize Date is sort-of deprecated, but I support Firestore for now
-    and Firestore still uses it.
-     */
-    private Date dateFromDateField(String dateFieldText) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd-yyyy", Locale.US);
-        Date returnDate;
-        try {
-            returnDate = dateFormat.parse(dateFieldText);
-        } catch( ParseException e) {
-            /*
-            If the date field doesn't parse right (which shouldn't happen because we're using a
-            date picker), return the current date.
-             */
-            returnDate = new Date();
-        }
-
-        return returnDate;
     }
 }

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:title="@string/context_menu_edit" android:id="@+id/copy_menu_option_edit" />
+    <item android:title="@string/context_menu_delete" android:id="@+id/copy_menu_option_delete" />
+    <item android:title="@string/context_menu_record_sale" android:id="@+id/copy_menu_option_record_sale" />
+    <!--
+    <item android:title="@string/context_menu_purchase" android:id="@+id/copy_menu_option_purchase" />
+    <item android:title="@string/context_menu_price_change" android:id="@+id/copy_menu_option_price_change" />
+    <item android:title="@string/context_menu_undo_sale" android:id="@+id/copy_menu_option_undo_sale" />
+    -->
+</menu>

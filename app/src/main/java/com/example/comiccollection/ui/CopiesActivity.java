@@ -21,6 +21,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.example.comiccollection.R;
 import com.example.comiccollection.application.ComicCollectionApplication;
 import com.example.comiccollection.data.entities.Copy;
+import com.example.comiccollection.data.entities.CopyType;
 import com.example.comiccollection.data.entities.Issue;
 import com.example.comiccollection.viewmodel.CopiesViewModel;
 import com.example.comiccollection.viewmodel.CopiesViewModelFactory;
@@ -41,7 +42,8 @@ unowned (sold) copies of a given issue.  The title and issue number will be pass
 by intent.
  */
 public class CopiesActivity extends AppCompatActivity implements AddCopyDialogFragment.AddCopyDialogListener,
-        EditCopyDialogFragment.EditCopyDialogListener {
+        EditCopyDialogFragment.EditCopyDialogListener,
+        RecordSaleDialogFragment.RecordSaleDialogListener{
 
     /*
     TextView for display of title and issue.
@@ -246,8 +248,21 @@ public class CopiesActivity extends AppCompatActivity implements AddCopyDialogFr
         if( type == ExpandableListView.PACKED_POSITION_TYPE_CHILD) {
             super.onCreateContextMenu(menu, view, menuInfo);
             MenuInflater inflater = getMenuInflater();
-            inflater.inflate(R.menu.copy_context_menu, menu);
 
+            /*
+            Choose a context menu to show based on the group in which the view that was clicked on.
+            This information is packed into the ExpandableListContextMenuInfo object.
+            */
+            int group = ExpandableListView.getPackedPositionGroup(expandableMenuInfo.packedPosition);
+            switch( group ) {
+                case CopyType.FORSALE_COPIES:
+                    inflater.inflate(R.menu.forsale_copy_context_menu, menu);
+                    break;
+
+                default:
+                    inflater.inflate(R.menu.copy_context_menu, menu);
+                    break;
+            }
         }
     }
 
@@ -279,11 +294,15 @@ public class CopiesActivity extends AppCompatActivity implements AddCopyDialogFr
                 copiesViewModel.deleteCopy(copy);
                 break;
 
+            case R.id.copy_menu_option_record_sale:
+                RecordSaleDialogFragment recordSaleDialogFragment =
+                        new RecordSaleDialogFragment(copy, this);
+                recordSaleDialogFragment.show(getSupportFragmentManager(), null);
+
                 /*
                 TODO: These options are to be added.
             case R.id.copy_menu_option_purchase:
             case R.id.copy_menu_option_price_change:
-            case R.id.copy_menu_option_record_sale:
             case R.id.copy_menu_option_undo_sale:
                  */
 
@@ -333,6 +352,18 @@ public class CopiesActivity extends AppCompatActivity implements AddCopyDialogFr
 
         if( editCopy != null ) {
             copiesViewModel.modifyCopy(editCopy);
+        }
+
+        fragment.dismiss();
+    }
+
+    @Override
+    public void onDialogClickRecordSale(RecordSaleDialogFragment fragment) {
+        Copy soldCopy = fragment.getCopy();
+
+        if( soldCopy != null ) {
+            copiesViewModel.modifyCopy(soldCopy);
+            copiesViewModel.recordSaleOfCopy(soldCopy);
         }
 
         fragment.dismiss();

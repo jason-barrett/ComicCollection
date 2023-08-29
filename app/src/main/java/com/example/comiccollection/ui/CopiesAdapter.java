@@ -11,6 +11,7 @@ import android.util.Log;
 
 import com.example.comiccollection.data.entities.Copy;
 import com.example.comiccollection.R;
+import com.example.comiccollection.data.entities.CopyType;
 
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
@@ -35,13 +36,6 @@ public class CopiesAdapter extends BaseExpandableListAdapter {
     This is the set of Copy objects, for each group, that carry the data for each copy (child).
      */
     private final Map<String, List<Copy>> copiesMap;
-
-    /*
-    A handy mapping of group list index positions to group descriptors.
-     */
-    private final int OWNED_COPIES = 0;
-    private final int FORSALE_COPIES = 1;
-    private final int SOLD_COPIES = 2;
 
     private final String TAG = CopiesAdapter.class.getSimpleName();
 
@@ -152,12 +146,12 @@ public class CopiesAdapter extends BaseExpandableListAdapter {
         if( convertView == null ) {
             LayoutInflater inflater = LayoutInflater.from(context);
             switch( groupListPosition ) {
-                case OWNED_COPIES:
+                case CopyType.OWNED_COPIES:
                     childView = inflater.inflate(R.layout.owned_copy_item_layout, null);
                     break;
 
-                case FORSALE_COPIES:
-                case SOLD_COPIES:
+                case CopyType.FORSALE_COPIES:
+                case CopyType.SOLD_COPIES:
                     childView = inflater.inflate(R.layout.unowned_copy_item_layout, null);
                     break;
 
@@ -172,12 +166,12 @@ public class CopiesAdapter extends BaseExpandableListAdapter {
         copy is owned or not.
          */
         switch( groupListPosition ) {
-            case OWNED_COPIES:
+            case CopyType.OWNED_COPIES:
                 /*
                 Get the copy object at the group and child list positions.
                  */
                 List<Copy> ownedCopiesList =
-                        (List<Copy>) copiesMap.get(copyCategoryNamesList.get(OWNED_COPIES));
+                        (List<Copy>) copiesMap.get(copyCategoryNamesList.get(CopyType.OWNED_COPIES));
                 assert ownedCopiesList != null;
                 Copy ownedCopy = ownedCopiesList.get(childListPosition);
 
@@ -202,12 +196,12 @@ public class CopiesAdapter extends BaseExpandableListAdapter {
 
                 break;
 
-            case FORSALE_COPIES:
+            case CopyType.FORSALE_COPIES:
                 /*
                 Get the copy object at the group and child list positions.
                  */
                 List<Copy> forSaleCopiesList =
-                        (List<Copy>) copiesMap.get(copyCategoryNamesList.get(FORSALE_COPIES));
+                        (List<Copy>) copiesMap.get(copyCategoryNamesList.get(CopyType.FORSALE_COPIES));
                 assert forSaleCopiesList != null;
                 Copy forSaleCopy = forSaleCopiesList.get(childListPosition);
 
@@ -250,12 +244,12 @@ public class CopiesAdapter extends BaseExpandableListAdapter {
 
                 break;
 
-            case SOLD_COPIES:
+            case CopyType.SOLD_COPIES:
                 /*
                 Get the copy object at the group and child list positions.
                  */
                 List<Copy> soldCopiesList =
-                        (List<Copy>) copiesMap.get(copyCategoryNamesList.get(SOLD_COPIES));
+                        (List<Copy>) copiesMap.get(copyCategoryNamesList.get(CopyType.SOLD_COPIES));
                 assert soldCopiesList != null;
                 Copy soldCopy = soldCopiesList.get(childListPosition);
 
