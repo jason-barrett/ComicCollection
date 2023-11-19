@@ -257,7 +257,7 @@ public class IssuesListManagerTest {
         batman234_withCopy.setIssueNumber("234");
         batman234_withCopy.setWanted(true);
 
-        batman234_withCopy.setUnownedCopies(unownedCopies);
+        batman234_withCopy.setForSaleCopies(unownedCopies);
 
         ArrayList<Issue> issuesToAddOrReplace = new ArrayList<>();
         issuesToAddOrReplace.add(batman234_withCopy);
@@ -279,7 +279,7 @@ public class IssuesListManagerTest {
         boolean got234Copy = false;
         for (Issue issue : modifiedIssues) {
             if (issue.getIssueNumber().equals("234")) {
-                if(issue.getUnownedCopies().size() == 1 ) {
+                if(issue.getForSaleCopies().size() == 1 ) {
                     got234Copy = true;
                 }
             }
