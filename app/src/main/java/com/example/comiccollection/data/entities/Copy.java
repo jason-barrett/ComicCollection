@@ -1,6 +1,7 @@
 package com.example.comiccollection.data.entities;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -51,6 +52,11 @@ public class Copy {
      */
     CopyType copyType;
 
+    /*
+    Provide a standard Comparator for comparing two copies, by grade (highest first).
+     */
+    private static Comparator<Copy> copyComparator;
+
     public Copy() {}
     /*
     Create the simplest possible Copy with just the title and issue number.
@@ -69,6 +75,20 @@ public class Copy {
         this.copyType = copyType;
 
         mOffers = new ArrayList<Offer>();
+
+        copyComparator = new Comparator<Copy>() {
+            @Override
+            public int compare(Copy copy, Copy t1) {
+                if (copy.getGrade() == null || t1.getGrade() == null) {
+                    return 0;
+                }
+                return t1.getGrade().compareTo(copy.getGrade());
+            }
+        };
+    }
+
+    public static Comparator<Copy> getCopyComparator() {
+        return copyComparator;
     }
 
     public String getTitle() {

@@ -21,6 +21,7 @@ import com.example.comiccollection.R;
 import com.example.comiccollection.application.ComicCollectionApplication;
 import com.example.comiccollection.data.entities.Copy;
 import com.example.comiccollection.data.entities.CopyType;
+import com.example.comiccollection.data.entities.Grade;
 import com.example.comiccollection.data.entities.Issue;
 import com.example.comiccollection.viewmodel.CopiesViewModel;
 import com.example.comiccollection.viewmodel.CopiesViewModelFactory;
@@ -28,6 +29,8 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
@@ -134,16 +137,25 @@ public class CopiesActivity extends AppCompatActivity implements AddCopyDialogFr
                 known copies.
                  */
                 copiesMap.merge(getString(R.string.owned_copy_category), issue.getOwnedCopies(),
-                        (oldList, newList) -> {return newList;});
+                        (oldList, newList) -> {
+                            newList.sort(Copy.getCopyComparator());
+                            return newList;
+                        });
 
                 copiesMap.merge(getString(R.string.forsale_copy_category), issue.getForSaleCopies(),
-                        (oldList, newList) -> {return newList;});
+                        (oldList, newList) -> {
+                            newList.sort(Copy.getCopyComparator());
+                            return newList;
+                });
 
                 /*
                 These are copies sold in the market, not copies sold by me.
                  */
                 copiesMap.merge(getString(R.string.sold_copy_category), issue.getSoldCopies(),
-                        (oldList, newList) -> {return newList;});
+                        (oldList, newList) -> {
+                            newList.sort(Copy.getCopyComparator());
+                            return newList;
+                });
 
                 /*
                 Update the list adapter with new or changed information.
