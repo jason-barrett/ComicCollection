@@ -200,7 +200,7 @@ public class FirestoreComicRepository implements ComicRepository {
         /*
         Specify the title in a HashMap.  Firestore will auto-generate a document ID.
          */
-        Map<String, Object> newTitle = new HashMap();
+        Map<String, Object> newTitle = new HashMap<String, Object>();
         newTitle.put(ComicDbHelper.CC_TITLE_NAME, title.getName());
         newTitle.put(ComicDbHelper.CC_TITLE_FIRST_ISSUE, title.getFirstIssue());
         newTitle.put(ComicDbHelper.CC_TITLE_LAST_ISSUE, title.getLastIssue());
@@ -231,7 +231,7 @@ public class FirestoreComicRepository implements ComicRepository {
         in Firestore, which at this point is practically probably unimportant, but as the
         product evolves, could matter.
          */
-        Map<String, Object> newTitle = new HashMap();
+        Map<String, Object> newTitle = new HashMap<String, Object>();
         newTitle.put(ComicDbHelper.CC_TITLE_NAME, title.getName());
         newTitle.put(ComicDbHelper.CC_TITLE_FIRST_ISSUE, title.getFirstIssue());
         newTitle.put(ComicDbHelper.CC_TITLE_LAST_ISSUE, title.getLastIssue());
@@ -245,7 +245,7 @@ public class FirestoreComicRepository implements ComicRepository {
                 }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-                Log.e(TAG, "Failed to modify title " + title.getName() + e.toString());
+                Log.e(TAG, "Failed to modify title " + title.getName() + e);
 
                 //TODO: Refactor to propagate this error back to the screen / user.
             }

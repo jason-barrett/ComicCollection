@@ -22,6 +22,7 @@ import androidx.fragment.app.DialogFragment;
 
 import com.example.comiccollection.data.entities.Copy;
 import com.example.comiccollection.data.entities.CopyType;
+import com.example.comiccollection.data.entities.Grade;
 import com.google.android.gms.common.internal.safeparcel.SafeParcelable;
 
 import java.text.ParseException;
@@ -176,7 +177,7 @@ public class AddCopyDialogFragment extends DialogFragment {
                             Log.i(TAG, "Creating a new " + copyType.toString() + " copy of "
                                 + thisTitle + " " + thisIssue);
 
-                            newCopy.setGrade(gradeField.getText().toString());
+                            newCopy.setGrade(Grade.fromString(gradeField.getText().toString()));
                             if( valueField.getText().length() > 0 ) {
                                 newCopy.setValue(Double.parseDouble(valueField.getText().toString()));
                             }

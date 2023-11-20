@@ -5,6 +5,7 @@ import android.util.Log;
 import com.example.comiccollection.data.ComicDbHelper;
 import com.example.comiccollection.data.entities.Copy;
 import com.example.comiccollection.data.entities.CopyType;
+import com.example.comiccollection.data.entities.Grade;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -50,7 +51,7 @@ public class SoldCopiesMapper {
                 soldCopy.setPageQuality(document.getString(ComicDbHelper.CC_COPY_PAGE_QUALITY));
             }
             if( document.contains(ComicDbHelper.CC_COPY_GRADE) ) {
-                soldCopy.setGrade((document.getString(ComicDbHelper.CC_COPY_GRADE)));
+                soldCopy.setGrade(Grade.fromString(document.getString(ComicDbHelper.CC_COPY_GRADE)));
             }
             if( document.contains(ComicDbHelper.CC_COPY_NOTES) ) {
                 soldCopy.setNotes((document.getString(ComicDbHelper.CC_COPY_NOTES)));
@@ -66,13 +67,6 @@ public class SoldCopiesMapper {
                 soldCopy.setPurchaser(document.getString(ComicDbHelper.CC_COPY_PURCHASER));
             }
             if( document.contains(ComicDbHelper.CC_COPY_SALE_PRICE) ) {
-                /*
-                String salePriceAsString = document.getString(ComicDbHelper.CC_COPY_SALE_PRICE);
-                soldCopy.setSalePrice(FirestoreTypeUtils
-                        .handleDoubleAsString(salePriceAsString, soldCopy,
-                                ComicDbHelper.CC_COPY_SALE_PRICE));
-
-                 */
                 soldCopy.setSalePrice(document.getDouble(ComicDbHelper.CC_COPY_SALE_PRICE));
             }
             if( document.contains(ComicDbHelper.CC_COPY_DATE_SOLD) ) {

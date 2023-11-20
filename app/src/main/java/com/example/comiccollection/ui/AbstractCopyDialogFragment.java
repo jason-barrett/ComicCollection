@@ -11,6 +11,7 @@ import androidx.fragment.app.DialogFragment;
 
 import com.example.comiccollection.data.entities.Copy;
 import com.example.comiccollection.data.entities.CopyType;
+import com.example.comiccollection.data.entities.Grade;
 import com.example.comiccollection.ui.utilities.UiUtils;
 
 import java.text.ParseException;
@@ -43,7 +44,7 @@ public abstract class AbstractCopyDialogFragment extends DialogFragment {
             return;
         }
 
-        newCopy.setGrade(gradeField.getText().toString());
+        newCopy.setGrade(Grade.fromString(gradeField.getText().toString()));
 
         /*
         Strip the leading '$' from the monetary string before loading to the new Copy.

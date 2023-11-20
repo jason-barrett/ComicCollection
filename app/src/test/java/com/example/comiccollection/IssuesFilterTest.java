@@ -1,6 +1,7 @@
 package com.example.comiccollection;
 
 import com.example.comiccollection.data.entities.Copy;
+import com.example.comiccollection.data.entities.Grade;
 import com.example.comiccollection.data.entities.Issue;
 import com.example.comiccollection.data.entities.OwnedCopy;
 import com.example.comiccollection.ui.IssuesToggleState;
@@ -54,12 +55,12 @@ public class IssuesFilterTest {
         Copy ownedFF201_1 = new Copy();
         ownedFF201_1.setTitle("Fantastic Four");
         ownedFF201_1.setIssue("201");
-        ownedFF201_1.setGrade("VF");
+        ownedFF201_1.setGrade(Grade.VF);
 
         Copy ownedFF201_2 = new Copy();
         ownedFF201_2.setTitle("Fantastic Four");
         ownedFF201_2.setIssue("201");
-        ownedFF201_2.setGrade("VG/F");
+        ownedFF201_2.setGrade(Grade.VGF);
 
         ArrayList<Copy> ownedCopyList201 = new ArrayList<Copy>();
         ownedCopyList201.add(ownedFF201_1);

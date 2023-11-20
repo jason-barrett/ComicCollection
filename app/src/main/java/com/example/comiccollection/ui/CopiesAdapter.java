@@ -176,8 +176,8 @@ public class CopiesAdapter extends BaseExpandableListAdapter {
                 Copy ownedCopy = ownedCopiesList.get(childListPosition);
 
                 TextView gradeView = childView.findViewById(R.id.owned_copy_grade);
-                if( ownedCopy.getGrade() != null && !ownedCopy.getGrade().isEmpty()) {
-                    gradeView.setText(ownedCopy.getGrade());
+                if( ownedCopy.getGrade() != null ) {
+                    gradeView.setText(ownedCopy.getGrade().toString());
                 }
 
                 TextView valueView = childView.findViewById(R.id.owned_copy_value);
@@ -206,7 +206,7 @@ public class CopiesAdapter extends BaseExpandableListAdapter {
                 Copy forSaleCopy = forSaleCopiesList.get(childListPosition);
 
                 TextView forSaleGradeView = childView.findViewById(R.id.unowned_copy_grade);
-                forSaleGradeView.setText(forSaleCopy.getGrade());
+                forSaleGradeView.setText(forSaleCopy.getGrade().toString());
 
                 TextView forSaleDealerView = childView.findViewById(R.id.unowned_copy_dealer);
                 forSaleDealerView.setText(forSaleCopy.getDealer());
@@ -254,7 +254,7 @@ public class CopiesAdapter extends BaseExpandableListAdapter {
                 Copy soldCopy = soldCopiesList.get(childListPosition);
 
                 TextView soldGradeView = childView.findViewById(R.id.unowned_copy_grade);
-                soldGradeView.setText(soldCopy.getGrade());
+                soldGradeView.setText(soldCopy.getGrade().toString());
 
                 TextView soldDealerView = childView.findViewById(R.id.unowned_copy_dealer);
                 soldDealerView.setText(soldCopy.getDealer());

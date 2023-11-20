@@ -14,7 +14,7 @@ public class Copy {
     private String mTitle;
     private String mIssue;
 
-    private String mGrade;
+    private Grade mGrade;
     private String mPageQuality;
 
     private String mNotes;
@@ -95,11 +95,11 @@ public class Copy {
         this.mPageQuality = pageQuality;
     }
 
-    public String getGrade() {
+    public Grade getGrade() {
         return mGrade;
     }
 
-    public void setGrade(String grade) {
+    public void setGrade(Grade grade) {
         this.mGrade = grade;
     }
 

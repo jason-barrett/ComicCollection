@@ -5,6 +5,7 @@ import android.util.Log;
 import com.example.comiccollection.data.ComicDbHelper;
 import com.example.comiccollection.data.entities.Copy;
 import com.example.comiccollection.data.entities.CopyType;
+import com.example.comiccollection.data.entities.Grade;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -52,7 +53,7 @@ public class OwnedCopiesMapper {
                 ownedCopy.setPageQuality(document.getString(ComicDbHelper.CC_COPY_PAGE_QUALITY));
             }
             if( document.contains(ComicDbHelper.CC_COPY_GRADE) ) {
-                ownedCopy.setGrade((document.getString(ComicDbHelper.CC_COPY_GRADE)));
+                ownedCopy.setGrade(Grade.fromString(document.getString(ComicDbHelper.CC_COPY_GRADE)));
             }
             if( document.contains(ComicDbHelper.CC_COPY_NOTES) ) {
                 ownedCopy.setNotes((document.getString(ComicDbHelper.CC_COPY_NOTES)));

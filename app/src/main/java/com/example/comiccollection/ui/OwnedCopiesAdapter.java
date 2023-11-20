@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.comiccollection.R;
+import com.example.comiccollection.data.entities.Grade;
 import com.example.comiccollection.data.entities.OwnedCopy;
 
 import java.util.ArrayList;
@@ -38,8 +39,8 @@ public class OwnedCopiesAdapter extends RecyclerView.Adapter<OwnedCopiesAdapter.
     @Override
     public void onBindViewHolder(@NonNull OwnedCopiesViewHolder holder, int position) {
 
-        String grade = ownedCopiesList.get(position).getGrade();
-        holder.getGradeView().setText(grade == null || grade.isEmpty() ? "NG" : grade);
+        Grade grade = ownedCopiesList.get(position).getGrade();
+        holder.getGradeView().setText(grade == null  ? "NG" : grade.toString());
 
         String value = String.valueOf(ownedCopiesList.get(position).getValue());
         holder.getValueView().setText(value);

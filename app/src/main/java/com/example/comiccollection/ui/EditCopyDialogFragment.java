@@ -66,8 +66,8 @@ public class EditCopyDialogFragment extends AbstractCopyDialogFragment {
         object.  It'll depend a little bit on what type of copy it is.
          */
         gradeField = view.findViewById(R.id.edit_copy_grade);
-        if( copyToEdit.getGrade() != null && !copyToEdit.getGrade().isEmpty()) {
-            gradeField.setText(copyToEdit.getGrade());
+        if( copyToEdit.getGrade() != null ) {
+            gradeField.setText(copyToEdit.getGrade().toString());
         }
 
         valueField = view.findViewById(R.id.edit_copy_value);

@@ -3,6 +3,8 @@ package com.example.comiccollection;
 import android.util.Log;
 
 import com.example.comiccollection.data.entities.Copy;
+import com.example.comiccollection.data.entities.CopyType;
+import com.example.comiccollection.data.entities.Grade;
 import com.example.comiccollection.data.entities.Issue;
 import com.example.comiccollection.viewmodel.IssuesListManager;
 
@@ -240,12 +242,12 @@ public class IssuesListManagerTest {
         issueList.add(batman244);
         issueList.add(batman254);
 
-        Copy batman234Copy = new Copy();
+        Copy batman234Copy = new Copy("Batman", "234", CopyType.FORSALE);
         batman234Copy.setDocumentId("12121");
         batman234Copy.setTitle("Batman");
         batman234Copy.setIssue("234");
         batman234Copy.addOffer(125.00, new Date("2/21/2021"));
-        batman234Copy.setGrade("VG+");
+        batman234Copy.setGrade(Grade.VGPlus);
         batman234Copy.setDealer("Metropolis Comics");
 
         ArrayList<Copy> unownedCopies = new ArrayList<>();
